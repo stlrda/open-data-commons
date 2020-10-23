@@ -1,4 +1,5 @@
 import React from 'react'
+import { Button as BPButton } from '@blueprintjs/core/lib/cjs/components/button/buttons'
 
 interface ButtonProps {
   title: string
@@ -11,9 +12,10 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
 
   return (
-    <button onClick={handleClick}>
-      {title}
-    </button>
+    <BPButton
+      text={title}
+      onClick={handleClick}
+    />
   )
 }
 
