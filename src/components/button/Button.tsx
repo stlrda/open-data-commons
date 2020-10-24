@@ -1,5 +1,6 @@
 import React from 'react'
-import { Button as BPButton } from '@blueprintjs/core/lib/cjs/components/button/buttons'
+// import { Button as BPButton } from '@blueprintjs/core/lib/cjs/components/button/buttons'
+import { Button as BPButton } from '@blueprintjs/core'
 
 interface ButtonProps {
   title: string
