@@ -1,9 +1,9 @@
-import React from 'react'
-import { Table as BPTable, Column, Cell } from '@blueprintjs/table'
+import React from 'react';
+import { Table as BPTable, Column, Cell } from '@blueprintjs/table';
 
 export interface IColumn {
   name: string
-  //items: any
+  // items: any
 }
 
 interface TableProps {
@@ -13,12 +13,9 @@ interface TableProps {
 
 const Table: React.FC<TableProps> = ({
   numRows,
-  columns
+  columns,
 }) => {
-
-  const cellRenderer = (rowIndex: number) => {
-    return <Cell>{rowIndex}</Cell>
-  }
+  const cellRenderer = (rowIndex: number) => <Cell>{rowIndex}</Cell>;
 
   return (
     <BPTable numRows={numRows}>
@@ -30,7 +27,7 @@ const Table: React.FC<TableProps> = ({
         />
       ))}
     </BPTable>
-  )
-}
+  );
+};
 
 export default Table;

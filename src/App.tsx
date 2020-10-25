@@ -8,6 +8,7 @@ function App() {
   const handleButtonClick = () => {
     console.log('you pressed me')
   }
+
   return (
     <div>
       <h1>Welcome to the project</h1>
