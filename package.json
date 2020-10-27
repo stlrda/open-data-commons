@@ -15,10 +15,12 @@
   "dependencies": {
     "@blueprintjs/core": "^3.35.0",
     "@blueprintjs/table": "^3.8.17",
+    "@types/styled-components": "^5.1.4",
     "normalize.css": "^8.0.1",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "4.0.0",
+    "styled-components": "^5.2.0",
     "web-vitals": "^0.2.4"
   },
   "devDependencies": {

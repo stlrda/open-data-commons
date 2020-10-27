@@ -1,20 +1,17 @@
 import React from 'react';
-import Button from './components/button/Button'
-import Table from './components/table/Table'
-import { simpleColumns } from './mocks/table'
+import Layout from './components/layout/Layout'
+import { ThemeProvider } from 'styled-components'
+import GlobalStyle from './styles/global'
+import odcTheme from './styles/theme'
 
 function App() {
-
-  const handleButtonClick = () => {
-    console.log('you pressed me')
-  }
-
   return (
-    <div>
-      <h1>Welcome to the project</h1>
-      <Button title="hello" handleClick={handleButtonClick} />
-      <Table numRows={10} columns={simpleColumns} />
-    </div>
+    <>
+      <GlobalStyle />
+      <ThemeProvider theme={odcTheme}>
+        <Layout />
+      </ThemeProvider>
+    </>
   );
 }
 

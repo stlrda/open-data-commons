@@ -10,10 +10,10 @@ export const simpleColumns: Column[] = [
   {
     name: "Birds"
   },
-  {
-    name: "Hamsters"
-  },
-  {
-    name: "Fish"
-  },
+  // {
+  //   name: "Hamsters"
+  // },
+  // {
+  //   name: "Fish"
+  // },
 ]
