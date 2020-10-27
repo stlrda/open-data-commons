@@ -23,6 +23,7 @@
     ],
     "rules": {
       "react/prop-types": "warn",
-      "react/no-unescaped-entities": "warn"
+      "react/no-unescaped-entities": "warn",
+      "no-unused-vars": "warn"
     }
 }
