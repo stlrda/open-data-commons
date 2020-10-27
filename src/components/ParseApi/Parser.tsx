@@ -1,4 +1,3 @@
-import { JSONFormat } from '@blueprintjs/table';
 import React, { useState, useEffect } from 'react'
 import ApiParser from './ApiParser'
 

@@ -71,7 +71,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
         <div className="api-responses">
           <h3 className="section-header-title small-title">Responses</h3>
           <div className="subsection-header">
-            <h6 className="subsection-header-title">query parameters</h6>
+            <h6 className="subsection-header-title">response schema</h6>
             <Divider className="mh-0" />
           </div>
           <div className="api-responses-innner">
