@@ -66,6 +66,15 @@ const StyledApiItem = styled.div`
   .api-item-html-table {
     margin-bottom: 40;
     width: 100%;
+
+    .parameter-name-column {
+      display: flex;
+      flex-direction:column;
+      min-width: 110px;
+    }
+    .parameter-datatype-column {
+      width: 75%;
+    }
   }
 
   .api-item-left {

@@ -42,13 +42,13 @@ const ApiItem: React.FC<ApiItemProps> = ({
               <tbody>
                 {apiItem.parameters.map((parameter, index) => (
                   <tr key={index}>
-                    <td style={{display: 'flex', flexDirection:'column', minWidth: 110}}>
+                    <td className="parameter-name-column">
                       <span>{parameter.name}</span>
                       {parameter.required && (
                         <span className="required-text">required</span>
                       )}
                     </td>
-                    <td style={{width: "75"}}>
+                    <td className="parameter-datatype-column">
                       <span>{parameter.type}</span>
                       {parameter.defaultValue && (
                         <div className="default-value-container">
