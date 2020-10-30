@@ -7,11 +7,13 @@ import Parser from './components/ParseApi/Parser'
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
 
+import { SpecProvider } from './components/context/SpecContext'
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 
 function App() {
   return (
     <>
+    <SpecProvider>
       <GlobalStyle />
       <ThemeProvider theme={odcTheme}>
         <Layout>
@@ -22,6 +24,7 @@ function App() {
 
         </Layout>
       </ThemeProvider>
+      </SpecProvider>
     </>
   );
 }
