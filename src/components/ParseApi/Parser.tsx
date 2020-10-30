@@ -26,12 +26,13 @@ const Parser: React.FC<ParserProps> = ({
 
   useEffect(() => {
     if(parsedData) {
+      // TO Print to Console
       console.log('parsed data value:', JSON.stringify(parsedData))
+      // Check if already exists before updating
       dispatch({
-        type: Types.Update,
+        type: Types.UPDATE,
         payload: parsedData
       })
-      console.log(state)
     }
   }, [parsedData])
 

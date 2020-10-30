@@ -13,17 +13,17 @@ const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 function App() {
   return (
     <>
-    <SpecProvider>
-      <GlobalStyle />
-      <ThemeProvider theme={odcTheme}>
-        <Layout>
-          <Parser swaggerUrl={swaggerUrl} />
-          <PageHeader />
+      <SpecProvider>
+        <GlobalStyle />
+        <ThemeProvider theme={odcTheme}>
+          <Layout>
+            <Parser swaggerUrl={swaggerUrl} />
+            <PageHeader />
 
-          <ApiItems />
+            <ApiItems />
 
-        </Layout>
-      </ThemeProvider>
+          </Layout>
+        </ThemeProvider>
       </SpecProvider>
     </>
   );

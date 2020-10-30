@@ -1,41 +1,47 @@
-import React, { useReducer, createContext} from 'react'
-import {AppReducer, SpecActions} from './AppReducer'
+import React, { useReducer, createContext } from 'react'
+import { appReducer, AppActions } from './AppReducer'
 
 type DataType = {
-    data: JSON;
+  data: any, // JSON
+  // loading: boolean
+}
+interface IDataType {
+  data: any
 }
 
-type InitialStateType = {
-    data: DataType[];
+// export type InitialStateType = {
+//   data: DataType[], // OpenApi Type
+//   loading: boolean // boolean
+// }
+export type InitialStateType = {
+  data: any //IDataType[] // IDataType[]
+  loading: boolean
 }
+
+// export type InitialStateType =
 
 const initialState = {
-    data: []
+  data: [],
+  loading: true,
 }
 
 const SpecContext = createContext<{
-    state: InitialStateType;
-    dispatch: React.Dispatch<any>
+  state: InitialStateType;
+  dispatch: React.Dispatch<AppActions>
 }>({
-    state: initialState,
-    dispatch: () => null
-});
+  state: initialState,
+  dispatch: () => null,
+})
 
-const mainReducer = (
-    { data }: InitialStateType, 
-    action: SpecActions
-) => ({
-    data: AppReducer(data, action)
-});
+// const mainReducer = (state: InitialStateType, action: AppActions) => ({
+//   appState: AppReducer(state, action),
+//   // loading: AppReducer(loading, action)
+// })
 
 const SpecProvider: React.FC = ({ children }) => {
-    const [state, dispatch] = useReducer(mainReducer, initialState);
-  
-    return (
-      <SpecContext.Provider value={{ state, dispatch }}>
-        { children }
-      </SpecContext.Provider>
-    );
-  };
+  const [state, dispatch] = useReducer(appReducer, initialState)
+
+  return <SpecContext.Provider value={{ state, dispatch }}>{children}</SpecContext.Provider>
+}
 
 export { SpecContext, SpecProvider }
