@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import ThreeColumnLayout, { MainContent, SidebarLayout, Backdrop } from './layout.styled'
 import Sidebar from '../Sidebar/Sidebar'
 

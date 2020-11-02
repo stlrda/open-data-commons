@@ -3,10 +3,12 @@ import ApiParser from './ApiParser'
 
 interface ParserProps {
   swaggerUrl: string
+  updateSwaggerData(data: any): void
 }
 
 const Parser: React.FC<ParserProps> = ({
-  swaggerUrl
+  swaggerUrl,
+  updateSwaggerData
 }) => {
   let apiParser: ApiParser;
 
@@ -21,7 +23,8 @@ const Parser: React.FC<ParserProps> = ({
 
   useEffect(() => {
     if(parsedData) console.log('parsed data value:', JSON.stringify(parsedData))
-  }, [parsedData])
+    updateSwaggerData(parsedData)
+  }, [parsedData, updateSwaggerData])
 
   const handleSwaggerUrl = async (url: string) => {
     const previousUrl = localStorage.getItem("openapi_url")
