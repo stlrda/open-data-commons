@@ -83,6 +83,12 @@ const Sidebar: React.FC<SidebarProps> = ({
               <span className="navitem-text">{route.summary}</span>
             </li>
           ))}
+          {routes.length < 1 && (
+            <li className="sidebar-navitem">
+              <span className="endpoint-http-text bp3-skeleton" style={{width: 20}}>Load</span>
+              <span className="navitem-text bp3-skeleton">Loading Routes</span>
+            </li>
+          )}
         </ul>
       </div>
     </StyledSidebar>

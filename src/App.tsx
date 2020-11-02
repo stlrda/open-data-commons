@@ -54,7 +54,6 @@ function App() {
       const navRoutes = openapiFormatter.getNavRoutes(paths);
       console.log('navRoutes:', navRoutes)
       setRoutes(navRoutes);
-
       setPaths(paths)
     }
 

@@ -3,7 +3,7 @@ import { Divider, HTMLTable, Tag } from '@blueprintjs/core'
 import Table from '../table/Table'
 import { simpleColumns } from '../../mocks/table'
 import StyledApiItem from './api-items.styled'
-import IApiItem from '../../types/ApiItem';
+import IApiItem from '../../types/ApiItem'
 
 interface ApiItemProps {
   http: string
@@ -12,12 +12,7 @@ interface ApiItemProps {
   // apiItem: IApiItem
 }
 
-const ApiItem: React.FC<ApiItemProps> = ({
-  http,
-  method,
-  endpoint
-}) => {
-
+const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint }) => {
   // TODO: test for schema objects with "items" that are an array
   // TODO: test with a more robust openapi.json spec to verify edge cases
   return (
@@ -35,10 +30,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
             </div>
             {/* Display the query parameters */}
             {/* HTMLTable: Field, Type */}
-            <HTMLTable
-              className="api-item-html-table"
-              bordered
-            >
+            <HTMLTable className="api-item-html-table" bordered>
               <thead>
                 <tr>
                   <th>Field</th>
@@ -50,12 +42,13 @@ const ApiItem: React.FC<ApiItemProps> = ({
                   <tr key={index}>
                     <td className="parameter-name-column">
                       <span>{parameter.name}</span>
-                      {parameter.required && (
-                        <span className="required-text">required</span>
-                      )}
+                      {parameter.required && <span className="required-text">required</span>}
                     </td>
                     <td className="parameter-datatype-column">
-                      <span>{parameter.schema.type} {parameter.schema.title && `(${parameter.schema.title})`}</span>
+                      <span>
+                        {parameter.schema.type}{' '}
+                        {parameter.schema.title && `(${parameter.schema.title})`}
+                      </span>
                       {parameter.defaultValue && (
                         <div className="default-value-container">
                           <span>Default: &nbsp;</span>
@@ -84,7 +77,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     key={response.code}
                     className="method-response-tag"
                     htmlTitle={response.code}
-                    intent={response.code < 400 ? "success" : "danger"}
+                    intent={response.code < 400 ? 'success' : 'danger'}
                   >
                     {response.code}
                   </Tag>
@@ -98,10 +91,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
           </div>
           <div className="api-responses-innner">
             <div className="table-container">
-              <Table
-                numRows={3}
-                columns={simpleColumns}
-              />
+              <Table numRows={3} columns={simpleColumns} />
             </div>
           </div>
         </div>
@@ -110,11 +100,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
       {/* Right side: Visualizations, downloads(?), what else? */}
       <div className="api-item-right">
         <div className="api-method-item">
-          <Tag
-            htmlTitle={http}
-            intent="success"
-            className="endpoint-http-text"
-          >
+          <Tag htmlTitle={http} intent="success" className="endpoint-http-text">
             {http}
           </Tag>
           <span className="endpoint-path-text">{endpoint}</span>
@@ -123,16 +109,11 @@ const ApiItem: React.FC<ApiItemProps> = ({
         <h3 className="response-header">Response Samples</h3>
 
         <div className="response-visualizations">
-          <div className="helper-toolbar">
-            {/* Copy, Expand All, Collapse All, etc. */}
-          </div>
+          <div className="helper-toolbar">{/* Copy, Expand All, Collapse All, etc. */}</div>
           <div className="response-result">
             {/* Show the code */}
             <div className="table-container">
-              <Table
-                numRows={3}
-                columns={simpleColumns}
-              />
+              <Table numRows={3} columns={simpleColumns} />
             </div>
           </div>
         </div>

@@ -15,9 +15,10 @@ const ApiItems: React.FC<ApiItemsProps> = ({
   isFetching,
 }) => {
 
-  if(isFetching) {
+  if(isFetching || apiData.length < 1) {
     return (
       <div className="content-container">
+        <ApiItemSkeleton />
         <ApiItemSkeleton />
       </div>
     )
@@ -27,7 +28,7 @@ const ApiItems: React.FC<ApiItemsProps> = ({
       {apiData.map(apiItem => {
         return apiItem.methods.map((method: any) => (
           <ApiItem
-            key={apiItem.id}
+            key={method.http}
             http={method.http}
             method={method.value}
             endpoint={apiItem.endpoint}
