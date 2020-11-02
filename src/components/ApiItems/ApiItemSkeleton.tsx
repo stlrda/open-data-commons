@@ -79,11 +79,11 @@ const ApiItemSkeleton: React.FC<ApiItemProps> = () => {
           <Tag
             htmlTitle="Loading"
             intent="success"
-            className="endpoint-http-text"
+            className={`endpoint-http-text ${Classes.SKELETON}`}
           >
             Load
           </Tag>
-          <span className="endpoint-path-text">example/loading/path/api</span>
+          <span className={`endpoint-path-text ${Classes.SKELETON}`}>example/loading/path/api</span>
         </div>
 
         <h3 className={`response-header ${Classes.SKELETON}`}>Response Samples</h3>
