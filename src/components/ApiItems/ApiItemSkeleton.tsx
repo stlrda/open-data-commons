@@ -1,5 +1,5 @@
 import React from 'react'
-import { Divider, HTMLTable, Tag, Classes } from '@blueprintjs/core'
+import { HTMLTable, Tag, Classes } from '@blueprintjs/core'
 import Table from '../table/Table'
 import { simpleColumns } from '../../mocks/table'
 import StyledApiItem from './api-items.styled'

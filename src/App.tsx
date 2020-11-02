@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { ThemeProvider } from 'styled-components'
-import { useQuery, useMutation, useQueryCache, QueryCache, ReactQueryCacheProvider } from 'react-query'
+import { useQuery, QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import Layout from './components/layout/Layout'
 import PageHeader from './components/Header/PageHeader'
 import ApiItems from './components/ApiItems/ApiItems'
 // import Parser from './components/ParseApi/Parser'
+import { OpenAPIV3 } from 'openapi-types'
+import { ODCNavRoute } from './types/Openapi'
 // services
 import SwaggerParserService from './services/SwaggerParser'
-import LocalStorageService from './services/LocalStorage'
+import OpenapiFormatter from './services/OpenapiFormatter'
+// import LocalStorageService from './services/LocalStorage'
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
 
@@ -16,6 +19,10 @@ const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 const uniqueQueryId = 'openapi-source'
 
 const queryCache = new QueryCache()
+
+export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
+  path: string
+}
 
 function App() {
   const fetchSwaggerData = async () => {
@@ -26,12 +33,30 @@ function App() {
 
   const { isLoading, isError, data, error } = useQuery(uniqueQueryId, fetchSwaggerData)
 
+  // "paths" contain more data than just "paths"
+  // since the "refs" are resolved with swagger-parser, all schemas are nested within these paths.
+  // would be a good idea to refactor this later on, so that the object isn't so may layers deep
+  // it wouldn't hurt to save some of this in local storage either. tbd.
+  const [paths, setPaths] = useState<any>([])
+  const [routes, setRoutes] = useState<ODCNavRoute[]>([])
+  const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
+
   useEffect(() => {
     console.log('swagger data changed:', data)
     console.log('swagger error changed:', error)
     console.log('swagger isLoading changed:', isLoading)
     console.log('swagger isError changed:', isError)
 
+    if(data && !isError && !error) {
+      const openapiFormatter = new OpenapiFormatter();
+      const paths = openapiFormatter.formatPaths(data.paths);
+      console.log('paths:', paths)
+      const navRoutes = openapiFormatter.getNavRoutes(paths);
+      console.log('navRoutes:', navRoutes)
+      setRoutes(navRoutes);
+
+      setPaths(paths)
+    }
 
     return cleanup;
   }, [data, isLoading, isError, error])
@@ -45,15 +70,15 @@ function App() {
       <ReactQueryDevtools initialIsOpen />
       <GlobalStyle />
       <ThemeProvider theme={odcTheme}>
-        <Layout>
-          <ReactQueryCacheProvider queryCache={queryCache}>
+        <ReactQueryCacheProvider queryCache={queryCache}>
+          <Layout routes={routes} logoUrl={logoUrl} >
             <PageHeader />
             <ApiItems
               isFetching={isLoading}
-              swaggerData={data}
+              apiData={paths}
             />
-          </ReactQueryCacheProvider>
-        </Layout>
+          </Layout>
+        </ReactQueryCacheProvider>
       </ThemeProvider>
     </>
   );

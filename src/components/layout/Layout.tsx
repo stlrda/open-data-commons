@@ -1,12 +1,18 @@
 import React from 'react'
 import ThreeColumnLayout, { MainContent, SidebarLayout, Backdrop } from './layout.styled'
 import Sidebar from '../Sidebar/Sidebar'
+import { ODCNavRoute } from '../../types/Openapi'
 
 interface LayoutProps {
-
+  routes: ODCNavRoute[]
+  logoUrl?: string
 }
 
-const Layout: React.FC<LayoutProps> = (props) => {
+const Layout: React.FC<LayoutProps> = ({
+  children,
+  routes,
+  logoUrl
+}) => {
   // const [lightDarkTheme, setLightDarkTheme] = useState<0 | 1>(0); // 0 is light, 1 is dark
 
   // useEffect(() => {
@@ -17,7 +23,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
     <ThreeColumnLayout>
       {/* Sidebar */}
       <SidebarLayout>
-        <Sidebar />
+        <Sidebar routes={routes} logoUrl={logoUrl} />
       </SidebarLayout>
 
       {/* Main Content */}
@@ -25,7 +31,7 @@ const Layout: React.FC<LayoutProps> = (props) => {
         {/* If small screen, 1 column with each row collapsed using flex-direction: column */}
       <MainContent>
         {/* Content Header, 100% width with 40% padding-right */}
-        {props.children}
+        {children}
       </MainContent>
 
       {/* Right-column Backdrop, only display if large screens */}

@@ -2549,6 +2549,11 @@
   resolved "https://registry.yarnpkg.com/@types/json5/-/json5-0.0.29.tgz#ee28707ae94e11d2b827bcbe5270bcea7f3e71ee"
   integrity sha1-7ihweulOEdK4J7y+UnC86n8+ce4=
 
+"@types/lodash@^4.14.164":
+  version "4.14.164"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.164.tgz#52348bcf909ac7b4c1bcbeda5c23135176e5dfa0"
+  integrity sha512-fXCEmONnrtbYUc5014avwBeMdhHHO8YJCkOBflUL9EoJBSKZ1dei+VO74fA7JkTHZ1GvZack2TyIw5U+1lT8jg==
+
 "@types/markdown-to-jsx@^6.11.0":
   version "6.11.2"
   resolved "https://registry.yarnpkg.com/@types/markdown-to-jsx/-/markdown-to-jsx-6.11.2.tgz#05d1aaffbf15be7be12c70535fa4fed65cc7c64f"
@@ -10139,12 +10144,10 @@ open@^7.0.2, open@^7.0.3:
     is-docker "^2.0.0"
     is-wsl "^2.1.1"
 
-openapi3-ts@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/openapi3-ts/-/openapi3-ts-2.0.0.tgz#5edc238053c8e4b1133bc7c339e574db68d92d7c"
-  integrity sha512-q4p8OX/mD7qXeDKkhdLhpEz1Zh/IxPBDWmuq7f07fQJpo7exUW20sMrHfws1xzihYPktTXVV5MDOZkG/1uguEg==
-  dependencies:
-    yaml "^1.10.0"
+openapi-types@^7.0.1:
+  version "7.0.1"
+  resolved "https://registry.yarnpkg.com/openapi-types/-/openapi-types-7.0.1.tgz#966bcacfd14119fa12000dbc9d588bfd8df2e4d1"
+  integrity sha512-6pi4/Fw+JIW1HHda2Ij7LRJ5QJ8f6YzaXnsRA6m44BJz8nLq/j5gVFzPBKJo+uOFhAeHqZC/3uzhTpYPga3Q/A==
 
 opn@^5.5.0:
   version "5.5.0"
@@ -11795,10 +11798,10 @@ react-popper@^1.3.7:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-query-devtools@^2.6.0:
-  version "2.6.0"
-  resolved "https://registry.yarnpkg.com/react-query-devtools/-/react-query-devtools-2.6.0.tgz#69699af6303c90dbbdc2b6b7664d8b24504e39eb"
-  integrity sha512-cz807LJNcXFfL1VVWJm3iJo0CqG4XyKClDzTqZOEMbSgs7K74bEjv4YDcZw8wjulKiKi+6LX/uX2qMWcnqwRNg==
+react-query-devtools@^2.6.1:
+  version "2.6.1"
+  resolved "https://registry.yarnpkg.com/react-query-devtools/-/react-query-devtools-2.6.1.tgz#ccb544d1d63bfc003b851424583f5d5c85fad6d1"
+  integrity sha512-qQX7MStNIZnRzDDnWepQmBG7fn7+U4AhxVpm1Kc1smaZIUEmgW8Jt8zzCutgRbcfNbJrbGi2EhRxE5BuuhvBmg==
   dependencies:
     match-sorter "^4.1.0"
 
@@ -14803,7 +14806,7 @@ yallist@^4.0.0:
   resolved "https://registry.yarnpkg.com/yallist/-/yallist-4.0.0.tgz#9bb92790d9c0effec63be73519e11a35019a3a72"
   integrity sha512-3wdGidZyq5PB084XLES5TpOSRA3wjXAlIWMhum2kRcv/41Sn2emQ0dycQW4uZXLejwKvg6EsvbdlVL+FYEct7A==
 
-yaml@^1.10.0, yaml@^1.7.2:
+yaml@^1.7.2:
   version "1.10.0"
   resolved "https://registry.yarnpkg.com/yaml/-/yaml-1.10.0.tgz#3b593add944876077d4d683fee01081bd9fff31e"
   integrity sha512-yr2icI4glYaNG+KWONODapy2/jDdMSDnrONSjblABjD9B4Z5LgiircSt8m8sRZFNi08kG9Sm0uSHtEmP3zaEGg==

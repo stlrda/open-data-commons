@@ -6,22 +6,28 @@ import StyledApiItem from './api-items.styled'
 import IApiItem from '../../types/ApiItem';
 
 interface ApiItemProps {
-  apiItem: IApiItem
+  http: string
+  method: any // add types
+  endpoint: string
+  // apiItem: IApiItem
 }
 
 const ApiItem: React.FC<ApiItemProps> = ({
-  apiItem,
+  http,
+  method,
+  endpoint
 }) => {
 
-
+  // TODO: test for schema objects with "items" that are an array
+  // TODO: test with a more robust openapi.json spec to verify edge cases
   return (
     <StyledApiItem>
       {/* Left side: Api Info, Table Display, Params */}
       <div className="api-item-left">
-        <h3 className="section-header-title">{apiItem.title}</h3>
-        {apiItem.description && <p className="section-header-description">{apiItem.description}</p>}
+        <h3 className="section-header-title">{method.summary}</h3>
+        {method.description && <p className="section-header-description">{method.description}</p>}
 
-        {apiItem.parameters && apiItem.parameters.length > 0 && (
+        {method.parameters && method.parameters.length > 0 && (
           <div className="query-parameters">
             <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
@@ -40,7 +46,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 </tr>
               </thead>
               <tbody>
-                {apiItem.parameters.map((parameter, index) => (
+                {method.parameters.map((parameter: any, index: number) => (
                   <tr key={index}>
                     <td className="parameter-name-column">
                       <span>{parameter.name}</span>
@@ -49,7 +55,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                       )}
                     </td>
                     <td className="parameter-datatype-column">
-                      <span>{parameter.type}</span>
+                      <span>{parameter.schema.type} {parameter.schema.title && `(${parameter.schema.title})`}</span>
                       {parameter.defaultValue && (
                         <div className="default-value-container">
                           <span>Default: &nbsp;</span>
@@ -90,13 +96,13 @@ const ApiItem: React.FC<ApiItemProps> = ({
       <div className="api-item-right">
         <div className="api-method-item">
           <Tag
-            htmlTitle={apiItem.endpoint.http}
+            htmlTitle={http}
             intent="success"
             className="endpoint-http-text"
           >
-            {apiItem.endpoint.http}
+            {http}
           </Tag>
-          <span className="endpoint-path-text">{apiItem.endpoint.path}</span>
+          <span className="endpoint-path-text">{endpoint}</span>
         </div>
 
         <h3 className="response-header">Response Samples</h3>
