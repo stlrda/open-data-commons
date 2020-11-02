@@ -1,7 +1,7 @@
 import React from 'react'
 import { Divider, HTMLTable, Tag } from '@blueprintjs/core'
 import Table from '../table/Table'
-import { simpleColumns } from '../../mocks/table'
+// import { simpleColumns } from '../../mocks/table'
 import StyledApiItem from './api-items.styled'
 import IApiItem from '../../types/ApiItem'
 
@@ -13,6 +13,44 @@ interface ApiItemProps {
 }
 
 const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint }) => {
+
+  const getTableColumns = () => {
+    // will only get the first response for now
+    console.log('method:', method)
+    const schema = method.responses[0].content["application/json"].schema
+    console.log('schema:', schema)
+
+    let columns: any[] = []
+
+    if(schema.items) {
+      // an array of items
+      for(let property in schema.items.properties) {
+        let schemaItem = schema.items.properties[property]
+        schemaItem.name = property;
+        console.log('property key:', property, 'property value:', schemaItem)
+        columns.push(schemaItem)
+      }
+    }
+    else {
+      // a single item with 'properties'
+      if(schema.properties) {
+        // iterate over properties, adding each one to columns as an object
+        for(let property in schema.properties) {
+          let propertyItem = schema.properties[property]
+          propertyItem.name = property;
+          console.log('property key:', property, 'property value:', propertyItem)
+          columns.push(propertyItem)
+        }
+      }
+      else {
+        console.log('No properties were supplied for this schema. This is likely an error')
+      }
+    }
+    console.log('columns returning from getTableColumns():', columns);
+
+    return columns;
+  }
+
   // TODO: test for schema objects with "items" that are an array
   // TODO: test with a more robust openapi.json spec to verify edge cases
   return (
@@ -91,7 +129,11 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint }) => {
           </div>
           <div className="api-responses-innner">
             <div className="table-container">
-              <Table numRows={3} columns={simpleColumns} />
+              <Table
+                numRows={3}
+                columns={getTableColumns()}
+                // columns={simpleColumns}
+              />
             </div>
           </div>
         </div>
@@ -113,7 +155,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint }) => {
           <div className="response-result">
             {/* Show the code */}
             <div className="table-container">
-              <Table numRows={3} columns={simpleColumns} />
+              {/* <Table numRows={3} columns={} /> */}
             </div>
           </div>
         </div>

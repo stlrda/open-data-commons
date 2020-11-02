@@ -55,6 +55,11 @@ function App() {
       console.log('navRoutes:', navRoutes)
       setRoutes(navRoutes);
       setPaths(paths)
+      console.log('item count:', paths.reduce((prev, next) => {
+        let methodsLength = prev.methods ? prev.methods.length : 0;
+        let nextMethodsLength = next.methods ? next.methods.length : 0;
+        return methodsLength + nextMethodsLength;
+      }))
     }
 
     return cleanup;

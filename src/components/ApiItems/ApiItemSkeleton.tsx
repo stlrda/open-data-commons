@@ -1,7 +1,7 @@
 import React from 'react'
 import { HTMLTable, Tag, Classes } from '@blueprintjs/core'
-import Table from '../table/Table'
-import { simpleColumns } from '../../mocks/table'
+// import Table from '../table/Table'
+// import { simpleColumns } from '../../mocks/table'
 import StyledApiItem from './api-items.styled'
 
 interface ApiItemProps {}
@@ -63,11 +63,11 @@ const ApiItemSkeleton: React.FC<ApiItemProps> = () => {
           </div>
           <div className="api-responses-innner">
             {/* <p>Responses Here!!</p> */}
-            <div className={`table-container ${Classes.SKELETON}`}>
-              <Table
+            <div className={`table-container ${Classes.SKELETON}`} style={{minHeight: 120}}>
+              {/* <Table
                 numRows={3}
                 columns={simpleColumns}
-              />
+              /> */}
             </div>
           </div>
         </div>
@@ -94,11 +94,11 @@ const ApiItemSkeleton: React.FC<ApiItemProps> = () => {
           </div>
           <div className="response-result">
             {/* Show the code */}
-            <div className={`table-container ${Classes.SKELETON}`}>
-              <Table
+            <div className={`table-container ${Classes.SKELETON}`} style={{minHeight: 120}}>
+              {/* <Table
                 numRows={3}
                 columns={simpleColumns}
-              />
+              /> */}
             </div>
           </div>
         </div>

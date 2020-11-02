@@ -69,7 +69,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           {routes.map((route, index) => (
             <li
               key={index}
-              className={`sidebar-navitem ${index === activeTab && "active"}`}
+              className={`sidebar-navitem noselect ${index === activeTab && "active"}`}
               onClick={() => handleNavClick(index, route.operationId)}
             >
               <Tag
