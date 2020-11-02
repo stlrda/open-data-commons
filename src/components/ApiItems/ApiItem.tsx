@@ -75,13 +75,28 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
         {/* Response Section */}
         <div className="api-responses">
-          <h3 className="section-header-title small-title">Responses</h3>
+          <h3 className="section-header-title small-title">
+            <span>Responses</span>
+            {method.responses && (
+              <div className="method-responses">
+                {method.responses.map((response: any) => (
+                  <Tag
+                    key={response.code}
+                    className="method-response-tag"
+                    htmlTitle={response.code}
+                    intent={response.code < 400 ? "success" : "danger"}
+                  >
+                    {response.code}
+                  </Tag>
+                ))}
+              </div>
+            )}
+          </h3>
           <div className="subsection-header">
             <h6 className="subsection-header-title">response schema</h6>
             <Divider className="mh-0" />
           </div>
           <div className="api-responses-innner">
-            <p>Responses Here!!</p>
             <div className="table-container">
               <Table
                 numRows={3}
