@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Classes } from '@blueprintjs/core'
 import StyledPageHeader from '../layout/header.styled'
+
+import { SpecContext } from '../../context/SpecContext'
 
 interface PageHeaderProps {
   loading: boolean
@@ -28,7 +30,6 @@ const PageHeader: React.FC<PageHeaderProps> = ({
       </StyledPageHeader>
     )
   }
-
   return (
     <StyledPageHeader style={{marginRight: "15%"}}>
       <h1 className="header-title">{title}</h1>

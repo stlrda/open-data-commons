@@ -15,6 +15,7 @@ import OpenapiFormatter from './services/OpenapiFormatter'
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
 
+import { SpecProvider } from './context/SpecContext'
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 const uniqueQueryId = 'openapi-source'
 
@@ -69,20 +70,22 @@ function App() {
       <ReactQueryDevtools initialIsOpen />
       <GlobalStyle />
       <ThemeProvider theme={odcTheme}>
-        <ReactQueryCacheProvider queryCache={queryCache}>
-          <Layout routes={routes} logoUrl={logoUrl} >
-            <PageHeader
-              loading={isLoading}
-              title={data?.info.title || "loading"}
-              description={data?.info.description || "loading"}
-              version={data?.info.version || "loading"}
-            />
-            <ApiItems
-              isFetching={isLoading}
-              apiData={paths}
-            />
-          </Layout>
-        </ReactQueryCacheProvider>
+        <SpecProvider>
+          <ReactQueryCacheProvider queryCache={queryCache}>
+            <Layout routes={routes} logoUrl={logoUrl} >
+              <PageHeader
+                loading={isLoading}
+                title={data?.info.title || "loading"}
+                description={data?.info.description || "loading"}
+                version={data?.info.version || "loading"}
+              />
+              <ApiItems
+                isFetching={isLoading}
+                apiData={paths}
+              />
+            </Layout>
+          </ReactQueryCacheProvider>
+        </SpecProvider>
       </ThemeProvider>
     </>
   );

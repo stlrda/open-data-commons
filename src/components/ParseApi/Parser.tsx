@@ -1,5 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import ApiParser from './ApiParser'
+
+import { SpecContext } from '../../context/SpecContext'
+import { Types } from '../../context/AppReducer'
 
 interface ParserProps {
   swaggerUrl: string
@@ -15,6 +18,8 @@ const Parser: React.FC<ParserProps> = ({
   const [parsedData, setParsedData] = useState<any | null>(null)
   const [errors, setErrors] = useState<string | null>(null)
 
+  const { state, dispatch } = useContext(SpecContext)
+
   useEffect(() => {
     console.log('swagger url:', swaggerUrl)
 
@@ -22,8 +27,19 @@ const Parser: React.FC<ParserProps> = ({
   }, [swaggerUrl])
 
   useEffect(() => {
-    if(parsedData) console.log('parsed data value:', JSON.stringify(parsedData))
-    updateSwaggerData(parsedData)
+    if(parsedData) {
+      // TO Print to Console
+      console.log('parsed data value:', JSON.stringify(parsedData))
+      // Check if already exists before updating
+      dispatch({
+        type: Types.UPDATE,
+        payload: parsedData
+      })
+    }
+    if(parsedData) {
+      console.log('parsed data value:', JSON.stringify(parsedData))
+      updateSwaggerData(parsedData)
+    }
   }, [parsedData, updateSwaggerData])
 
   const handleSwaggerUrl = async (url: string) => {
