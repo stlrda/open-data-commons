@@ -2,7 +2,7 @@ import React, { useContext } from 'react'
 import { Classes } from '@blueprintjs/core'
 import StyledPageHeader from '../layout/header.styled'
 
-import { SpecContext } from '../context/SpecContext'
+import { SpecContext } from '../../context/SpecContext'
 
 interface PageHeaderProps {
 

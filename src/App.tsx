@@ -7,7 +7,7 @@ import Parser from './components/ParseApi/Parser'
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
 
-import { SpecProvider } from './components/context/SpecContext'
+import { SpecProvider } from './context/SpecContext'
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 
 function App() {

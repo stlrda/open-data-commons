@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext } from 'react'
 import ApiParser from './ApiParser'
 
-import { SpecContext } from '../context/SpecContext'
-import { Types } from '../context/AppReducer'
+import { SpecContext } from '../../context/SpecContext'
+import { Types } from '../../context/AppReducer'
 
 interface ParserProps {
   swaggerUrl: string
