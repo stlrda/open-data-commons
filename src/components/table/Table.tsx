@@ -102,7 +102,7 @@ const Table: React.FC<TableProps> = ({
       numRows={1}
       bodyContextMenuRenderer={(context) => handleRightClick(context)}
       getCellClipboardData={(row, col) => handleCellClipboardData(row, col)}
-      loadingOptions={getTableLoadingStates()}
+      // loadingOptions={getTableLoadingStates()}
     >
       {/* <Column
           key={1}

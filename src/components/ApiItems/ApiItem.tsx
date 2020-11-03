@@ -27,7 +27,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint }) => {
       for(let property in schema.items.properties) {
         let schemaItem = schema.items.properties[property]
         schemaItem.name = property;
-        console.log('property key:', property, 'property value:', schemaItem)
+        // console.log('property key:', property, 'property value:', schemaItem)
         columns.push(schemaItem)
       }
     }
@@ -38,7 +38,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint }) => {
         for(let property in schema.properties) {
           let propertyItem = schema.properties[property]
           propertyItem.name = property;
-          console.log('property key:', property, 'property value:', propertyItem)
+          // console.log('property key:', property, 'property value:', propertyItem)
           columns.push(propertyItem)
         }
       }

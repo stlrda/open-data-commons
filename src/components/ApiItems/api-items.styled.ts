@@ -114,6 +114,7 @@ const StyledApiItem = styled.div`
     }
   }
   .api-responses {
+    padding-bottom: 10px;
   }
 
   .api-method-item {
