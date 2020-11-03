@@ -29,6 +29,9 @@ const StyledApiItem = styled.div`
   }
 
   .section-header-title {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
     font-size: 1.5em;
     color: #000;
     font-weight: 400;
@@ -52,6 +55,7 @@ const StyledApiItem = styled.div`
 
     .subsection-header-title {
       margin-bottom: 0;
+      margin-top: 1.5em;
       font-size: .95em;
       line-height: 1em;
       text-transform: uppercase;
@@ -109,6 +113,8 @@ const StyledApiItem = styled.div`
       min-height: 4em;
     }
   }
+  .api-responses {
+  }
 
   .api-method-item {
     display: flex;
@@ -131,6 +137,17 @@ const StyledApiItem = styled.div`
     font-size: .93em;
     opacity: .85;
     letter-spacing: 1px;
+  }
+  .method-responses {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-end;
+  }
+  .method-response-tag {
+    margin-right: 6px;
+    cursor: pointer;
   }
 
   @media(max-width: ${props => props.theme.breakpoints.medium}) {

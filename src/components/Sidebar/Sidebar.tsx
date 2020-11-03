@@ -1,13 +1,18 @@
 import React, { useState } from 'react'
 import { InputGroup, Tag } from '@blueprintjs/core'
-import navItemsData from '../../mocks/nav-items'
+// import navItemsData from '../../mocks/nav-items'
 import StyledSidebar, { SidebarHeader } from './sidebar.styled'
+import { ODCNavRoute } from '../../types/Openapi'
 
 interface SidebarProps {
-
+  routes: ODCNavRoute[]
+  logoUrl?: string
 }
 
-const Sidebar: React.FC<SidebarProps> = () => {
+const Sidebar: React.FC<SidebarProps> = ({
+  routes,
+  logoUrl
+}) => {
   const [activeTab, setActiveTab] = useState<number>(-1)
   const [searchInput, setSearchInput] = useState<string>("")
 
@@ -22,15 +27,25 @@ const Sidebar: React.FC<SidebarProps> = () => {
     setSearchInput("")
   }
 
-  const handleNavClick = (index: number) => { // React.MouseEvent<HTMLElement>?
+  const handleNavClick = (index: number, operationId: string) => { // React.MouseEvent<HTMLElement>?
     setActiveTab(index)
+    console.log('route with id clicked:', operationId)
   }
 
   return (
     <StyledSidebar>
       {/* Logo Here */}
       <SidebarHeader>
-        <h1>Open Data Commons</h1>
+        {/* The Logo */}
+        {logoUrl ? (
+          <img
+            src={logoUrl}
+            className="header-logo"
+            alt="Open Data Commons - Api Logo"
+          />
+        ) : (
+          <h1>Open Data Commons</h1>
+        )}
       </SidebarHeader>
 
       {/* Search Components */}
@@ -51,23 +66,29 @@ const Sidebar: React.FC<SidebarProps> = () => {
       {/* Navigation Items */}
       <div className="sidebar-items-container">
         <ul className="sidebar-items-list">
-          {navItemsData.map((navItem, index) => (
+          {routes.map((route, index) => (
             <li
               key={index}
-              className={`sidebar-navitem ${index === activeTab && "active"}`}
-              onClick={() => handleNavClick(index)}
+              className={`sidebar-navitem noselect ${index === activeTab && "active"}`}
+              onClick={() => handleNavClick(index, route.operationId)}
             >
               <Tag
-                htmlTitle={navItem.http}
+                htmlTitle={route.http}
                 intent="success" // assumes all http are 'GET' for now
                 minimal
                 className="endpoint-http-text"
               >
-                {navItem.http}
+                {route.http}
               </Tag>
-              <span className="navitem-text">{navItem.name}</span>
+              <span className="navitem-text">{route.summary}</span>
             </li>
           ))}
+          {routes.length < 1 && (
+            <li className="sidebar-navitem">
+              <span className="endpoint-http-text bp3-skeleton" style={{width: 20}}>Load</span>
+              <span className="navitem-text bp3-skeleton">Loading Routes</span>
+            </li>
+          )}
         </ul>
       </div>
     </StyledSidebar>

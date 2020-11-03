@@ -54,6 +54,16 @@ const SidebarHeader = styled.div`
     margin: 0;
     padding: 0;
   }
+
+  .header-logo {
+    height: 80;
+    width: 80;
+    align-self: center;
+    vertical-align: center;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+  }
 `
 
 export default StyledSidebar;
