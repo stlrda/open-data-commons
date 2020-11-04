@@ -4,6 +4,7 @@ import { useQuery, QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query-devtools'
 import Layout from './components/layout/Layout'
 import PageHeader from './components/Header/PageHeader'
+import PageFooter from './components/Footer/PageFooter'
 import ApiItems from './components/ApiItems/ApiItems'
 import { OpenAPIV3 } from 'openapi-types'
 import { ODCNavRoute } from './types/Openapi'
@@ -117,6 +118,7 @@ function App() {
                 isFetching={isLoading}
                 apiData={paths}
               />
+              <PageFooter />
             </Layout>
           </ReactQueryCacheProvider>
         </SpecProvider>

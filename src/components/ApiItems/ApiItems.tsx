@@ -71,7 +71,7 @@ const ApiItems: React.FC<ApiItemsProps> = ({
             http={method.http}
             method={method.value} // rename to be more clear
             endpoint={apiItem.endpoint}
-            columns={getTableColumns(method.responses?.length && method.responses[0]?.content["application/json"]?.schema)}
+            columns={getTableColumns(method.value?.responses?.length && method.value?.responses[0]?.content["application/json"]?.schema)}
           />
         ))
       })}

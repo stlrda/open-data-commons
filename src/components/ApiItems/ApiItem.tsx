@@ -1,7 +1,7 @@
 import React from 'react'
 import { Divider, HTMLTable, Tag } from '@blueprintjs/core'
 import Table from '../table/Table'
-import StyledApiItem from './api-items.styled'
+import StyledApiItem from './api-item.styled'
 import IApiItem from '../../types/ApiItem'
 
 interface ApiItemProps {
@@ -41,9 +41,9 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, columns }) =>
               <tbody>
                 {method.parameters.map((parameter: any, index: number) => (
                   <tr key={index}>
-                    <td className="parameter-name-column">
+                    <td className="parameter-name-column" style={{display:'flex',flexDirection:'row'}}>
                       <span>{parameter.name}</span>
-                      {parameter.required && <span className="required-text">required</span>}
+                      {parameter.required && <span className="required-text">*</span>}
                     </td>
                     <td className="parameter-datatype-column">
                       <span>
