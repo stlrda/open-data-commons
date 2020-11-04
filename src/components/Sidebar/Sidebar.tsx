@@ -38,11 +38,16 @@ const Sidebar: React.FC<SidebarProps> = ({
       <SidebarHeader>
         {/* The Logo */}
         {logoUrl ? (
-          <img
-            src={logoUrl}
-            className="header-logo"
-            alt="Open Data Commons - Api Logo"
-          />
+          <a href="https://stldata.org" target="_blank" rel="noreferrer">
+            <img
+              src={logoUrl}
+              width={230}
+              height={230}
+              className="header-logo"
+              style={{cursor:'pointer'}}
+              alt="Open Data Commons - Logo"
+            />
+          </a>
         ) : (
           <h1>Open Data Commons</h1>
         )}

@@ -5,21 +5,34 @@ import { ReactQueryDevtools } from 'react-query-devtools'
 import Layout from './components/layout/Layout'
 import PageHeader from './components/Header/PageHeader'
 import ApiItems from './components/ApiItems/ApiItems'
-// import Parser from './components/ParseApi/Parser'
 import { OpenAPIV3 } from 'openapi-types'
 import { ODCNavRoute } from './types/Openapi'
 // services
 import SwaggerParserService from './services/SwaggerParser'
 import OpenapiFormatter from './services/OpenapiFormatter'
 // import LocalStorageService from './services/LocalStorage'
+// Context API
+import { SpecProvider } from './context/SpecContext'
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
 
-import { SpecProvider } from './context/SpecContext'
+
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 const uniqueQueryId = 'openapi-source'
 
+const scrollContainerId = "#odc-scroll-container"
+
 const queryCache = new QueryCache()
+
+interface IApiInfo { // store in local storage
+  logoUrl?: string
+  apiVersion?: string
+  openapiVersion?: string // | number
+}
+
+// interface IOpenapiV3Document extends OpenAPIV3.Document {
+//   "x-logo"?: string
+// }
 
 export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
   path: string
@@ -41,6 +54,18 @@ function App() {
   const [paths, setPaths] = useState<any>([])
   const [routes, setRoutes] = useState<ODCNavRoute[]>([])
   const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
+  const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
+
+  // Old way (use as fallback)
+  // window.addEventListener('scroll', (event) => {
+  //   const element = document.getElementById('#odc-scroll-container')
+  //   const position = element?.getBoundingClientRect();
+  //   if(position && position.top >= 0) {
+  //     console.log('top of element is in the screen with position:', position)
+  //     // set the active window.url, ... will I need to get Y offset for element?
+  //     // TODO: be able to print this element position's id
+  //   }
+  // })
 
   useEffect(() => {
     console.log('swagger data changed:', data)
@@ -56,6 +81,11 @@ function App() {
       console.log('navRoutes:', navRoutes)
       setRoutes(navRoutes);
       setPaths(paths)
+
+      let newApiInfo: IApiInfo = {}
+      //@ts-ignore
+      data.info["x-logo"]?.url && (newApiInfo.logoUrl = data.info["x-logo"].url)
+      setApiInfo(newApiInfo);
     }
 
     return cleanup;
@@ -72,7 +102,11 @@ function App() {
       <ThemeProvider theme={odcTheme}>
         <SpecProvider>
           <ReactQueryCacheProvider queryCache={queryCache}>
-            <Layout routes={routes} logoUrl={logoUrl} >
+            <Layout
+              routes={routes}
+              scrollContainerId={scrollContainerId}
+              logoUrl={apiInfo?.logoUrl}
+            >
               <PageHeader
                 loading={isLoading}
                 title={data?.info.title || "loading"}
