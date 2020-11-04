@@ -54,7 +54,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint }) => {
   // TODO: test for schema objects with "items" that are an array
   // TODO: test with a more robust openapi.json spec to verify edge cases
   return (
-    <StyledApiItem>
+    <StyledApiItem id={method.operationId}>
       {/* Left side: Api Info, Table Display, Params */}
       <div className="api-item-left">
         <h3 className="section-header-title">{method.summary}</h3>

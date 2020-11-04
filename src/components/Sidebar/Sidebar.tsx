@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
-import { InputGroup, Tag } from '@blueprintjs/core'
-// import navItemsData from '../../mocks/nav-items'
+import { InputGroup } from '@blueprintjs/core'
+import NavLink from './NavLink'
 import StyledSidebar, { SidebarHeader } from './sidebar.styled'
 import { ODCNavRoute } from '../../types/Openapi'
 
@@ -67,21 +67,15 @@ const Sidebar: React.FC<SidebarProps> = ({
       <div className="sidebar-items-container">
         <ul className="sidebar-items-list">
           {routes.map((route, index) => (
-            <li
+            <NavLink
               key={index}
-              className={`sidebar-navitem noselect ${index === activeTab && "active"}`}
-              onClick={() => handleNavClick(index, route.operationId)}
-            >
-              <Tag
-                htmlTitle={route.http}
-                intent="success" // assumes all http are 'GET' for now
-                minimal
-                className="endpoint-http-text"
-              >
-                {route.http}
-              </Tag>
-              <span className="navitem-text">{route.summary}</span>
-            </li>
+              index={index}
+              active={index === activeTab}
+              operationId={route.operationId}
+              http={route.http}
+              summary={route.summary}
+              handleNavClick={handleNavClick}
+            />
           ))}
           {routes.length < 1 && (
             <li className="sidebar-navitem">
