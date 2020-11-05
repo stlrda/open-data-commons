@@ -1,4 +1,5 @@
 import ODCTheme from './theme.interface'
+import rdaColors from './rda-colors'
 
 const odcTheme: ODCTheme = {
   // Colors
@@ -8,6 +9,8 @@ const odcTheme: ODCTheme = {
   background: "#fff",
   gray: "#E1E1E1",
   red: "rgb(234, 24, 18)",
+
+  rdaColors: rdaColors,
 
   // Typography
   typography: {
