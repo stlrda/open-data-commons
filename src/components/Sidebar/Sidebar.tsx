@@ -6,14 +6,17 @@ import { ODCNavRoute } from '../../types/Openapi'
 
 interface SidebarProps {
   routes: ODCNavRoute[]
+  navIndex: number
   logoUrl?: string
+  onNavClick(index: number, operationId: string): void
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
   routes,
-  logoUrl
+  navIndex,
+  logoUrl,
+  onNavClick
 }) => {
-  const [activeTab, setActiveTab] = useState<number>(-1)
   const [searchInput, setSearchInput] = useState<string>("")
 
   const handleSearchChange = (event: any) => {
@@ -28,7 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   }
 
   const handleNavClick = (index: number, operationId: string) => { // React.MouseEvent<HTMLElement>?
-    setActiveTab(index)
+    onNavClick(index, operationId)
     console.log('route with id clicked:', operationId)
   }
 
@@ -75,7 +78,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             <NavLink
               key={index}
               index={index}
-              active={index === activeTab}
+              active={index === navIndex}
               operationId={route.operationId}
               http={route.http}
               summary={route.summary}

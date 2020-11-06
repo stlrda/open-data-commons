@@ -8,7 +8,7 @@ interface NavLinkProps {
   operationId: string
   http: string
   summary: string
-  handleNavClick(index: number, operationId: string): void
+  handleNavClick: (index: number, operationId: string) => void
 }
 
 const NavLink: React.FC<NavLinkProps> = ({

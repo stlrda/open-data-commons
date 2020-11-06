@@ -40,13 +40,17 @@ export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
 }
 
 function App() {
+  let hashChangeListener: any;
+
   const fetchSwaggerData = async () => {
     const swaggerParser = new SwaggerParserService();
     const response = await swaggerParser.validateApi(swaggerUrl)
     return response;
   }
 
-  const { isLoading, isError, data, error } = useQuery(uniqueQueryId, fetchSwaggerData)
+  const { isLoading, isError, data, error } = useQuery(uniqueQueryId, fetchSwaggerData, {
+    refetchOnMount: false, refetchOnWindowFocus: false, refetchOnReconnect: false
+  })
 
   // "paths" contain more data than just "paths"
   // since the "refs" are resolved with swagger-parser, all schemas are nested within these paths.
@@ -54,8 +58,12 @@ function App() {
   // it wouldn't hurt to save some of this in local storage either. tbd.
   const [paths, setPaths] = useState<any>([])
   const [routes, setRoutes] = useState<ODCNavRoute[]>([])
+  const [operationIds, setOperationIds] = useState<string[]>([])
   const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
+
+  // TODO: move to Context API
+  const [navIndex, setNavIndex] = useState<number>(-1)
 
   // Old way (use as fallback)
   // window.addEventListener('scroll', (event) => {
@@ -67,6 +75,32 @@ function App() {
   //     // TODO: be able to print this element position's id
   //   }
   // })
+
+  useEffect(() => {
+    hashChangeListener = window.addEventListener('hashchange', (event) => {
+      console.log('hash changed event:', event)
+      console.log('new hash:', location.hash)
+      // We need to set the active index
+      if(operationIds.length > 0) {
+        let index = operationIds.indexOf(location.hash.substring(1))
+        if(index) {
+          console.log('setting nav index:', index)
+          setNavIndex(index)
+        }
+      }
+    }, false)
+    // hashChangeListener = window.onhashchange = () => {
+    //   console.log('hash changed event:')
+    //   console.log('new hash:', location.hash)
+    // }
+    if(hashChangeListener) {
+      console.log('hash change activated')
+    }
+    return () => {
+      if(hashChangeListener) window.removeEventListener('hashchange', hashChangeListener)
+      console.log('unmounting component')
+    }
+  }, [])
 
   useEffect(() => {
     console.log('swagger data changed:', data)
@@ -87,10 +121,39 @@ function App() {
       //@ts-ignore
       data.info["x-logo"]?.url && (newApiInfo.logoUrl = data.info["x-logo"].url)
       setApiInfo(newApiInfo);
+      setOperationIds(navRoutes.map(route => route.operationId))
     }
 
     return cleanup;
   }, [data, isLoading, isError, error])
+
+  const onItemEnter = (operationId: string) => {
+    try {
+      console.log('item entered:', operationId)
+      // console.log('changing the hash')
+      // const hrefArray = window.location.href.split('#')
+      // const newUrl = hrefArray[0] + "#" + operationId
+      // window.history.pushState(null, '', newUrl)
+      // if previous location
+      const currentHash = window.location.hash
+      console.log('previous hash:', currentHash)
+      const currentIndex = operationIds.indexOf(currentHash.substring(1))
+      console.log('current index:', currentIndex)
+      const nextIndex = operationIds.indexOf(operationId)
+      console.log('next index:', nextIndex)
+        // if(currentIndex + 1 === nextIndex || currentIndex - 1 === nextIndex) {
+        //   window.location.hash = "#" + operationId
+        // }
+        // else console.log('the indexes dont match, so the urls arent changing')
+    } catch (error) {
+      console.log('error updating history:', error)
+    }
+  }
+
+  const onNavClick = (index: number, operationId: string) => {
+    console.log('nav clicked')
+    console.log('index:', index, 'operationId:', operationId)
+  }
 
   const cleanup = () => {
     console.log('cleanup component')
@@ -107,6 +170,8 @@ function App() {
               routes={routes}
               scrollContainerId={scrollContainerId}
               logoUrl={apiInfo?.logoUrl}
+              navIndex={navIndex}
+              onNavClick={onNavClick}
             >
               <PageHeader
                 loading={isLoading}
@@ -117,6 +182,7 @@ function App() {
               <ApiItems
                 isFetching={isLoading}
                 apiData={paths}
+                onItemEnter={onItemEnter}
               />
               <PageFooter />
             </Layout>

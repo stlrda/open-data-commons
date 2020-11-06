@@ -6,14 +6,18 @@ import { ODCNavRoute } from '../../types/Openapi'
 interface LayoutProps {
   routes: ODCNavRoute[]
   scrollContainerId: string
+  navIndex: number
   logoUrl?: string
+  onNavClick(index: number, operationId: string): void
 }
 
 const Layout: React.FC<LayoutProps> = ({
   children,
   routes,
   scrollContainerId,
-  logoUrl
+  navIndex,
+  logoUrl,
+  onNavClick
 }) => {
   // const [lightDarkTheme, setLightDarkTheme] = useState<0 | 1>(0); // 0 is light, 1 is dark
 
@@ -25,7 +29,12 @@ const Layout: React.FC<LayoutProps> = ({
     <ThreeColumnLayout>
       {/* Sidebar */}
       <SidebarLayout>
-        <Sidebar routes={routes} logoUrl={logoUrl} />
+        <Sidebar
+          routes={routes}
+          navIndex={navIndex}
+          logoUrl={logoUrl}
+          onNavClick={onNavClick}
+        />
       </SidebarLayout>
 
       {/* Main Content */}

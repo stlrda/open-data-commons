@@ -1,4 +1,5 @@
 import React from 'react'
+import { Waypoint } from 'react-waypoint'
 import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import ApiItem from './ApiItem'
 import ApiItemSkeleton from './ApiItemSkeleton'
@@ -8,11 +9,13 @@ interface ApiItemsProps {
   apiData: any[]
   // apiData: OpenAPIV3.Document | OpenAPIV2.Document | undefined
   isFetching: boolean
+  onItemEnter: (operationId: string) => void
 }
 
 const ApiItems: React.FC<ApiItemsProps> = ({
   apiData,
   isFetching,
+  onItemEnter
 }) => {
 
   const getTableColumns = (schema?: any) => {
@@ -72,6 +75,7 @@ const ApiItems: React.FC<ApiItemsProps> = ({
             method={method.value} // rename to be more clear
             endpoint={apiItem.endpoint}
             columns={getTableColumns(method.value?.responses?.length && method.value?.responses[0]?.content["application/json"]?.schema)}
+            onItemEnter={onItemEnter}
           />
         ))
       })}
