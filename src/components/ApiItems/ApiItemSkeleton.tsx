@@ -2,7 +2,7 @@ import React from 'react'
 import { HTMLTable, Tag, Classes } from '@blueprintjs/core'
 // import Table from '../table/Table'
 // import { simpleColumns } from '../../mocks/table'
-import StyledApiItem from './api-items.styled'
+import StyledApiItem from './api-item.styled'
 
 interface ApiItemProps {}
 

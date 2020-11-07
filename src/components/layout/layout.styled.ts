@@ -20,7 +20,6 @@ const MainContent = styled.main`
   background: ${props => props.theme.background};
   padding-left: ${props => props.theme.sidebarWidth};
   width: 100%;
-  padding-bottom: 2em;
 
   .content-container {
     // padding-left: 40px; // TODO: add to global theme

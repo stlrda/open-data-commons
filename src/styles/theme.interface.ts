@@ -1,4 +1,5 @@
 // Define the app theme
+import { RDAColors } from './rda-colors'
 
 interface odcTheme {
   /**
@@ -13,6 +14,8 @@ interface odcTheme {
   tertiary?: string;
   gray?: string;
   red?: string;
+
+  rdaColors: RDAColors
 
   /**
    * Typography

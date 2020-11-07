@@ -19,7 +19,8 @@ const StyledApiItem = styled.div`
     display: block;
     content: "";
     bottom: 0;
-    border-bottom: 1px solid rgba(10,10,10, .26);
+    border-bottom: 1px solid rgba(10,10,10, .7);
+    // border-bottom: 1px solid rgba(17,23,26);
   }
   &:last-child {
     &::after {
@@ -65,6 +66,7 @@ const StyledApiItem = styled.div`
 
   .required-text {
     color: ${props => props.theme.red};
+    font-size: 12px;
   }
 
   .api-item-html-table {
@@ -153,6 +155,8 @@ const StyledApiItem = styled.div`
 
   @media(max-width: ${props => props.theme.breakpoints.medium}) {
     flex-direction: column;
+    padding-bottom: 0;
+    padding-top: 0;
 
     .api-item-left {
       width: 100%;

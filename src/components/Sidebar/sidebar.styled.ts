@@ -17,22 +17,6 @@ const StyledSidebar = styled.div`
       margin-left: 0;
       padding-left: 0;
     }
-    .sidebar-navitem {
-      cursor: pointer;
-      padding: 10px 20px;
-      text-overflow: ellipsis;
-      list-style: inside none none;
-
-      &:hover {
-        background: ${props => props.theme.gray};
-      }
-      &.active {
-        background: ${props => props.theme.gray};
-      }
-    }
-    .navitem-text {
-      font-size: 1.1em;
-    }
   }
   .endpoint-http-text {
     text-transform: uppercase;
