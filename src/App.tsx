@@ -21,8 +21,6 @@ import odcTheme from './styles/theme'
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 const uniqueQueryId = 'openapi-source'
 
-const scrollContainerId = "#odc-scroll-container"
-
 const queryCache = new QueryCache()
 
 interface IApiInfo { // store in local storage
@@ -105,7 +103,6 @@ function App() {
           <ReactQueryCacheProvider queryCache={queryCache}>
             <Layout
               routes={routes}
-              scrollContainerId={scrollContainerId}
               logoUrl={apiInfo?.logoUrl}
             >
               <PageHeader
