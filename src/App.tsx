@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { ThemeProvider } from 'styled-components'
 import { useQuery, QueryCache, ReactQueryCacheProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query-devtools'
@@ -13,9 +13,11 @@ import SwaggerParserService from './services/SwaggerParser'
 import OpenapiFormatter from './services/OpenapiFormatter'
 // import LocalStorageService from './services/LocalStorage'
 // Context API
-import { SpecProvider } from './context/SpecContext'
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
+
+import { SpecProvider } from './context/SpecContext'
+import { UIProvider } from './context/UIContext';
 
 
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
@@ -92,6 +94,7 @@ function App() {
       <GlobalStyle />
       <ThemeProvider theme={odcTheme}>
         <SpecProvider>
+        <UIProvider>
           <ReactQueryCacheProvider queryCache={queryCache}>
             <Layout
               routes={routes}
@@ -110,6 +113,7 @@ function App() {
               <PageFooter />
             </Layout>
           </ReactQueryCacheProvider>
+        </UIProvider>
         </SpecProvider>
       </ThemeProvider>
     </>
