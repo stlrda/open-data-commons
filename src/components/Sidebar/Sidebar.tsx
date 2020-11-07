@@ -27,9 +27,9 @@ const Sidebar: React.FC<SidebarProps> = ({
     setSearchInput("")
   }
 
-  const handleNavClick = (index: number, operationId: string) => { // React.MouseEvent<HTMLElement>?
+  const handleNavClick = (index: number, operationId: string) => {
     setActiveTab(index)
-    console.log('route with id clicked:', operationId)
+    // console.log('route with id clicked:', operationId)
   }
 
   return (

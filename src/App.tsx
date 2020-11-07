@@ -44,7 +44,9 @@ function App() {
     return response;
   }
 
-  const { isLoading, isError, data, error } = useQuery(uniqueQueryId, fetchSwaggerData)
+  const { isLoading, isError, data, error } = useQuery(uniqueQueryId, fetchSwaggerData, {
+    refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false
+  })
 
   // "paths" contain more data than just "paths"
   // since the "refs" are resolved with swagger-parser, all schemas are nested within these paths.
@@ -55,22 +57,12 @@ function App() {
   const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
 
-  // Old way (use as fallback)
-  // window.addEventListener('scroll', (event) => {
-  //   const element = document.getElementById('#odc-scroll-container')
-  //   const position = element?.getBoundingClientRect();
-  //   if(position && position.top >= 0) {
-  //     console.log('top of element is in the screen with position:', position)
-  //     // set the active window.url, ... will I need to get Y offset for element?
-  //     // TODO: be able to print this element position's id
-  //   }
-  // })
 
   useEffect(() => {
     console.log('swagger data changed:', data)
-    console.log('swagger error changed:', error)
-    console.log('swagger isLoading changed:', isLoading)
-    console.log('swagger isError changed:', isError)
+    // console.log('swagger error changed:', error)
+    // console.log('swagger isLoading changed:', isLoading)
+    // console.log('swagger isError changed:', isError)
 
     if(data && !isError && !error) {
       const openapiFormatter = new OpenapiFormatter();
