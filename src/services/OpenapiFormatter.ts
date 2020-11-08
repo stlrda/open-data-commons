@@ -96,7 +96,7 @@ class OpenapiFormatter {
           const properties = schema.items.properties
           Object.keys(properties).forEach(key => {
             // For each column, we need [field: string]: {name: string, title: string, type: string, format?: string}
-            console.log('schema property:', properties[key])
+            // console.log('schema property:', properties[key])
             table.columns[key] = {...properties[key]}
             if(schema.items.required && schema.items.required.includes(key))
               table.columns[key].required = true;
@@ -109,7 +109,7 @@ class OpenapiFormatter {
           table.requiredFields = schema.required;
           Object.keys(schema.properties).forEach(key => {
             // For each column, we need [field: string]: {name: string, title: string, type: string, format?: string}
-            console.log('schema property:', schema.properties[key])
+            // console.log('schema property:', schema.properties[key])
             table.columns[key] = {...schema.properties[key]}
             if(schema.required && schema.required.includes(key))
               table.columns[key].required = true;

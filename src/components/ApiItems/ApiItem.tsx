@@ -44,22 +44,17 @@ const ApiItem: React.FC<ApiItemProps> = ({
     console.log('input confirmed:', input, 'as type:', type)
     if(input) {
       if(type === 'integer') {
-        try {
-          let number = parseInt(input);
-          if(number) {
-            console.log('number:', number)
-            if(errors[field])
-              removeError(field)
-          }
-          else throw new Error("Could not parse number")
-        } catch (error) {
-          console.log('error parsing input:', error)
-          addError(field, error)
+        let number = parseInt(input);
+        if(number) {
+          console.log('number:', number)
+          if(errors[field])
+            removeError(field)
         }
+        else addError(field, "Could not parse number")
       }
+      else if(errors[field])
+        removeError(field)
     }
-    else if(errors[field])
-      removeError(field)
   }
 
   const clearForm = () => {
@@ -116,6 +111,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
   }
 
   const removeError = (field: string) => {
+    console.log('removing field:', field)
     let tempErrors = Object.assign({}, errors)
     delete tempErrors[field]
     setErrors(tempErrors)
