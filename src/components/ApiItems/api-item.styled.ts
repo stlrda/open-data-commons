@@ -152,6 +152,18 @@ const StyledApiItem = styled.div`
     margin-right: 6px;
     cursor: pointer;
   }
+  .api-execute-button-bar {
+    margin-top: .9em;
+    padding-left: 25%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    // justify-content: center;
+
+    .api-execute-button {
+      margin-right: 10px;
+    }
+  }
 
   @media(max-width: ${props => props.theme.breakpoints.medium}) {
     flex-direction: column;

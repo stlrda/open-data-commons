@@ -6,18 +6,19 @@ import Layout from './components/layout/Layout'
 import PageHeader from './components/Header/PageHeader'
 import PageFooter from './components/Footer/PageFooter'
 import ApiItems from './components/ApiItems/ApiItems'
-import { OpenAPIV3 } from 'openapi-types'
-import { ODCNavRoute } from './types/Openapi'
 // services
 import SwaggerParserService from './services/SwaggerParser'
-import OpenapiFormatter from './services/OpenapiFormatter'
+import OpenapiFormatter, { ODCTable } from './services/OpenapiFormatter'
 // import LocalStorageService from './services/LocalStorage'
 // Context API
-import GlobalStyle from './styles/global'
-import odcTheme from './styles/theme'
-
 import { SpecProvider } from './context/SpecContext'
 import { UIProvider } from './context/UIContext';
+// types
+import { OpenAPIV3 } from 'openapi-types'
+import { ODCNavRoute } from './types/Openapi'
+// styles
+import GlobalStyle from './styles/global'
+import odcTheme from './styles/theme'
 
 
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
@@ -56,24 +57,27 @@ function App() {
   // it wouldn't hurt to save some of this in local storage either. tbd.
   const [paths, setPaths] = useState<any>([])
   const [routes, setRoutes] = useState<ODCNavRoute[]>([])
+  const [responseTables, setResponseTables] = useState<ODCTable[]>([])
   const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
 
 
   useEffect(() => {
     console.log('swagger data changed:', data)
-    // console.log('swagger error changed:', error)
-    // console.log('swagger isLoading changed:', isLoading)
-    // console.log('swagger isError changed:', isError)
 
-    if(data && !isError && !error) {
+    if(data && !isError && !error && paths.length < 1) {
       const openapiFormatter = new OpenapiFormatter();
-      const paths = openapiFormatter.formatPaths(data.paths);
-      console.log('paths:', paths)
-      const navRoutes = openapiFormatter.getNavRoutes(paths);
-      console.log('navRoutes:', navRoutes)
-      setRoutes(navRoutes);
-      setPaths(paths)
+
+      const formattedPaths = openapiFormatter.formatPaths(data.paths);
+      console.log('paths:', formattedPaths)
+      const formattedNavRoutes = openapiFormatter.getNavRoutes(formattedPaths);
+      console.log('navRoutes:', formattedNavRoutes)
+      const formattedResponseTables = openapiFormatter.getResponseTables(formattedPaths)
+      console.log('tables:', formattedResponseTables)
+
+      setRoutes(formattedNavRoutes);
+      setPaths(formattedPaths)
+      setResponseTables(formattedResponseTables)
 
       let newApiInfo: IApiInfo = {}
       //@ts-ignore
@@ -85,7 +89,7 @@ function App() {
   }, [data, isLoading, isError, error])
 
   const cleanup = () => {
-    console.log('cleanup component')
+    console.log('cleanup App.tsx')
   }
 
   return (
@@ -109,6 +113,7 @@ function App() {
               <ApiItems
                 isFetching={isLoading}
                 apiData={paths}
+                tables={responseTables}
               />
               <PageFooter />
             </Layout>

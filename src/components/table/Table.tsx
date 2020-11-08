@@ -1,6 +1,8 @@
 import React from 'react';
-import { Table as BPTable, Column, Cell } from '@blueprintjs/table';
-import { IMenuContext, TableLoadingOption } from '@blueprintjs/table'
+import { Menu, MenuItem } from '@blueprintjs/core'
+import { Table as BPTable, Column, Cell, IMenuContext, TableLoadingOption, SelectionModes } from '@blueprintjs/table';
+import TableOperationsService from '../../services/TableOperations'
+import { ODCTable, ODCTableColumn, ODCTableRow } from '../../services/OpenapiFormatter';
 // import { JSONFormat } from '@blueprintjs/table'
 
 type NonArraySchemaObjectType = 'boolean' | 'object' | 'number' | 'string' | 'integer';
@@ -18,25 +20,47 @@ export interface SchemaProperty {
 
 interface TableProps {
   numRows: number
-  columns: any[] // method.responses[]
+  rows: ODCTableRow[]
+  columns: {
+    [name: string]: ODCTableColumn // method.responses[]
+  }
+  id?: string
   loadingRows?: boolean
 }
 
 const Table: React.FC<TableProps> = ({
   numRows,
+  rows,
   columns,
+  id,
   loadingRows = false,
 }) => {
   // region will be either IRegion[] if selection or single IRegion if just the cell
   const handleRightClick = (context: IMenuContext) => {
     console.log('context passed on right click:', context)
     return (
-      <div style={{backgroundColor: "#fff", minWidth: 90, textAlign: 'center'}}>
-        <p onClick={() => handleTableCopy(context)} style={{padding: 5, margin: 0, borderBottom: "1px solid rgba(66,66,66,.16)", cursor: 'pointer'}}>Copy</p>
-        <p onClick={() => handleTableCut(context)} style={{padding: 5, margin: 0, borderBottom: "1px solid rgba(66,66,66,.16)", cursor: 'pointer'}}>Cut</p>
-        <p onClick={() => handleTablePaste(context)} style={{padding: 5, margin: 0, borderBottom: "1px solid rgba(66,66,66,.16)", cursor: 'pointer'}}>Paste</p>
-        <p onClick={() => handleTableDelete(context)} style={{padding: 5, margin: 0, cursor: 'pointer'}}>Delete</p>
-      </div>
+      <Menu>
+        <MenuItem
+          className="context-menu-item"
+          onClick={() => handleTableCopy(context)}
+          text="Copy"
+        />
+        <MenuItem
+          className="context-menu-item"
+          onClick={() => handleTableCut(context)}
+          text="Cut"
+        />
+        <MenuItem
+          className="context-menu-item"
+          onClick={() => handleTablePaste(context)}
+          text="Paste"
+        />
+        <MenuItem
+          className="context-menu-item"
+          onClick={() => handleTableDelete(context)}
+          text="Delete"
+        />
+      </Menu>
     )
   }
 
@@ -66,31 +90,19 @@ const Table: React.FC<TableProps> = ({
     return tableLoadingStates
   }
 
-  const generateDummyData = (datatype: NonArraySchemaObjectType | ArraySchemaObjectType) => { // make bool
-    switch(datatype) {
-      case "string":
-        return "string";
-      case "number": case "integer":
-        return 0
-      case "boolean":
-        return true;
-      case "object":
-        return JSON.stringify({ first: "input", second: "input" })
-      case "array":
-        return ["array", "of", "items"].toString()
-      default:
-        return "";
-    }
-  }
-
-  const cellRenderer = (colIndex: number, type: NonArraySchemaObjectType | ArraySchemaObjectType) => {
+  const cellRenderer = (rowIndex: number, colIndex: number, key: string) => {
+    console.log('(cell renderer) row index:', rowIndex)
+    const rowValue = rows[rowIndex][key];
+    // console.log('row value:', rowValue)
+    // console.log('rows:', rows[rowIndex])
     return (
-      <Cell>{generateDummyData(type)}</Cell>
+      // Note: Can replace [key] with [colIndex] lookup if table rows are refactored to be array of arrays
+      <Cell>{rowValue}</Cell>
     )
   }
 
   // const cellRendererJSON = (rowIndex: number) => <Cell><JSONFormat>{{"index": rowIndex, "yessir": true}}</JSONFormat></Cell>;
-  if(!columns || columns.length < 1) {
+  if(!columns || Object.keys(columns).length < 1) {
     return (
       <div>
         <p>No responses found for this request</p>
@@ -99,23 +111,19 @@ const Table: React.FC<TableProps> = ({
   }
   return (
     <BPTable
-      numRows={1}
+      numRows={numRows}
       bodyContextMenuRenderer={(context) => handleRightClick(context)}
       getCellClipboardData={(row, col) => handleCellClipboardData(row, col)}
+      selectionModes={SelectionModes.COLUMNS_AND_CELLS}
       // loadingOptions={getTableLoadingStates()}
     >
-      {/* <Column
-          key={1}
-          name={column}
-          cellRenderer={(row, col) => cellRenderer(col)}
-        /> */}
-      {columns && Object.keys(columns).map((columnKey, index) => (
+      {columns && Object.keys(columns).map((key, index) => (
         <Column
-          key={index}
+          key={key}
           //@ts-ignore
-          name={columns[columnKey].name}
+          name={key} // OR columns[key].title
           //@ts-ignore
-          cellRenderer={(row, col) => cellRenderer(col, columns[columnKey].type)}
+          cellRenderer={(row, col) => cellRenderer(row, col, key)}
         />
       ))}
     </BPTable>

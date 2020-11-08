@@ -1,18 +1,115 @@
-import React from 'react'
-import { Divider, HTMLTable, Tag } from '@blueprintjs/core'
+import React, { useState } from 'react'
+import { Divider, HTMLTable, Tag, EditableText, Button } from '@blueprintjs/core'
 import Table from '../table/Table'
+import ApiRequestService from '../../services/ApiRequest'
 import StyledApiItem from './api-item.styled'
+// types
 import IApiItem from '../../types/ApiItem'
+import { ODCTable } from '../../services/OpenapiFormatter'
+
+interface IParametersForm {
+  [field: string]: any // string | boolean | number | undefined
+}
+interface FormErrors {
+  [field: string]: string
+}
 
 interface ApiItemProps {
   http: string
   method: any // add types
   endpoint: string
-  columns?: any[]
+  table: ODCTable
   // apiItem: IApiItem
 }
 
-const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, columns }) => {
+const ApiItem: React.FC<ApiItemProps> = ({
+  http,
+  method,
+  endpoint,
+  table
+}) => {
+  const ApiRequest = new ApiRequestService(endpoint)
+
+  const [parameters, setParameters] = useState<IParametersForm>({})
+  const [loading, setLoading] = useState<boolean>(false)
+  const [errors, setErrors] = useState<FormErrors>({})
+
+  const handleChange = (value: any, field: string) => {
+    setParameters({...parameters, [field]: value})
+  }
+
+  const validateInput = (field: string, type: string) => { // enum
+    // onConfirm
+    console.log('input confirmed:', parameters[field], 'as type:', type)
+    if(type === 'integer') {
+      try {
+        let number = parseInt(parameters[field]);
+        if(number) {
+          console.log('number:', number)
+          if(errors[field])
+            removeError(field)
+        }
+        else throw new Error("Could not parse number")
+      } catch (error) {
+        console.log('error parsing input:', error)
+        addError(field, error)
+      }
+    }
+  }
+
+  const clearForm = () => {
+    setParameters({})
+  }
+
+  const submitForm = async () => {
+    const { columns } = table;
+    if(!columns) {
+      alert('no response to show')
+      return;
+    }
+    setLoading(true)
+    console.log('submitting data:', parameters)
+    // send api call
+    const response = await ApiRequest.callApi()
+    console.log('api response in ApiItem:', response)
+
+    // Get Column Fields, Iterate
+    // const columnFields = Object.keys(columns)
+    for(let field in response) {
+      console.log('response field:', field)
+      console.log('response data:', response[field])
+      // TODO: allow table for multi-rows
+      if(table.columns[field]) {
+        table.rows[0][field] = response[field];
+      }
+    }
+    // for(let field in columns) {
+
+    // }
+    // .map((columnKey, index) => (
+    //   <Column
+    //     key={index}
+    //     //@ts-ignore
+    //     name={columns[columnKey].name}
+    //     //@ts-ignore
+    //     cellRenderer={(row, col) => cellRenderer(col, columns[columnKey].type)}
+    //   />
+    // ))}
+      // Populate them with the response data
+
+
+    setLoading(false)
+  }
+
+  const addError = (field: string, message: string) => {
+    setErrors({...errors, [field]: message})
+  }
+
+  const removeError = (field: string) => {
+    let tempErrors = Object.assign({}, errors)
+    delete tempErrors[field]
+    setErrors(tempErrors)
+  }
 
   // TODO: test for schema objects with "items" that are an array
   // TODO: test with a more robust openapi.json spec to verify edge cases
@@ -35,7 +132,8 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, columns }) =>
               <thead>
                 <tr>
                   <th>Field</th>
-                  <th>Data Type</th>
+                  <th>Data Input</th>
+                  {/* <th>Data Type</th> */}
                 </tr>
               </thead>
               <tbody>
@@ -47,8 +145,18 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, columns }) =>
                     </td>
                     <td className="parameter-datatype-column">
                       <span>
-                        {parameter.schema.type}{' '}
-                        {parameter.schema.title && `(${parameter.schema.title})`}
+                        <EditableText
+                          alwaysRenderInput={true}
+                          intent={errors[index] ? "danger" : "none"}
+                          // maxLength={this.state.maxLength}
+                          placeholder={`${parameter.schema.type} ${parameter.schema.title ? `(${parameter.schema.title})` : ""}`}
+                          selectAllOnFocus={true}
+                          value={parameters[parameter.name] || ""}
+                          onChange={(data) => handleChange(data, parameter.name)}
+                          onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+                        />
+                        {/* {parameter.schema.type}{' '}
+                        {parameter.schema.title && `(${parameter.schema.title})`} */}
                       </span>
                       {parameter.defaultValue && (
                         <div className="default-value-container">
@@ -64,6 +172,24 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, columns }) =>
                 ))}
               </tbody>
             </HTMLTable>
+
+            {/* Execute Button Bar */}
+            <div className="api-execute-button-bar">
+              <Button
+                className="api-execute-button"
+                // icon=""
+                // intent="success"
+                text="Clear"
+                onClick={clearForm}
+              />
+              <Button
+                className="api-execute-button"
+                rightIcon="arrow-right"
+                intent="success"
+                text="Execute"
+                onClick={submitForm}
+              />
+            </div>
           </div>
         ) : (
           <div className="query-parameters">
@@ -72,6 +198,23 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, columns }) =>
               <Divider className="mh-0" />
             </div>
             <p>No query parameters</p>
+            {/* Execute Button Bar */}
+            <div className="api-execute-button-bar">
+              {/* <Button
+                className="api-execute-button"
+                // icon=""
+                // intent="success"
+                text="Clear"
+                onClick={clearForm}
+              /> */}
+              <Button
+                className="api-execute-button"
+                rightIcon="arrow-right"
+                intent="success"
+                text="Execute"
+                onClick={submitForm}
+              />
+            </div>
           </div>
         )}
 
@@ -100,11 +243,12 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, columns }) =>
           </div>
           <div className="api-responses-innner">
             <div className="table-container">
-              {columns ? (
+              {table ? (
                 <Table
-                  numRows={3}
-                  columns={columns}
-                  // columns={simpleColumns}
+                  numRows={table.rows.length}
+                  columns={table.columns}
+                  rows={table.rows}
+                  id={table.id}
                 />
               ) : (
                 <p>
