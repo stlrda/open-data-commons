@@ -38,65 +38,75 @@ const ApiItem: React.FC<ApiItemProps> = ({
     setParameters({...parameters, [field]: value})
   }
 
+  // onConfirm
   const validateInput = (field: string, type: string) => { // enum
-    // onConfirm
-    console.log('input confirmed:', parameters[field], 'as type:', type)
-    if(type === 'integer') {
-      try {
-        let number = parseInt(parameters[field]);
-        if(number) {
-          console.log('number:', number)
-          if(errors[field])
-            removeError(field)
+    let input = parameters[field]
+    console.log('input confirmed:', input, 'as type:', type)
+    if(input) {
+      if(type === 'integer') {
+        try {
+          let number = parseInt(input);
+          if(number) {
+            console.log('number:', number)
+            if(errors[field])
+              removeError(field)
+          }
+          else throw new Error("Could not parse number")
+        } catch (error) {
+          console.log('error parsing input:', error)
+          addError(field, error)
         }
-        else throw new Error("Could not parse number")
-      } catch (error) {
-        console.log('error parsing input:', error)
-        addError(field, error)
       }
     }
+    else if(errors[field])
+      removeError(field)
   }
 
   const clearForm = () => {
     setParameters({})
+    setErrors({})
   }
 
   const submitForm = async () => {
+    setLoading(true)
+
     const { columns } = table;
     if(!columns) {
       alert('no response to show')
       return;
     }
-    setLoading(true)
-    console.log('submitting data:', parameters)
-    // send api call
-    const response = await ApiRequest.callApi()
-    console.log('api response in ApiItem:', response)
-
-    // Get Column Fields, Iterate
-    // const columnFields = Object.keys(columns)
-    for(let field in response) {
-      console.log('response field:', field)
-      console.log('response data:', response[field])
-      // TODO: allow table for multi-rows
-      if(table.columns[field]) {
-        table.rows[0][field] = response[field];
-      }
+    // console.log('parameters to be validated:', parameters)
+    let valid = true;
+    // for each field in 'required', make sure it exists in parameters
+    if(method.parameters) {
+      method.parameters.forEach((parameter: any) => {
+        // console.log('parameter:', parameter)
+        if(parameter.required && !parameters[parameter.name]) {
+          // console.log(parameter.name + ' is missing from parameters')
+          addError(parameter.name, `${parameter.name} is required`)
+          valid = false;
+        }
+      })
     }
-    // for(let field in columns) {
 
-    // }
-    // .map((columnKey, index) => (
-    //   <Column
-    //     key={index}
-    //     //@ts-ignore
-    //     name={columns[columnKey].name}
-    //     //@ts-ignore
-    //     cellRenderer={(row, col) => cellRenderer(col, columns[columnKey].type)}
-    //   />
-    // ))}
-      // Populate them with the response data
+    if(valid) {
+      console.log('submitting data:', parameters)
+      // send api call
+      const response = await ApiRequest.callApi()
+      console.log('api response in ApiItem:', response)
 
+      // Get Column Fields, Iterate
+      // const columnFields = Object.keys(columns)
+      Object.keys(response).forEach(field => {
+        // console.log('response field:', field)
+        // console.log('response data:', response[field])
+        // TODO: allow table for multi-rows
+        if(table.columns[field]) {
+          table.rows[0][field] = response[field];
+        }
+      })
+    }
+    else console.log('data is invalid somehow. errors:', errors)
 
     setLoading(false)
   }
@@ -144,11 +154,10 @@ const ApiItem: React.FC<ApiItemProps> = ({
                       {parameter.required && <span className="required-text">*</span>}
                     </td>
                     <td className="parameter-datatype-column">
-                      <span>
+                      <span style={{border: errors[parameter.name] && "1px solid rgba(235,0,0,.54)", padding:4, borderRadius: 4}}>
                         <EditableText
                           alwaysRenderInput={true}
-                          intent={errors[index] ? "danger" : "none"}
-                          // maxLength={this.state.maxLength}
+                          intent={errors[parameter.name] ? "danger" : "none"}
                           placeholder={`${parameter.schema.type} ${parameter.schema.title ? `(${parameter.schema.title})` : ""}`}
                           selectAllOnFocus={true}
                           value={parameters[parameter.name] || ""}

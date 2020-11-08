@@ -8,11 +8,13 @@ export interface ODCTable {
     [name: string]: ODCTableColumn
   },
   rows: ODCTableRow[]
+  requiredFields?: string[] // requiredFields
 }
 export interface ODCTableColumn {
   name: string
   title: string
   type: string
+  required: boolean
   format?: string
 }
 export interface ODCTableRow {
@@ -81,7 +83,7 @@ class OpenapiFormatter {
     paths.forEach(path => {
       let table: ODCTable = {}
 
-      try {
+      // try {
         const method = path.methods[0].value;
         const schema = method.responses[0].content["application/json"].schema;
 
@@ -90,21 +92,27 @@ class OpenapiFormatter {
         table.columns = {}
         table.rows = [{}]
         if(schema.items) {
+          table.requiredFields = schema.items.required;
           const properties = schema.items.properties
           Object.keys(properties).forEach(key => {
             // For each column, we need [field: string]: {name: string, title: string, type: string, format?: string}
             console.log('schema property:', properties[key])
             table.columns[key] = {...properties[key]}
+            if(schema.items.required && schema.items.required.includes(key))
+              table.columns[key].required = true;
 
             // For each row, we need { value: }
             table.rows[0][key] = this.generateDummyData(properties[key].type)
           })
         }
         else if(schema.properties) {
+          table.requiredFields = schema.required;
           Object.keys(schema.properties).forEach(key => {
             // For each column, we need [field: string]: {name: string, title: string, type: string, format?: string}
             console.log('schema property:', schema.properties[key])
             table.columns[key] = {...schema.properties[key]}
+            if(schema.required && schema.required.includes(key))
+              table.columns[key].required = true;
 
             // For each row, we need { [column]: value }
             table.rows[0][key] = this.generateDummyData(schema.properties[key].type)
@@ -114,10 +122,10 @@ class OpenapiFormatter {
           console.log('schema does not have any properties')
         }
         tables.push(table)
-      } catch (error) {
-        console.log('error while iterating paths:', error)
-        tables.push(table);
-      }
+      // } catch (error) {
+      //   console.log('error while iterating paths:', error)
+      //   tables.push(table);
+      // }
     })
 
     return tables;

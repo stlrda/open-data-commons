@@ -91,7 +91,7 @@ const Table: React.FC<TableProps> = ({
   }
 
   const cellRenderer = (rowIndex: number, colIndex: number, key: string) => {
-    console.log('(cell renderer) row index:', rowIndex)
+    // console.log('(cell renderer) row index:', rowIndex)
     const rowValue = rows[rowIndex][key];
     // console.log('row value:', rowValue)
     // console.log('rows:', rows[rowIndex])
@@ -120,6 +120,11 @@ const Table: React.FC<TableProps> = ({
       {columns && Object.keys(columns).map((key, index) => (
         <Column
           key={key}
+          nameRenderer={(name: string) => (
+            columns[name].required
+              ? <div>{name} <span style={{color:"red"}}>*</span></div>
+              : <div>{name}</div>
+          )}
           //@ts-ignore
           name={key} // OR columns[key].title
           //@ts-ignore

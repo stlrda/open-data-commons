@@ -1,5 +1,6 @@
 import React, { useContext } from 'react'
 import { Classes } from '@blueprintjs/core'
+import sanitizeHtml from 'sanitize-html'
 import StyledPageHeader from '../layout/header.styled'
 
 import { SpecContext } from '../../context/SpecContext'
@@ -39,8 +40,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
         </h4>
       )}
       {description && (
-        <p className="header-description">
-          {description}
+        <p className="header-description" dangerouslySetInnerHTML={{__html: sanitizeHtml(description)}}>
         </p>
       )}
     </StyledPageHeader>
