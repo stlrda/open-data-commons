@@ -5,6 +5,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 # Add and Install Dependencies
 COPY package.json ./
+COPY .env ./
 COPY yarn.lock ./
 
 # RUN yarn ci
