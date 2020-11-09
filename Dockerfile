@@ -5,7 +5,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 
 # Add and Install Dependencies
 COPY package.json ./
-COPY yarn.json ./
+COPY yarn.lock ./
 
 RUN npm i -g yarn
 RUN yarn ci
