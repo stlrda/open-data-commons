@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Divider, HTMLTable, Tag, EditableText, Button } from '@blueprintjs/core'
+import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse } from '@blueprintjs/core'
+// import { JSONFormat } from '@blueprintjs/table'
 import Table from '../table/Table'
 import ApiRequestService from '../../services/ApiRequest'
-import StyledApiItem from './api-item.styled'
+import StyledApiItem, { ResponseItem_Styled } from './api-item.styled'
 // types
-import IApiItem from '../../types/ApiItem'
+// import IApiItem from '../../types/ApiItem'
 import { ODCTable } from '../../services/OpenapiFormatter'
 
 interface IParametersForm {
@@ -14,9 +15,11 @@ interface FormErrors {
   [field: string]: string
 }
 interface ResponseItem {
-  id: string
+  id: number
   time: string // date string
   success: boolean
+  details: string
+  status?: number
 }
 
 interface ApiItemProps {
@@ -29,39 +32,30 @@ interface ApiItemProps {
 
 const maxResponses = 5
 
-const ApiItem: React.FC<ApiItemProps> = ({
-  http,
-  method,
-  endpoint,
-  table
-}) => {
-  const ApiRequest = new ApiRequestService(endpoint)
-
+const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table }) => {
   const [parameters, setParameters] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [responses, setResponses] = useState<ResponseItem[]>([])
+  const [openResults, setOpenResults] = useState<number[]>([])
 
   const handleChange = (value: any, field: string) => {
-    setParameters({...parameters, [field]: value})
+    setParameters({ ...parameters, [field]: value })
   }
 
   // onConfirm
-  const validateInput = (field: string, type: string) => { // enum
+  const validateInput = (field: string, type: string) => {
+    // enum
     let input = parameters[field]
     console.log('input confirmed:', input, 'as type:', type)
-    if(input) {
-      if(type === 'integer') {
-        let number = parseInt(input);
-        if(number) {
+    if (input) {
+      if (type === 'integer') {
+        let number = parseInt(input)
+        if (number) {
           console.log('number:', number)
-          if(errors[field])
-            removeError(field)
-        }
-        else addError(field, "Could not parse number")
-      }
-      else if(errors[field])
-        removeError(field)
+          if (errors[field]) removeError(field)
+        } else addError(field, 'Could not parse number')
+      } else if (errors[field]) removeError(field)
     }
   }
 
@@ -73,65 +67,77 @@ const ApiItem: React.FC<ApiItemProps> = ({
   const submitForm = async () => {
     setLoading(true)
 
-    const { columns } = table;
-    if(!columns) {
+    const { columns } = table
+    if (!columns) {
       alert('no response to show')
-      return;
+      return
     }
     // console.log('parameters to be validated:', parameters)
-    let valid = true;
+    let valid = true
     // for each field in 'required', make sure it exists in parameters
-    if(method.parameters) {
+    if (method.parameters) {
       method.parameters.forEach((parameter: any) => {
         // console.log('parameter:', parameter)
-        if(parameter.required && !parameters[parameter.name]) {
+        if (parameter.required && !parameters[parameter.name]) {
           // console.log(parameter.name + ' is missing from parameters')
           addError(parameter.name, `${parameter.name} is required`)
-          valid = false;
+          valid = false
         }
       })
     }
 
-    if(valid) {
+    if (valid) {
       console.log('submitting data:', parameters)
       // send api call
+      const ApiRequest = new ApiRequestService(endpoint)
       const response = await ApiRequest.callApi()
       console.log('api response in ApiItem:', response)
 
       // Get Column Fields, Iterate
       // const columnFields = Object.keys(columns)
-      Object.keys(response).forEach(field => {
-        // console.log('response field:', field)
-        // console.log('response data:', response[field])
-        // TODO: allow table for multi-rows
-        if(table.columns[field]) {
-          table.rows[0][field] = response[field];
-        }
-      })
-      if(responses.length < maxResponses) {
-        setResponses([...responses, {
-          id: `${responses.length}-${http}-${endpoint}`,
-          time: new Date().toISOString(),
-          success: true // can check for response code
-        }])
+      if(!response.error && response.status! < 400 ) {
+        Object.keys(response.data).forEach((field) => {
+          // console.log('response field:', field)
+          // console.log('response data:', response[field])
+          // TODO: allow table for multi-rows
+          if (table.columns[field]) {
+            table.rows[0][field] = response.data[field]
+          }
+        })
       }
-      else {
+
+      if (responses.length < maxResponses) {
+        setResponses([
+          ...responses,
+          {
+            id: responses.length,
+            time: new Date().toISOString(),
+            status: response.status || 500,
+            success: (response.error || response.status! >= 400) ? false : true, // can check for response code
+            details: (response.error || response.status! >= 400) ? (response.message || response.data) : response.data,
+          },
+        ])
+      } else {
         let tempResp = [...responses]
-        tempResp.shift();
-        setResponses([...tempResp, {
-          id: `${responses.length}-${http}-${endpoint}`,
-          time: new Date().toISOString(),
-          success: true // can check for response code
-        }])
+        tempResp.shift()
+        setResponses([
+          ...tempResp,
+          {
+            id: responses[responses.length - 1].id + 1,
+            time: new Date().toISOString(),
+            status: response.status || 500,
+            success: (response.error || response.status! >= 400) ? false : true, // can check for response code
+            details: (response.error || response.status! >= 400) ? (response.message || response.data) : response.data,
+          },
+        ])
       }
-    }
-    else console.log('data is invalid somehow. errors:', errors)
+    } else console.log('data is invalid somehow. errors:', errors)
 
     setLoading(false)
   }
 
   const addError = (field: string, message: string) => {
-    setErrors({...errors, [field]: message})
+    setErrors({ ...errors, [field]: message })
   }
 
   const removeError = (field: string) => {
@@ -141,9 +147,26 @@ const ApiItem: React.FC<ApiItemProps> = ({
     setErrors(tempErrors)
   }
 
-  const resetRow = () => {
+  const resetResponseTable = () => {
     // reset row values with dummy data
   }
+
+  const downloadCsv = () => {}
+
+  const toggleCollapse = (id: number) => {
+    // open / close the collapse using the given id
+    console.log('toggling collapse')
+    if(openResults.includes(id))
+      setOpenResults(openResults.filter(resultId => resultId !== id))
+    else
+      setOpenResults([...openResults, id ])
+  }
+
+  const expandResults = () => {
+    setOpenResults(responses.map(response => response.id))
+  }
+
+  const collapseResults = () => setOpenResults([])
 
   // TODO: test for schema objects with "items" that are an array
   // TODO: test with a more robust openapi.json spec to verify edge cases
@@ -154,7 +177,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
         <h3 className="section-header-title">{method.summary}</h3>
         {method.description && <p className="section-header-description">{method.description}</p>}
 
-        {(method.parameters && method.parameters.length > 0) ? (
+        {method.parameters && method.parameters.length > 0 ? (
           <div className="query-parameters">
             <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
@@ -173,18 +196,29 @@ const ApiItem: React.FC<ApiItemProps> = ({
               <tbody>
                 {method.parameters.map((parameter: any, index: number) => (
                   <tr key={index}>
-                    <td className="parameter-name-column" style={{display:'flex',flexDirection:'row'}}>
+                    <td
+                      className="parameter-name-column"
+                      style={{ display: 'flex', flexDirection: 'row' }}
+                    >
                       <span>{parameter.name}</span>
                       {parameter.required && <span className="required-text">*</span>}
                     </td>
                     <td className="parameter-datatype-column">
-                      <span style={{border: errors[parameter.name] && "1px solid rgba(235,0,0,.54)", padding:4, borderRadius: 4}}>
+                      <span
+                        style={{
+                          border: errors[parameter.name] && '1px solid rgba(235,0,0,.54)',
+                          padding: 4,
+                          borderRadius: 4,
+                        }}
+                      >
                         <EditableText
                           alwaysRenderInput={true}
-                          intent={errors[parameter.name] ? "danger" : "none"}
-                          placeholder={`${parameter.schema.type} ${parameter.schema.title ? `(${parameter.schema.title})` : ""}`}
+                          intent={errors[parameter.name] ? 'danger' : 'none'}
+                          placeholder={`${parameter.schema.type} ${
+                            parameter.schema.title ? `(${parameter.schema.title})` : ''
+                          }`}
                           selectAllOnFocus={true}
-                          value={parameters[parameter.name] || ""}
+                          value={parameters[parameter.name] || ''}
                           onChange={(data) => handleChange(data, parameter.name)}
                           onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
                         />
@@ -210,20 +244,10 @@ const ApiItem: React.FC<ApiItemProps> = ({
             <div className="api-execute-button-bar">
               <Button
                 className="api-execute-button"
-                // icon=""
-                // intent="success"
                 text="Clear"
+                disabled={Object.keys(parameters).length < 1 && Object.keys(errors).length < 1}
                 onClick={clearForm}
               />
-              {/* {responses.length > 0 && (
-                <Button
-                  className="api-execute-button"
-                  // icon=""
-                  // intent="success"
-                  text="Reset"
-                  onClick={resetRow}
-                />
-              )} */}
               <Button
                 className="api-execute-button"
                 rightIcon="arrow-right"
@@ -242,22 +266,6 @@ const ApiItem: React.FC<ApiItemProps> = ({
             <p>No query parameters</p>
             {/* Execute Button Bar */}
             <div className="api-execute-button-bar">
-              {/* <Button
-                className="api-execute-button"
-                // icon=""
-                // intent="success"
-                text="Clear"
-                onClick={clearForm}
-              /> */}
-              {/* {responses.length > 0 && (
-                <Button
-                  className="api-execute-button"
-                  // icon=""
-                  // intent="success"
-                  text="Reset"
-                  onClick={resetRow}
-                />
-              )} */}
               <Button
                 className="api-execute-button"
                 rightIcon="arrow-right"
@@ -272,7 +280,27 @@ const ApiItem: React.FC<ApiItemProps> = ({
         {/* Response Section */}
         <div className="api-responses">
           <h3 className="section-header-title small-title">
-            <span>Responses</span>
+            <div>
+              <span style={{ marginRight: 6 }}>Responses</span>
+              {responses.length > 0 && (
+                <>
+                  <Button
+                    className="api-execute-button"
+                    rightIcon="refresh"
+                    text="Reset"
+                    minimal={true}
+                    onClick={resetResponseTable}
+                  />
+                  <Button
+                    className="api-execute-button"
+                    rightIcon="download"
+                    text="CSV"
+                    minimal={true}
+                    onClick={downloadCsv}
+                  />
+                </>
+              )}
+            </div>
             {method.responses && (
               <div className="method-responses">
                 {method.responses.map((response: any) => (
@@ -303,12 +331,11 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 />
               ) : (
                 <p>
-                  {method?.responses[0]?.code ?
-                    `A successful response will return a ${method.responses[0].code} status code but no data`
-                    : "This method does not return any data"}
+                  {method?.responses[0]?.code
+                    ? `A successful response will return a ${method.responses[0].code} status code but no data`
+                    : 'This method does not return any data'}
                 </p>
               )}
-
             </div>
           </div>
         </div>
@@ -323,25 +350,53 @@ const ApiItem: React.FC<ApiItemProps> = ({
           <span className="endpoint-path-text">{endpoint}</span>
         </div>
 
-        <h3 className="response-header">Response Log</h3>
+        <h3 className="response-header" style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
+          <span style={{flex: 1}}>Response Log</span>
+          {responses.length > 0 && (
+            <ButtonGroup>
+              <Button
+                className="api-execute-button"
+                rightIcon="expand-all"
+                // text="Expand"
+                minimal
+                onClick={expandResults}
+              />
+              <Button
+                className="api-execute-button"
+                rightIcon="collapse-all"
+                // text="Collapse"
+                minimal
+                onClick={collapseResults}
+              />
+            </ButtonGroup>
+          )}
+        </h3>
 
         <div className="response-visualizations">
-          <div className="helper-toolbar">
-            {/* Copy, Expand All, Collapse All, etc. */}
-          </div>
+          <div className="helper-toolbar">{/* Copy, Expand All, Collapse All, etc. */}</div>
           <div className="response-results">
-            {/* Show the code */}
-            {/* <Table numRows={3} columns={} /> */}
             {/* <p style={{color: "#fff"}}>still deciding...</p> */}
             {responses.map((response, index) => (
-              <div style={{display:'flex', flexDirection:'row',alignItems:'center', marginBottom:4}} key={index}>
-                <span style={{marginRight: 12, fontSize: '1.15em'}}>{index}</span>
-                <div className="response-result-item" >
-                  {/* <span>{response.id}</span> */}
-                  <span style={{flex:1}}>{response.time}</span>
-                  <span>{response.success ? "success" : "error"}</span>
+              <ResponseItem_Styled key={index} className="response-result-item">
+                <span className="response-result-item-index">{response.id}</span>
+                <div style={{display:'flex', flexDirection:'column', alignItems:'stretch', flex: 1}}>
+                  <div
+                    className="response-result-item-inner"
+                    onClick={() => toggleCollapse(response.id)}
+                  >
+                    <span style={{ flex: 1, opacity: .93 }}>{response.time}</span>
+                    <span style={{opacity: .93}}>{response.success ? 'success' : 'error'}</span>
+                  </div>
+                  <Collapse isOpen={openResults.includes(response.id)}>
+                    <div className="response-result-item-inner response-item-response">
+                      <p style={{ color: '#fff', padding: 5, width: '100%', display: 'block', marginBottom: 0 }}>
+                        {JSON.stringify(response.details)}
+                        {/* <JSONFormat>{response.details}</JSONFormat> */}
+                      </p>
+                    </div>
+                  </Collapse>
                 </div>
-              </div>
+              </ResponseItem_Styled>
             ))}
           </div>
         </div>

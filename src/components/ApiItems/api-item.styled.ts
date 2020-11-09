@@ -127,20 +127,6 @@ const StyledApiItem = styled.div`
     .response-results {
 
 
-      .response-result-item {
-        flex: 1;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        background-color: ${props => props.theme.darkest};
-        padding: 10px;
-        font-size: .95em;
-        font-family: sans-serif;
-        // margin-bottom: 4px;
-        border-radius: 5px;
-        cursor: pointer;
-      }
     }
   }
 
@@ -202,6 +188,46 @@ const StyledApiItem = styled.div`
     &:first-child {
       .api-item-left {
         padding-top: 0;
+      }
+    }
+  }
+`
+
+export const ResponseItem_Styled = styled.div`
+  &.response-result-item {
+    display: flex;
+    flex-direction: row;
+    // align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 5px;
+
+    .response-result-item-index {
+      margin-right: 12px;
+      font-size: 1.15em;
+      line-height: 1.3em;
+      padding-top: calc(.1em + 5px);
+      padding-bottom: calc(.1em + 5px);
+    }
+    .response-result-item-inner {
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      background-color: ${props => props.theme.darkest};
+      padding: 10px;
+      font-size: .95em;
+      line-height: 1.1em;
+      font-family: sans-serif;
+      border-radius: 5px;
+      cursor: pointer;
+
+      &.response-item-response {
+        cursor: initial;
+        margin-top: 2px;
+        border-top-left-radius: 2px;
+        border-bottom-left-radius: 2px;
+        border-left: 1px solid rgba(245,245,245,.9);
       }
     }
   }

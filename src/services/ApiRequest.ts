@@ -23,9 +23,9 @@ class ApiRequest {
         method: apiMethod,
         headers: this.headers
       })
+      console.log('status:', response.status)
       const data = await response.json();
-      console.log('data from api:', data)
-      return data
+      return { status: response.status, data }
     } catch (error) {
       console.log('error fetching api:', error)
       return { error: true, message: error.toString() } // status?
