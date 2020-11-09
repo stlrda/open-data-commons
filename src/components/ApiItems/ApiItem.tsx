@@ -13,6 +13,11 @@ interface IParametersForm {
 interface FormErrors {
   [field: string]: string
 }
+interface ResponseItem {
+  id: string
+  time: string // date string
+  success: boolean
+}
 
 interface ApiItemProps {
   http: string
@@ -21,6 +26,8 @@ interface ApiItemProps {
   table: ODCTable
   // apiItem: IApiItem
 }
+
+const maxResponses = 5
 
 const ApiItem: React.FC<ApiItemProps> = ({
   http,
@@ -33,6 +40,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
   const [parameters, setParameters] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<FormErrors>({})
+  const [responses, setResponses] = useState<ResponseItem[]>([])
 
   const handleChange = (value: any, field: string) => {
     setParameters({...parameters, [field]: value})
@@ -100,6 +108,22 @@ const ApiItem: React.FC<ApiItemProps> = ({
           table.rows[0][field] = response[field];
         }
       })
+      if(responses.length < maxResponses) {
+        setResponses([...responses, {
+          id: `${responses.length}-${http}-${endpoint}`,
+          time: new Date().toISOString(),
+          success: true // can check for response code
+        }])
+      }
+      else {
+        let tempResp = [...responses]
+        tempResp.shift();
+        setResponses([...tempResp, {
+          id: `${responses.length}-${http}-${endpoint}`,
+          time: new Date().toISOString(),
+          success: true // can check for response code
+        }])
+      }
     }
     else console.log('data is invalid somehow. errors:', errors)
 
@@ -115,6 +139,10 @@ const ApiItem: React.FC<ApiItemProps> = ({
     let tempErrors = Object.assign({}, errors)
     delete tempErrors[field]
     setErrors(tempErrors)
+  }
+
+  const resetRow = () => {
+    // reset row values with dummy data
   }
 
   // TODO: test for schema objects with "items" that are an array
@@ -187,6 +215,15 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 text="Clear"
                 onClick={clearForm}
               />
+              {/* {responses.length > 0 && (
+                <Button
+                  className="api-execute-button"
+                  // icon=""
+                  // intent="success"
+                  text="Reset"
+                  onClick={resetRow}
+                />
+              )} */}
               <Button
                 className="api-execute-button"
                 rightIcon="arrow-right"
@@ -212,6 +249,15 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 text="Clear"
                 onClick={clearForm}
               /> */}
+              {/* {responses.length > 0 && (
+                <Button
+                  className="api-execute-button"
+                  // icon=""
+                  // intent="success"
+                  text="Reset"
+                  onClick={resetRow}
+                />
+              )} */}
               <Button
                 className="api-execute-button"
                 rightIcon="arrow-right"
@@ -277,16 +323,26 @@ const ApiItem: React.FC<ApiItemProps> = ({
           <span className="endpoint-path-text">{endpoint}</span>
         </div>
 
-        <h3 className="response-header">Response Samples</h3>
+        <h3 className="response-header">Response Log</h3>
 
         <div className="response-visualizations">
-          <div className="helper-toolbar">{/* Copy, Expand All, Collapse All, etc. */}</div>
-          <div className="response-result">
+          <div className="helper-toolbar">
+            {/* Copy, Expand All, Collapse All, etc. */}
+          </div>
+          <div className="response-results">
             {/* Show the code */}
-            <div className="table-container">
-              {/* <Table numRows={3} columns={} /> */}
-              <p style={{color: "#fff"}}>still deciding...</p>
-            </div>
+            {/* <Table numRows={3} columns={} /> */}
+            {/* <p style={{color: "#fff"}}>still deciding...</p> */}
+            {responses.map((response, index) => (
+              <div style={{display:'flex', flexDirection:'row',alignItems:'center', marginBottom:4}} key={index}>
+                <span style={{marginRight: 12, fontSize: '1.15em'}}>{index}</span>
+                <div className="response-result-item" >
+                  {/* <span>{response.id}</span> */}
+                  <span style={{flex:1}}>{response.time}</span>
+                  <span>{response.success ? "success" : "error"}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>

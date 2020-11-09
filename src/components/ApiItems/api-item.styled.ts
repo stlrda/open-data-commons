@@ -95,7 +95,6 @@ const StyledApiItem = styled.div`
     padding-bottom: 1em;
     padding-left: 1em;
     padding-right: 1em;
-    // flex: 4;
     width: 40%;
     background: ${props => props.theme.dark};
     color: #fff;
@@ -103,7 +102,17 @@ const StyledApiItem = styled.div`
     // width: calc(40% - 130px);
     z-index: 2;
     overflow-x: auto;
-    // border-bottom: 1px solid rgba(16,16,16, .4);
+
+    .api-method-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background-color: ${props => props.theme.darkest};
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
 
     .response-header {
       color: #fff;
@@ -114,21 +123,31 @@ const StyledApiItem = styled.div`
     .response-visualizations {
       min-height: 4em;
     }
+
+    .response-results {
+
+
+      .response-result-item {
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        background-color: ${props => props.theme.darkest};
+        padding: 10px;
+        font-size: .95em;
+        font-family: sans-serif;
+        // margin-bottom: 4px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+    }
   }
+
   .api-responses {
     padding-bottom: 10px;
   }
 
-  .api-method-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    background-color: #11171A;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
   .endpoint-http-text {
     text-transform: uppercase;
     font-weight: 500;
