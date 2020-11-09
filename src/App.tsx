@@ -88,6 +88,24 @@ function App() {
     return cleanup;
   }, [data, isLoading, isError, error])
 
+  const resetTableRows = (id: string) => {
+    // reset the given table's rows to their default types
+    const openapiFormatter = new OpenapiFormatter();
+    // find the table and schema
+    const chosenTable = responseTables.find(responseTable => responseTable.id === id)
+    const chosenPath = paths.find((path: any) => path.methods[0].value.operationId === id)
+    const chosenSchema = chosenPath.methods[0].value.responses[0].content["application/json"].schema
+    if(chosenTable && chosenSchema) {
+      const table = openapiFormatter.resetTable(chosenTable, chosenSchema)
+      if(table)
+        setResponseTables(responseTables.map(responseTable => {
+          if(responseTable.id === id)
+            responseTable = table
+          return responseTable;
+        }))
+    }
+  }
+
   const cleanup = () => {
     console.log('cleanup App.tsx')
   }
@@ -114,6 +132,7 @@ function App() {
                 isFetching={isLoading}
                 apiData={paths}
                 tables={responseTables}
+                resetTableRows={resetTableRows}
               />
               <PageFooter />
             </Layout>

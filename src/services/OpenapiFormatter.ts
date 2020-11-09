@@ -131,6 +131,27 @@ class OpenapiFormatter {
     return tables;
   }
 
+  resetTable = (table: ODCTable, schema: any) => {
+    table.rows = [{}]
+
+    // get to the table's rows
+    if(schema.items) {
+      const properties = schema.items.properties
+      Object.keys(properties).forEach(key => {
+        table.rows[0][key] = this.generateDummyData(properties[key].type)
+      })
+    }
+    else if(schema.properties) {
+      Object.keys(schema.properties).forEach(key => {
+        table.rows[0][key] = this.generateDummyData(schema.properties[key].type)
+      })
+    }
+    else {
+      console.log('schema does not have any properties')
+    }
+    return table;
+  }
+
   generateDummyData = (datatype: NonArraySchemaObjectType | ArraySchemaObjectType) => { // make bool
     switch(datatype) {
       case "string":

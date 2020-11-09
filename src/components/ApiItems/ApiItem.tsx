@@ -27,12 +27,13 @@ interface ApiItemProps {
   method: any // add types
   endpoint: string
   table: ODCTable
+  resetTableRows(id: string): void
   // apiItem: IApiItem
 }
 
 const maxResponses = 5
 
-const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table }) => {
+const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetTableRows }) => {
   const [parameters, setParameters] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -149,6 +150,10 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table }) => {
 
   const resetResponseTable = () => {
     // reset row values with dummy data
+    setResponses([])
+    setOpenResults([])
+    // set first row to dummy data
+    resetTableRows(method.operationId)
   }
 
   const downloadCsv = () => {}
