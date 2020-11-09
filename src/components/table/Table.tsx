@@ -1,6 +1,6 @@
 import React from 'react';
 import { Menu, MenuItem } from '@blueprintjs/core'
-import { Table as BPTable, Column, Cell, IMenuContext, TableLoadingOption, SelectionModes } from '@blueprintjs/table';
+import { Table as BPTable, Column, Cell, IMenuContext, TableLoadingOption, SelectionModes, CopyCellsMenuItem } from '@blueprintjs/table';
 import TableOperationsService from '../../services/TableOperations'
 import { ODCTable, ODCTableColumn, ODCTableRow } from '../../services/OpenapiFormatter';
 // import { JSONFormat } from '@blueprintjs/table'
@@ -40,9 +40,10 @@ const Table: React.FC<TableProps> = ({
     console.log('context passed on right click:', context)
     return (
       <Menu>
-        <MenuItem
+        <CopyCellsMenuItem
           className="context-menu-item"
-          onClick={() => handleTableCopy(context)}
+          context={context}
+          getCellData={(row, col) => getCellData(row, col)}
           text="Copy"
         />
         <MenuItem
@@ -64,8 +65,11 @@ const Table: React.FC<TableProps> = ({
     )
   }
 
-  const handleTableCopy = (context: IMenuContext) => {
-    console.log('clicked copy option for table')
+  const getCellData = (rowIndex: number, colIndex: number) => {
+    // for a given row and col, need to return the data at that row and column
+    const columnKeys = Object.keys(columns);
+    const colData = columnKeys[colIndex]
+    return rows[rowIndex][colData]
   }
   const handleTableCut = (context: IMenuContext) => {
     console.log('clicked cut option for table')
