@@ -21,6 +21,7 @@ import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
 
 
+
 const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 const uniqueQueryId = 'openapi-source'
 
@@ -41,6 +42,9 @@ export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
 }
 
 function App() {
+
+  const swaggerUrl = process.env.SWAGGER_URL || "";
+
   const fetchSwaggerData = async () => {
     const swaggerParser = new SwaggerParserService();
     const response = await swaggerParser.validateApi(swaggerUrl)

@@ -1,0 +1,25 @@
+# Container for Open Data Commons Demo
+FROM node:13.12.0-alpine as build
+WORKDIR /app
+ENV PATH /app/node_modules/.bin:$PATH
+
+# Add and Install Dependencies
+COPY package.json ./
+COPY yarn.json ./
+
+RUN npm i -g yarn
+RUN yarn ci
+RUN yarn install
+
+# Set Env For Swagger Json
+ENV SWAGGER_URL = "https://api.stldata.org/crime/openapi.json"
+
+# Build the App for Production
+COPY . ./
+RUN yarn build
+
+# Copy Built App to Nginx Webserver
+FROM nginx:stable-alpine
+COPY --from=build /app/build /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
