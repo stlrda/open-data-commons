@@ -1,0 +1,17 @@
+name: Build Docker Image to Github Registry
+on:
+    push:
+        branches:
+            - main
+jobs:
+    build-container:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@master
+        - name: Publish Container to Github Registry
+          uses: elgohr/Publish-Docker-Github-Action@master
+          with:
+            name: stlrda/open-data-commons/crime
+            username: ${{ github.actor }}
+            password: ${{ secrets.TOKEN }}
+            registry: docker.pkg.github.com
