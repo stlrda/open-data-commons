@@ -71,12 +71,15 @@ const Table: React.FC<TableProps> = ({
     const colData = columnKeys[colIndex]
     return rows[rowIndex][colData]
   }
+
   const handleTableCut = (context: IMenuContext) => {
     console.log('clicked cut option for table')
   }
+
   const handleTablePaste = (context: IMenuContext) => {
     console.log('clicked paste option for table')
   }
+
   const handleTableDelete = (context: IMenuContext) => {
     console.log('clicked delete option for table')
   }
