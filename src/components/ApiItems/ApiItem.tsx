@@ -3,6 +3,7 @@ import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse } 
 // import { JSONFormat } from '@blueprintjs/table'
 import Table from '../table/Table'
 import ApiRequestService from '../../services/ApiRequest'
+import FileSaverService from '../../services/FileSaver'
 import StyledApiItem, { ResponseItem_Styled } from './api-item.styled'
 // types
 // import IApiItem from '../../types/ApiItem'
@@ -156,7 +157,15 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
     resetTableRows(method.operationId)
   }
 
-  const downloadCsv = () => {}
+  const downloadCsv = () => {
+    const filename = http + "-" + method.operationId + ".csv"
+    const fileSaver = new FileSaverService();
+    fileSaver.saveFile(filename, table.rows, table.columns, (error?: any) => {
+      if(error) {
+        alert('error downloading your file')
+      }
+    })
+  }
 
   const toggleCollapse = (id: number) => {
     // open / close the collapse using the given id
