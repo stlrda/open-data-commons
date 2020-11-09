@@ -58,7 +58,6 @@ function App() {
   const [paths, setPaths] = useState<any>([])
   const [routes, setRoutes] = useState<ODCNavRoute[]>([])
   const [responseTables, setResponseTables] = useState<ODCTable[]>([])
-  const [logoUrl, setLogoUrl] = useState<string | undefined>(undefined)
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
 
 

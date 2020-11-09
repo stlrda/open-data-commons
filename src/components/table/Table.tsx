@@ -1,8 +1,8 @@
 import React from 'react';
 import { Menu, MenuItem } from '@blueprintjs/core'
 import { Table as BPTable, Column, Cell, IMenuContext, TableLoadingOption, SelectionModes, CopyCellsMenuItem } from '@blueprintjs/table';
-import TableOperationsService from '../../services/TableOperations'
-import { ODCTable, ODCTableColumn, ODCTableRow } from '../../services/OpenapiFormatter';
+// import TableOperationsService from '../../services/TableOperations'
+import { ODCTableColumn, ODCTableRow } from '../../services/OpenapiFormatter';
 // import { JSONFormat } from '@blueprintjs/table'
 
 type NonArraySchemaObjectType = 'boolean' | 'object' | 'number' | 'string' | 'integer';
@@ -74,6 +74,7 @@ const Table: React.FC<TableProps> = ({
 
   const handleTableCut = (context: IMenuContext) => {
     console.log('clicked cut option for table')
+
   }
 
   const handleTablePaste = (context: IMenuContext) => {
