@@ -7,7 +7,7 @@ ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json ./
 COPY yarn.lock ./
 
-RUN yarn ci
+# RUN yarn ci
 RUN yarn install
 
 # Set Env For Swagger Json
