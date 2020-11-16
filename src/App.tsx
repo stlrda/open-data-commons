@@ -43,7 +43,7 @@ export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
 
 function App() {
 
-  const swaggerUrl = process.env.SWAGGER_URL || "";
+  const swaggerUrl = process.env.REACT_APP_SWAGGER_URL || "";
 
   const fetchSwaggerData = async () => {
     const swaggerParser = new SwaggerParserService();
