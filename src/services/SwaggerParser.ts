@@ -7,7 +7,12 @@ class SwaggerParserService {
   // can change to callback return for error responses
   async validateApi(url: string) {
     try {
-      const response = await SwaggerParser.validate(url, {});
+      alert(url)
+      const response = await SwaggerParser.validate(url, {
+        resolve: {
+          file: false
+        }
+      });
       return response;
     }
     catch(error) {
