@@ -1,6 +1,10 @@
-const PATH = "https://api.stldata.org"
+
+interface ParamsObject {
+  [field: string]: any // value of string, number, boolean, ...others?
+}
 
 class ApiRequest {
+  path: string;
   endpoint: string;
   method: string = 'GET'
   headers: any = {
@@ -14,12 +18,22 @@ class ApiRequest {
       this.method = method
     if(headers)
       this.headers = headers;
+
+    this.path = process.env.REACT_APP_API_URL || ""
   }
 
-  async callApi(method?: string) {
+  async callApi(params: ParamsObject, method?: string, ) {
     let apiMethod = method || this.method;
+    let url = this.path + this.endpoint;
+    Object.keys(params).forEach((param, index) => {
+      if(index === 0)
+        url+=`?${param}=${params[param]}`
+      else
+        url+=`&${param}=${params[param]}`
+    })
+
     try {
-      const response = await fetch(PATH + this.endpoint, {
+      const response = await fetch(url, {
         method: apiMethod,
         headers: this.headers
       })

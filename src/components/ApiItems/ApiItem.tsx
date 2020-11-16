@@ -92,7 +92,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
       console.log('submitting data:', parameters)
       // send api call
       const ApiRequest = new ApiRequestService(endpoint)
-      const response = await ApiRequest.callApi()
+      const response = await ApiRequest.callApi(parameters)
       console.log('api response in ApiItem:', response)
 
       // Get Column Fields, Iterate

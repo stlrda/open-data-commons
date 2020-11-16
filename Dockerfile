@@ -13,6 +13,7 @@ RUN yarn install
 
 # Set Env For Swagger Json
 ENV SWAGGER_URL="https://api.stldata.org/crime/openapi.json"
+ENV API_URL="https://api.stldata.org"
 
 # Build the App for Production
 COPY . ./
