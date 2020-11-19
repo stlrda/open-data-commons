@@ -24,3 +24,8 @@ yarn-error.log*
 package-lock.json
 
 /.vscode
+
+/storybook-static
+storybook-static
+./storybook-static/
+storybook-static/
