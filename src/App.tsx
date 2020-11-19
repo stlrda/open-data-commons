@@ -6,6 +6,7 @@ import Layout from './components/layout/Layout'
 import PageHeader from './components/Header/PageHeader'
 import PageFooter from './components/Footer/PageFooter'
 import ApiItems from './components/ApiItems/ApiItems'
+import Table from './components/table/Table'
 // services
 import SwaggerParserService from './services/SwaggerParser'
 import OpenapiFormatter, { ODCTable } from './services/OpenapiFormatter'
@@ -19,6 +20,7 @@ import { ODCNavRoute } from './types/Openapi'
 // styles
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
+import { Dialog, Classes, Spinner } from '@blueprintjs/core';
 
 
 
@@ -63,6 +65,8 @@ function App() {
   const [routes, setRoutes] = useState<ODCNavRoute[]>([])
   const [responseTables, setResponseTables] = useState<ODCTable[]>([])
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
+  const [showTableModal, setShowTableModal] = useState<boolean>(false)
+  const [modalTableIndex, setModalTableIndex] = useState<number>(-1)
 
 
   useEffect(() => {
@@ -141,6 +145,18 @@ function App() {
     }
   }
 
+  const showFullscreenTable = (tableId: string) => {
+    let foundTableIndex = responseTables.findIndex(table => table.id === tableId)
+    if(foundTableIndex < 0) return;
+    setModalTableIndex(foundTableIndex)
+    setShowTableModal(true)
+  }
+
+  const onCloseTable = () => {
+    setModalTableIndex(-1)
+    setShowTableModal(false)
+  }
+
   const cleanup = () => {
     // console.log('cleanup App.tsx')
   }
@@ -169,9 +185,51 @@ function App() {
                 tables={responseTables}
                 updateTableData={updateTableData}
                 resetTableRows={resetTableRows}
+                showFullscreenTable={showFullscreenTable}
               />
               <PageFooter />
             </Layout>
+            {/* Fullscreen Table Dialogue */}
+            <Dialog
+              isOpen={showTableModal}
+              className=""
+              style={{width: "90%", height: "95vh", margin: "auto"}}
+              icon="th-list"
+              onClose={onCloseTable}
+              title="Fullscreen Table"
+              autoFocus
+              canEscapeKeyClose
+              canOutsideClickClose
+              enforceFocus
+              lazy
+              usePortal
+              // portalContainer
+            >
+              <div className={Classes.DIALOG_BODY}>
+                {/* Toolbar Here: */}
+                <div className="table-toolbar">
+
+                </div>
+
+                <div className="table-container" style={{
+                  // height: `calc(22px * ${responseTables[modalTableIndex].rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
+                  height: `calc(95vh - 40px - 40px)`, // 40px margin, 40px header height
+                  // height: "auto",
+                  overflowY: "auto"
+                }}>
+                  {modalTableIndex > -1 ? (
+                    <Table
+                      numRows={responseTables[modalTableIndex].rows.length}
+                      columns={responseTables[modalTableIndex].columns}
+                      rows={responseTables[modalTableIndex].rows}
+                    />
+                  ) : (
+                    // Loading Indicator
+                    <Spinner />
+                  )}
+                </div>
+              </div>
+            </Dialog>
           </ReactQueryCacheProvider>
         </UIProvider>
         </SpecProvider>

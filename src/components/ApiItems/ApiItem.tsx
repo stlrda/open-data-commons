@@ -30,6 +30,7 @@ interface ApiItemProps {
   table: ODCTable
   updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
+  showFullscreenTable(tableId: string): void
   // apiItem: IApiItem
 }
 
@@ -37,13 +38,20 @@ const maxResponses = 5
 const cellHeight = 20; // px
 const maxVisibleCells = 15;
 
-const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, updateTableData, resetTableRows }) => {
+const ApiItem: React.FC<ApiItemProps> = ({
+  http,
+  method,
+  endpoint,
+  table,
+  updateTableData,
+  resetTableRows,
+  showFullscreenTable
+}) => {
   const [parameters, setParameters] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [responses, setResponses] = useState<ResponseItem[]>([])
   const [openResults, setOpenResults] = useState<number[]>([])
-  const [expandTable, setExpandTable] = useState<boolean>(false) // expand table
 
   const handleChange = (value: any, field: string) => {
     setParameters({ ...parameters, [field]: value })
@@ -309,10 +317,10 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, update
                 <>
                   <Button
                     className="api-execute-button"
-                    rightIcon="refresh"
-                    text="Reset"
+                    rightIcon="fullscreen" // document-share
+                    text="Fullscreen"
                     minimal={true}
-                    onClick={resetResponseTable}
+                    onClick={() => showFullscreenTable(table.id)}
                   />
                   <Button
                     className="api-execute-button"
@@ -320,6 +328,13 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, update
                     text="CSV"
                     minimal={true}
                     onClick={downloadCsv}
+                  />
+                  <Button
+                    className="api-execute-button"
+                    rightIcon="refresh"
+                    text="Reset"
+                    minimal={true}
+                    onClick={resetResponseTable}
                   />
                 </>
               )}
@@ -344,7 +359,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, update
             <Divider className="mh-0" />
           </div>
           <div className="api-responses-innner">
-            <div className={`table-container ${expandTable && "expanded"}`} style={{
+            <div className="table-container" style={{
               height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
             }}>
               {table ? (

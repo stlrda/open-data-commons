@@ -83,9 +83,9 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
           ))}
           {routes.length < 1 && (
-            <li className="sidebar-navitem" style={{margin: 10, padding: 5}}>
+            <li className="sidebar-navitem" style={{margin: 10, padding: 5, listStyle: "none"}}>
               <span className="endpoint-http-text bp3-skeleton" style={{width: 20}}>Load</span>
-              <span className="navitem-text bp3-skeleton">Loading Routes</span>
+              <span className="navitem-text bp3-skeleton">Loading Api Routes</span>
             </li>
           )}
         </ul>

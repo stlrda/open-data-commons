@@ -12,6 +12,7 @@ interface ApiItemsProps {
   isFetching: boolean
   updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
+  showFullscreenTable(tableId: string): void
 }
 
 const ApiItems: React.FC<ApiItemsProps> = ({
@@ -19,7 +20,8 @@ const ApiItems: React.FC<ApiItemsProps> = ({
   tables,
   isFetching,
   updateTableData,
-  resetTableRows
+  resetTableRows,
+  showFullscreenTable
 }) => {
 
   if(isFetching || apiData.length < 1) {
@@ -45,6 +47,7 @@ const ApiItems: React.FC<ApiItemsProps> = ({
               table={tables[index]}
               updateTableData={updateTableData}
               resetTableRows={resetTableRows}
+              showFullscreenTable={showFullscreenTable}
             />
           )
         // ))
