@@ -10,7 +10,7 @@ class FileSaverService {
 
     try {
       const csv = parse(rows, options)
-      console.log('csv parsed:', csv)
+      // console.log('csv parsed:', csv)
       const blob = new Blob([csv], {
         type: "text/plain;charset=utf-16;"
       })

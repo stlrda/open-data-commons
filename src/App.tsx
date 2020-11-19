@@ -22,7 +22,7 @@ import odcTheme from './styles/theme'
 
 
 
-const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
+// const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
 const uniqueQueryId = 'openapi-source'
 
 const queryCache = new QueryCache()
@@ -66,17 +66,17 @@ function App() {
 
 
   useEffect(() => {
-    console.log('swagger data changed:', data)
+    // console.log('swagger data changed:', data)
 
     if(data && !isError && !error && paths.length < 1) {
       const openapiFormatter = new OpenapiFormatter();
 
       const formattedPaths = openapiFormatter.formatPaths(data.paths);
-      console.log('paths:', formattedPaths)
+      // console.log('paths:', formattedPaths)
       const formattedNavRoutes = openapiFormatter.getNavRoutes(formattedPaths);
-      console.log('navRoutes:', formattedNavRoutes)
+      // console.log('navRoutes:', formattedNavRoutes)
       const formattedResponseTables = openapiFormatter.getResponseTables(formattedPaths)
-      console.log('tables:', formattedResponseTables)
+      // console.log('tables:', formattedResponseTables)
 
       setRoutes(formattedNavRoutes);
       setPaths(formattedPaths)
@@ -110,7 +110,7 @@ function App() {
   }
 
   const cleanup = () => {
-    console.log('cleanup App.tsx')
+    // console.log('cleanup App.tsx')
   }
 
   return (

@@ -37,7 +37,7 @@ class ApiRequest {
         method: apiMethod,
         headers: this.headers
       })
-      console.log('status:', response.status)
+      // console.log('status:', response.status)
       const data = await response.json();
       return { status: response.status, data }
     } catch (error) {

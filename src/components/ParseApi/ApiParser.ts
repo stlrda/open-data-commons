@@ -17,7 +17,7 @@ class ApiParser {
         }
       })
       const data = await response.json()
-      console.log('data:', data)
+      // console.log('data:', data)
       if(!data) throw new Error("Could not retrieve data")
       return data;
     }

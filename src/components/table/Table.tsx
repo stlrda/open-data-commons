@@ -37,7 +37,7 @@ const Table: React.FC<TableProps> = ({
 }) => {
   // region will be either IRegion[] if selection or single IRegion if just the cell
   const handleRightClick = (context: IMenuContext) => {
-    console.log('context passed on right click:', context)
+    // console.log('context passed on right click:', context)
     return (
       <Menu>
         <CopyCellsMenuItem

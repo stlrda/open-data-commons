@@ -23,7 +23,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   const handleSearchSubmit = (event: any) => {
     event.preventDefault();
     if(!searchInput) console.log('search must have text')
-    console.log('submitting form with text:', searchInput)
+    // console.log('submitting form with text:', searchInput)
     setSearchInput("")
   }
 
@@ -83,7 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
             />
           ))}
           {routes.length < 1 && (
-            <li className="sidebar-navitem">
+            <li className="sidebar-navitem" style={{margin: 10, padding: 5}}>
               <span className="endpoint-http-text bp3-skeleton" style={{width: 20}}>Load</span>
               <span className="navitem-text bp3-skeleton">Loading Routes</span>
             </li>

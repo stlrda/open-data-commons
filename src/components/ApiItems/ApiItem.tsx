@@ -49,12 +49,12 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
   const validateInput = (field: string, type: string) => {
     // enum
     let input = parameters[field]
-    console.log('input confirmed:', input, 'as type:', type)
+    // console.log('input confirmed:', input, 'as type:', type)
     if (input) {
       if (type === 'integer') {
         let number = parseInt(input)
         if (number) {
-          console.log('number:', number)
+          // console.log('number:', number)
           if (errors[field]) removeError(field)
         } else addError(field, 'Could not parse number')
       } else if (errors[field]) removeError(field)
@@ -89,11 +89,11 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
     }
 
     if (valid) {
-      console.log('submitting data:', parameters)
+      // console.log('submitting data:', parameters)
       // send api call
       const ApiRequest = new ApiRequestService(endpoint)
       const response = await ApiRequest.callApi(parameters)
-      console.log('api response in ApiItem:', response)
+      // console.log('api response in ApiItem:', response)
 
       // Get Column Fields, Iterate
       // const columnFields = Object.keys(columns)
@@ -143,7 +143,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
   }
 
   const removeError = (field: string) => {
-    console.log('removing field:', field)
+    // console.log('removing field:', field)
     let tempErrors = Object.assign({}, errors)
     delete tempErrors[field]
     setErrors(tempErrors)
@@ -169,7 +169,7 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
 
   const toggleCollapse = (id: number) => {
     // open / close the collapse using the given id
-    console.log('toggling collapse')
+    // console.log('toggling collapse')
     if(openResults.includes(id))
       setOpenResults(openResults.filter(resultId => resultId !== id))
     else

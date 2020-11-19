@@ -31,7 +31,7 @@ class OpenapiFormatter {
    * returns a paths array with the necesary nested object instances converted to arrays
    */
   formatPaths(paths: OpenAPIV3.PathsObject): any[] {
-    const start = Date.now();
+    // const start = Date.now();
     const formattedPaths = Object.keys(paths).map(key => {
       const methods = Object.keys(paths[key]).map(method => {
         if(paths[key][method].responses) {
@@ -47,9 +47,9 @@ class OpenapiFormatter {
       })
       return {endpoint: key, methods }
     })
-    const end = Date.now();
-    const time = end - start;
-    console.log('time elapsed:', time)
+    // const end = Date.now();
+    // const time = end - start;
+    // console.log('time elapsed:', time)
     return formattedPaths;
   }
 
@@ -119,7 +119,7 @@ class OpenapiFormatter {
           })
         }
         else {
-          console.log('schema does not have any properties')
+          // console.log('schema does not have any properties')
         }
         tables.push(table)
       // } catch (error) {
@@ -147,7 +147,7 @@ class OpenapiFormatter {
       })
     }
     else {
-      console.log('schema does not have any properties')
+      // console.log('schema does not have any properties')
     }
     return table;
   }
