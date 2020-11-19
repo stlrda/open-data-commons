@@ -28,13 +28,25 @@ interface ApiItemProps {
   method: any // add types
   endpoint: string
   table: ODCTable
+  updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
+  showFullscreenTable(tableId: string): void
   // apiItem: IApiItem
 }
 
 const maxResponses = 5
+const cellHeight = 20; // px
+const maxVisibleCells = 15;
 
-const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetTableRows }) => {
+const ApiItem: React.FC<ApiItemProps> = ({
+  http,
+  method,
+  endpoint,
+  table,
+  updateTableData,
+  resetTableRows,
+  showFullscreenTable
+}) => {
   const [parameters, setParameters] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<FormErrors>({})
@@ -108,6 +120,9 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
         })
       }
 
+      updateTableData(response.data, table.id)
+
+      // add response to response log
       if (responses.length < maxResponses) {
         setResponses([
           ...responses,
@@ -119,7 +134,9 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
             details: (response.error || response.status! >= 400) ? (response.message || response.data) : response.data,
           },
         ])
-      } else {
+      }
+      // replace response in response log with new response, it is at the max responses
+      else {
         let tempResp = [...responses]
         tempResp.shift()
         setResponses([
@@ -300,10 +317,10 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
                 <>
                   <Button
                     className="api-execute-button"
-                    rightIcon="refresh"
-                    text="Reset"
+                    rightIcon="fullscreen" // document-share
+                    text="Fullscreen"
                     minimal={true}
-                    onClick={resetResponseTable}
+                    onClick={() => showFullscreenTable(table.id)}
                   />
                   <Button
                     className="api-execute-button"
@@ -311,6 +328,13 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
                     text="CSV"
                     minimal={true}
                     onClick={downloadCsv}
+                  />
+                  <Button
+                    className="api-execute-button"
+                    rightIcon="refresh"
+                    text="Reset"
+                    minimal={true}
+                    onClick={resetResponseTable}
                   />
                 </>
               )}
@@ -335,7 +359,9 @@ const ApiItem: React.FC<ApiItemProps> = ({ http, method, endpoint, table, resetT
             <Divider className="mh-0" />
           </div>
           <div className="api-responses-innner">
-            <div className="table-container">
+            <div className="table-container" style={{
+              height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
+            }}>
               {table ? (
                 <Table
                   numRows={table.rows.length}

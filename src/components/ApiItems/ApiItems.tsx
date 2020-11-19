@@ -10,14 +10,18 @@ interface ApiItemsProps {
   tables: ODCTable[]
   // apiData: OpenAPIV3.Document | OpenAPIV2.Document | undefined
   isFetching: boolean
+  updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
+  showFullscreenTable(tableId: string): void
 }
 
 const ApiItems: React.FC<ApiItemsProps> = ({
   apiData,
   tables,
   isFetching,
-  resetTableRows
+  updateTableData,
+  resetTableRows,
+  showFullscreenTable
 }) => {
 
   if(isFetching || apiData.length < 1) {
@@ -41,7 +45,9 @@ const ApiItems: React.FC<ApiItemsProps> = ({
               method={apiItem.methods[0].value} // rename to be more clear
               endpoint={apiItem.endpoint}
               table={tables[index]}
+              updateTableData={updateTableData}
               resetTableRows={resetTableRows}
+              showFullscreenTable={showFullscreenTable}
             />
           )
         // ))
