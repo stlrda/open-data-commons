@@ -91,6 +91,38 @@ function App() {
     return cleanup;
   }, [data, isLoading, isError, error])
 
+  const updateTableData = (data: any, tableId: string) => {
+    // should have rows and columns...?
+    // or should be an api response in the form array of objects or object
+    let tableData = responseTables.find(table => table.id === tableId)
+    if(tableData) {
+      if(Array.isArray(data)) {
+        // replace table.rows with the data, since already array
+        setResponseTables(prevTables => {
+          return prevTables.map(table => {
+            if(table.id === tableId) {
+              table.rows = data;
+              console.log('data length:', data.length)
+            }
+            return table;
+          })
+        })
+      }
+      else {
+        // populate only the first row with response object data
+        setResponseTables(prevTables => {
+          return prevTables.map(table => {
+            if(table.id === tableId) {
+              table.rows = []
+              table.rows.push(data)
+            }
+            return table;
+          })
+        })
+      }
+    }
+  }
+
   const resetTableRows = (id: string) => {
     // reset the given table's rows to their default types
     const openapiFormatter = new OpenapiFormatter();
@@ -135,6 +167,7 @@ function App() {
                 isFetching={isLoading}
                 apiData={paths}
                 tables={responseTables}
+                updateTableData={updateTableData}
                 resetTableRows={resetTableRows}
               />
               <PageFooter />

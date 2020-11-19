@@ -5,7 +5,6 @@ const StyledApiItem = styled.div`
   position: relative;
   flex-direction: row;
   // width: 100%;
-  padding-bottom: 5em;
   padding-top: 3.5em;
   z-index: 1;
 
@@ -46,6 +45,11 @@ const StyledApiItem = styled.div`
 
   .table-container {
     display: flex; // keeps from taking up all space
+    // overflow-y: auto;
+
+    &.expanded {
+      height: initial; //100% or auto
+    }
   }
 
   .section-header-description {}

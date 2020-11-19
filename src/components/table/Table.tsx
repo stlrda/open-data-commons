@@ -1,6 +1,7 @@
 import React from 'react';
 import { Menu, MenuItem } from '@blueprintjs/core'
-import { Table as BPTable, Column, Cell, IMenuContext, TableLoadingOption, SelectionModes, CopyCellsMenuItem } from '@blueprintjs/table';
+import { Column, Cell, IMenuContext, TableLoadingOption, SelectionModes, CopyCellsMenuItem } from '@blueprintjs/table';
+import { PatchedTable as BPTable } from './PatchedBPTable'
 // import TableOperationsService from '../../services/TableOperations'
 import { ODCTableColumn, ODCTableRow } from '../../services/OpenapiFormatter';
 // import { JSONFormat } from '@blueprintjs/table'
@@ -89,14 +90,14 @@ const Table: React.FC<TableProps> = ({
     console.log('copied on row:', row, 'and col:', col)
   }
 
-  const getTableLoadingStates = () => {
-    let tableLoadingStates: TableLoadingOption[] = []
+  // const getTableLoadingStates = () => {
+  //   let tableLoadingStates: TableLoadingOption[] = []
 
-    if(loadingRows)
-      tableLoadingStates.push(TableLoadingOption.CELLS)
+  //   if(loadingRows)
+  //     tableLoadingStates.push(TableLoadingOption.CELLS)
 
-    return tableLoadingStates
-  }
+  //   return tableLoadingStates
+  // }
 
   const cellRenderer = (rowIndex: number, colIndex: number, key: string) => {
     // console.log('(cell renderer) row index:', rowIndex)
