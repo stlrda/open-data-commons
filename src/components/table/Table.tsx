@@ -46,21 +46,25 @@ const Table: React.FC<TableProps> = ({
           context={context}
           getCellData={(row, col) => getCellData(row, col)}
           text="Copy"
+          icon="duplicate"
         />
         <MenuItem
           className="context-menu-item"
           onClick={() => handleTableCut(context)}
           text="Cut"
+          icon="cut"
         />
         <MenuItem
           className="context-menu-item"
           onClick={() => handleTablePaste(context)}
           text="Paste"
+          icon="clipboard"
         />
         <MenuItem
           className="context-menu-item"
           onClick={() => handleTableDelete(context)}
           text="Delete"
+          icon="trash"
         />
       </Menu>
     )

@@ -31,6 +31,7 @@ interface ApiItemProps {
   updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
   showFullscreenTable(tableId: string): void
+  showFullscreenViz(tableId: string): void
   // apiItem: IApiItem
 }
 
@@ -45,7 +46,8 @@ const ApiItem: React.FC<ApiItemProps> = ({
   table,
   updateTableData,
   resetTableRows,
-  showFullscreenTable
+  showFullscreenTable,
+  showFullscreenViz,
 }) => {
   const [parameters, setParameters] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
@@ -321,6 +323,13 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     text="Fullscreen"
                     minimal={true}
                     onClick={() => showFullscreenTable(table.id)}
+                  />
+                  <Button
+                    className="api-execute-button"
+                    rightIcon="chart" // document-share
+                    text="Visualize"
+                    minimal={true}
+                    onClick={() => showFullscreenViz(table.id)}
                   />
                   <Button
                     className="api-execute-button"

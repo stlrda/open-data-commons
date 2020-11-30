@@ -1,5 +1,5 @@
 import React from 'react'
-import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
+// import { OpenAPIV3, OpenAPIV2 } from 'openapi-types'
 import { ODCTable } from '../../services/OpenapiFormatter'
 import ApiItem from './ApiItem'
 import ApiItemSkeleton from './ApiItemSkeleton'
@@ -13,6 +13,7 @@ interface ApiItemsProps {
   updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
   showFullscreenTable(tableId: string): void
+  showFullscreenViz(tableId: string): void
 }
 
 const ApiItems: React.FC<ApiItemsProps> = ({
@@ -21,7 +22,8 @@ const ApiItems: React.FC<ApiItemsProps> = ({
   isFetching,
   updateTableData,
   resetTableRows,
-  showFullscreenTable
+  showFullscreenTable,
+  showFullscreenViz
 }) => {
 
   if(isFetching || apiData.length < 1) {
@@ -48,6 +50,7 @@ const ApiItems: React.FC<ApiItemsProps> = ({
               updateTableData={updateTableData}
               resetTableRows={resetTableRows}
               showFullscreenTable={showFullscreenTable}
+              showFullscreenViz={showFullscreenViz}
             />
           )
         // ))

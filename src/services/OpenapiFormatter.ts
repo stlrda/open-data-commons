@@ -16,6 +16,7 @@ export interface ODCTableColumn {
   type: string
   required: boolean
   format?: string
+  id: string
 }
 export interface ODCTableRow {
   [key: string]: any
