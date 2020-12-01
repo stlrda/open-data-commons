@@ -50,6 +50,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
   showFullscreenViz,
 }) => {
   const [parameters, setParameters] = useState<IParametersForm>({})
+  const [paths, setPaths] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [responses, setResponses] = useState<ResponseItem[]>([])
@@ -59,10 +60,18 @@ const ApiItem: React.FC<ApiItemProps> = ({
     setParameters({ ...parameters, [field]: value })
   }
 
+  const handleChangePath = (value: any, field: string) => {
+    setPaths({...paths, [field]: value})
+  }
+
   // onConfirm
-  const validateInput = (field: string, type: string) => {
+  const validateInput = (field: string, type: string, path?: boolean) => {
     // enum
-    let input = parameters[field]
+    let input;
+    if(path)
+      input = paths[field]
+    else
+      input = parameters[field]
     // console.log('input confirmed:', input, 'as type:', type)
     if (input) {
       if (type === 'integer') {
@@ -77,6 +86,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
   const clearForm = () => {
     setParameters({})
+    setPaths({})
     setErrors({})
   }
 
@@ -94,7 +104,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
     if (method.parameters) {
       method.parameters.forEach((parameter: any) => {
         // console.log('parameter:', parameter)
-        if (parameter.required && !parameters[parameter.name]) {
+        if (parameter.required && !parameters[parameter.name] && !paths[parameter.name]) {
           // console.log(parameter.name + ' is missing from parameters')
           addError(parameter.name, `${parameter.name} is required`)
           valid = false
@@ -106,7 +116,11 @@ const ApiItem: React.FC<ApiItemProps> = ({
       // console.log('submitting data:', parameters)
       // send api call
       const ApiRequest = new ApiRequestService(endpoint)
-      const response = await ApiRequest.callApi(parameters)
+      let response: any;
+      if(Object.keys(paths).length > 0)
+        response = await ApiRequest.callApi(parameters, 'GET', Object.keys(paths).map(path => paths[path]))
+      else
+        response = await ApiRequest.callApi(parameters)
       // console.log('api response in ApiItem:', response)
 
       // Get Column Fields, Iterate
@@ -244,17 +258,31 @@ const ApiItem: React.FC<ApiItemProps> = ({
                           borderRadius: 4,
                         }}
                       >
-                        <EditableText
-                          alwaysRenderInput={true}
-                          intent={errors[parameter.name] ? 'danger' : 'none'}
-                          placeholder={`${parameter.schema.type} ${
-                            parameter.schema.title ? `(${parameter.schema.title})` : ''
-                          }`}
-                          selectAllOnFocus={true}
-                          value={parameters[parameter.name] || ''}
-                          onChange={(data) => handleChange(data, parameter.name)}
-                          onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
-                        />
+                        {parameter.in === "path" ? (
+                          <EditableText
+                            alwaysRenderInput={true}
+                            intent={errors[parameter.name] ? 'danger' : 'none'}
+                            placeholder={`(PATH): ${parameter.schema.type} ${
+                              parameter.schema.title ? `(${parameter.schema.title})` : ''
+                            }`}
+                            selectAllOnFocus={true}
+                            value={paths[parameter.name] || ''}
+                            onChange={(data) => handleChangePath(data, parameter.name)}
+                            onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
+                          />
+                        ) : (
+                          <EditableText
+                            alwaysRenderInput={true}
+                            intent={errors[parameter.name] ? 'danger' : 'none'}
+                            placeholder={`${parameter.schema.type} ${
+                              parameter.schema.title ? `(${parameter.schema.title})` : ''
+                            }`}
+                            selectAllOnFocus={true}
+                            value={parameters[parameter.name] || ''}
+                            onChange={(data) => handleChange(data, parameter.name)}
+                            onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+                          />
+                        )}
                         {/* {parameter.schema.type}{' '}
                         {parameter.schema.title && `(${parameter.schema.title})`} */}
                       </span>
@@ -315,7 +343,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
           <h3 className="section-header-title small-title">
             <div>
               <span style={{ marginRight: 6 }}>Responses</span>
-              {responses.length > 0 && (
+              {responses.length > 0 ? (
                 <>
                   <Button
                     className="api-execute-button"
@@ -344,6 +372,37 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     text="Reset"
                     minimal={true}
                     onClick={resetResponseTable}
+                  />
+                </>
+              ) : (
+                <>
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="fullscreen" // document-share
+                    text="Fullscreen"
+                    minimal={true}
+                  />
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="chart" // document-share
+                    text="Visualize"
+                    minimal={true}
+                  />
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="download"
+                    text="CSV"
+                    minimal={true}
+                  />
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="refresh"
+                    text="Reset"
+                    minimal={true}
                   />
                 </>
               )}

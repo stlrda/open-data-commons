@@ -105,12 +105,11 @@ const Table: React.FC<TableProps> = ({
 
   const cellRenderer = (rowIndex: number, colIndex: number, key: string) => {
     // console.log('(cell renderer) row index:', rowIndex)
-    const rowValue = rows[rowIndex][key];
-    // console.log('row value:', rowValue)
-    // console.log('rows:', rows[rowIndex])
+    if(!rows[rowIndex]) return <Cell>empty</Cell>
+
     return (
       // Note: Can replace [key] with [colIndex] lookup if table rows are refactored to be array of arrays
-      <Cell>{rowValue}</Cell>
+      <Cell>{rows[rowIndex][key]}</Cell>
     )
   }
 
