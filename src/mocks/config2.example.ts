@@ -12,6 +12,7 @@ const appConfig: DataCommonsConfig.Config = {
         {
           format: "year", // could make array?
           // ...more options
+          description: "yoooooo!"
         },
         {
           format: "month",
@@ -103,6 +104,7 @@ const appConfig: DataCommonsConfig.Config = {
         {
           field: "start",
           format: "date",
+          default: "2019-01-01"
         },
         {
           field: "end",
@@ -209,7 +211,7 @@ const appConfig: DataCommonsConfig.Config = {
       // ...
     },
     time: {
-      type: "string",
+      type: "time",
       description: "HH-MM-SS",
       min: "00:00:00",
       max: "24:00:00",

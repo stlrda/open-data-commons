@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import moment from 'moment'
 import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, NumericInput, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
-import { DateInput, IDateFormatProps } from '@blueprintjs/datetime'
+import { DateInput, IDateFormatProps, TimePicker, ITimePickerProps } from '@blueprintjs/datetime'
 import { DataCommonsConfig } from '../../mocks/config2'
 // import { JSONFormat } from '@blueprintjs/table'
 import Table from '../table/Table'
@@ -237,20 +237,35 @@ const ApiItem: React.FC<ApiItemProps> = ({
     }
   }
 
+  // Can have 2 separate functions, one for parameter that is in "path", one for parameter in "query"
   const getFormInput = (parameter: any, index: number) => {
     let queryData = config!.queries![index]
     let formatData = formats![queryData.format]
-    console.log('index:', index)
-    console.log('query field:', queryData.field ? queryData.field : "none specified")
-    console.log('format data default:', formatData.default ? formatData.default : "none")
-    if(queryData.default) {
-      console.log('changing defaults: formatData.default is', formatData.default, 'queryData.default is', queryData.default)
-      formatData.default = queryData.default
-    }
 
-    console.log('format data:', formatData)
+    // console.log('format data:', formatData)
 
     if(formatData.options) {
+      if(parameter.in === "path") {
+        if(!paths[parameter.name]) {
+          if(queryData.default) setPaths({...paths, [parameter.name]: queryData.default})
+          else if(formatData.default) setPaths({...paths, [parameter.name]: formatData.default})
+          else setPaths({...paths, [parameter.name]: formatData.options[0]})
+        }
+        // return select item
+        return (
+          <HTMLSelect
+            value={paths[parameter.name] || "none yet"}
+            onChange={(event) => {
+              let value = event.currentTarget.value;
+              handleChangePath(value, parameter.name)
+            }}
+          >
+            {formatData.options.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </HTMLSelect>
+        )
+      }
       if(!parameters[parameter.name]) {
         if(queryData.default) setParameters({...parameters, [parameter.name]: queryData.default})
         else if(formatData.default) setParameters({...parameters, [parameter.name]: formatData.default})
@@ -269,28 +284,6 @@ const ApiItem: React.FC<ApiItemProps> = ({
             <option key={index} value={option}>{option}</option>
           ))}
         </HTMLSelect>
-        // <Select
-        //   items={formatData.options}
-        //   itemRenderer={(item) => {
-        //     return (
-        //       <MenuItem
-        //         // active={parameters[parameter.name] === parameter.name}
-        //         // label="label"
-        //         key={item}
-        //         onClick={() => console.log('i clicked!')}
-        //         text={item}
-        //       />
-        //     )
-        //   }}
-        //   onItemSelect={handleItemSelect}
-        //   activeItem={parameters[parameter.name]}
-        //   // initialContent={formatData.options}
-        // >
-        //   <Button
-        //     text={parameters[parameter.name] || formatData.default || formatData.options[0]}
-        //     rightIcon="double-caret-vertical"
-        //   />
-        // </Select>
       )
     }
 
@@ -317,23 +310,42 @@ const ApiItem: React.FC<ApiItemProps> = ({
             placeholder="Enter a number..."
             value={parameters[parameter.name] || queryData.default || formatData.default || 0}
             onValueChange={(numericValue: number) => handleChange(numericValue, parameter.name)}
-            leftIcon={formatData.description ? (
-              <Tooltip content={formatData.description} position={Position.TOP}>
+            leftIcon={(queryData.description || formatData.description) ? (
+              // <Tooltip content={queryData.description || formatData.description} position={Position.TOP}>
                 <Icon icon="info-sign" />
-              </Tooltip>
+              // {/* </Tooltip> */}
             ) : undefined}
           />
         )
       case "date":
         if(formatData.dateFormatString)
           dateStringFormat = formatData.dateFormatString
+
+        if(parameter.in === "path") {
+          if(!paths[parameter.name]) {
+            if(queryData.default) handleChangePath(queryData.default, parameter.name)
+            else if (formatData.default) handleChangePath(formatData.default, parameter.name)
+          }
+          return (
+            <DateInput
+              {...momentFormatter(dateStringFormat)}
+              placeholder={formatData.description || "Date"}
+              minDate={formatData.min ? moment(formatData.min).toDate() : undefined}
+              maxDate={formatData.max ? moment(formatData.max).toDate() : undefined}
+              value={(paths[parameter.name] && moment(paths[parameter.name]).toDate()) || moment().toDate()}
+              onChange={(data, isUserChange) => {
+                let dateString = moment(data).format(dateStringFormat)
+                handleChangePath(dateString, parameter.name)
+              }}
+            />
+          )
+        }
+
         if(!parameters[parameter.name]) {
           if(queryData.default) handleChange(queryData.default, parameter.name)
           else if (formatData.default) handleChange(formatData.default, parameter.name)
         }
 
-        if(parameter.in === "path")
-          return <div>hey</div>
         return (
           <DateInput
             {...momentFormatter(dateStringFormat)}
@@ -347,7 +359,44 @@ const ApiItem: React.FC<ApiItemProps> = ({
             }}
           />
         )
-      case "time": case "string":
+      case "time":
+        if(parameter.in === "path") {
+          if(!paths[parameter.name]) {
+            if(queryData.default) handleChangePath(queryData.default, parameter.name)
+            else if(formatData.default) handleChangePath(formatData.default, parameter.name)
+          }
+          return (
+            <TimePicker
+              precision="second"
+              showArrowButtons
+              useAmPm={false}
+              value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
+              onChange={(data) => {
+                console.log('time change data:', data)
+                handleChange(data, parameter.name)
+              }}
+            />
+          )
+        }
+
+        if(!parameters[parameter.name]) {
+          if(queryData.default) handleChange(queryData.default, parameter.name)
+          else if(formatData.default) handleChange(formatData.default, parameter.name)
+        }
+
+        return (
+          <TimePicker
+            precision="second"
+            showArrowButtons
+            useAmPm={false}
+            value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
+            onChange={(data) => {
+              console.log('time change data:', data)
+              handleChange(data, parameter.name)
+            }}
+          />
+        )
+      case "string":
       default:
         if(parameter.in === "path")
           return (
@@ -358,7 +407,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 parameter.schema.title ? `(${parameter.schema.title})` : ''
               }`}
               selectAllOnFocus={true}
-              value={paths[parameter.name] || ''}
+              value={paths[parameter.name] || queryData.default || formatData.default || ''}
               onChange={(data) => handleChangePath(data, parameter.name)}
               onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
             />
@@ -371,7 +420,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
               parameter.schema.title ? `(${parameter.schema.title})` : ''
             }`}
             selectAllOnFocus={true}
-            value={parameters[parameter.name] || ''}
+            value={parameters[parameter.name] || queryData.default || formatData.default || ''}
             onChange={(data) => handleChange(data, parameter.name)}
             onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
           />
@@ -682,3 +731,26 @@ const ApiItem: React.FC<ApiItemProps> = ({
 }
 
 export default ApiItem
+
+// <Select
+//   items={formatData.options}
+//   itemRenderer={(item) => {
+//     return (
+//       <MenuItem
+//         // active={parameters[parameter.name] === parameter.name}
+//         // label="label"
+//         key={item}
+//         onClick={() => console.log('i clicked!')}
+//         text={item}
+//       />
+//     )
+//   }}
+//   onItemSelect={handleItemSelect}
+//   activeItem={parameters[parameter.name]}
+//   // initialContent={formatData.options}
+// >
+//   <Button
+//     text={parameters[parameter.name] || formatData.default || formatData.options[0]}
+//     rightIcon="double-caret-vertical"
+//   />
+// </Select>

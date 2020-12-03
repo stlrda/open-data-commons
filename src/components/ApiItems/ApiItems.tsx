@@ -41,7 +41,7 @@ const ApiItems: React.FC<ApiItemsProps> = ({
     // Consider using <ul> here
     <div className="content-container">
       {apiData.map((apiItem, index) => {
-          console.log('api item:', apiItem)
+          // console.log('api item:', apiItem)
           return (
             <ApiItem
               //@ts-ignore
