@@ -48,7 +48,7 @@ const appConfig: DataCommonsConfig.Config = {
         },
         {
           field: "end",
-          format: "date",
+          format: "date"
         },
         {
           field: "category",
@@ -137,11 +137,12 @@ const appConfig: DataCommonsConfig.Config = {
       // discrete: true
     },
     date: {
-      type: "string",
+      type: "date",
       min: "2008-01-01",
       max: "2020-10-01",
-      default: ["2020-01-01", "2020-10-01"],
-      description: "YYYY-MM-DD"
+      default: "2020-01-01",
+      description: "YYYY-MM-DD", // Should this be renamed? Made to a new field? i.e. "formatString"
+      dateFormatString: "YYYY-MM-DD",
     },
     year: {
       type: "number",

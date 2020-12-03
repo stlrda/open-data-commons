@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
+import moment from 'moment'
 import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, NumericInput, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
+import { DateInput, IDateFormatProps } from '@blueprintjs/datetime'
 import { DataCommonsConfig } from '../../mocks/config2'
 // import { JSONFormat } from '@blueprintjs/table'
 import Table from '../table/Table'
@@ -42,6 +44,12 @@ const maxResponses = 5
 const cellHeight = 20; // px
 const maxVisibleCells = 15;
 
+// const jsDateFormatter: IDateFormatProps = {
+//   formatDate: date => date.toLocaleDateString(),
+//   parseDate: str => new Date(str),
+//   placeholder: "YYYY-MM-DD"
+// }
+
 const ApiItem: React.FC<ApiItemProps> = ({
   http,
   method,
@@ -54,6 +62,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
   showFullscreenTable,
   showFullscreenViz,
 }) => {
+  // NOTE: could calculate the default parameters and paths in ApiItems, and pass as props...
   const [parameters, setParameters] = useState<IParametersForm>({})
   const [paths, setPaths] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
@@ -220,17 +229,31 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
   const collapseResults = () => setOpenResults([])
 
-  const handleItemSelect = (item: any) => {
-    console.log('item selected:', item)
+  const momentFormatter = (format: string): IDateFormatProps => {
+    return {
+      formatDate: date => moment(date).format(format),
+      parseDate: str => moment(str, format).toDate(),
+      placeholder: format
+    }
   }
 
   const getFormInput = (parameter: any, index: number) => {
-    const formatData = formats![config!.queries![index].format]
+    let queryData = config!.queries![index]
+    let formatData = formats![queryData.format]
+    console.log('index:', index)
+    console.log('query field:', queryData.field ? queryData.field : "none specified")
+    console.log('format data default:', formatData.default ? formatData.default : "none")
+    if(queryData.default) {
+      console.log('changing defaults: formatData.default is', formatData.default, 'queryData.default is', queryData.default)
+      formatData.default = queryData.default
+    }
+
     console.log('format data:', formatData)
 
     if(formatData.options) {
       if(!parameters[parameter.name]) {
-        if(formatData.default) setParameters({...parameters, [parameter.name]: formatData.default})
+        if(queryData.default) setParameters({...parameters, [parameter.name]: queryData.default})
+        else if(formatData.default) setParameters({...parameters, [parameter.name]: formatData.default})
         else setParameters({...parameters, [parameter.name]: formatData.options[0]})
       }
       // return select item
@@ -271,6 +294,8 @@ const ApiItem: React.FC<ApiItemProps> = ({
       )
     }
 
+    let dateStringFormat = "YYYY-MM-DD" // the default format
+
     switch(formatData.type) {
       case "number":
         if(parameter.in === "path")
@@ -280,7 +305,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
               min={formatData.min || undefined}
               max={formatData.max || undefined}
               placeholder="Enter a number..."
-              value={paths[parameter.name] || formatData.default || 0}
+              value={paths[parameter.name] || queryData.default || formatData.default || 0}
               onValueChange={(numericValue: number) => handleChangePath(numericValue, parameter.name)}
             />
           )
@@ -290,7 +315,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
             min={formatData.min || undefined}
             max={formatData.max || undefined}
             placeholder="Enter a number..."
-            value={parameters[parameter.name] || formatData.default || 0}
+            value={parameters[parameter.name] || queryData.default || formatData.default || 0}
             onValueChange={(numericValue: number) => handleChange(numericValue, parameter.name)}
             leftIcon={formatData.description ? (
               <Tooltip content={formatData.description} position={Position.TOP}>
@@ -299,7 +324,30 @@ const ApiItem: React.FC<ApiItemProps> = ({
             ) : undefined}
           />
         )
-      case "date": case "time": case "string":
+      case "date":
+        if(formatData.dateFormatString)
+          dateStringFormat = formatData.dateFormatString
+        if(!parameters[parameter.name]) {
+          if(queryData.default) handleChange(queryData.default, parameter.name)
+          else if (formatData.default) handleChange(formatData.default, parameter.name)
+        }
+
+        if(parameter.in === "path")
+          return <div>hey</div>
+        return (
+          <DateInput
+            {...momentFormatter(dateStringFormat)}
+            placeholder={formatData.description || "Date"}
+            minDate={formatData.min ? moment(formatData.min).toDate() : undefined}
+            maxDate={formatData.max ? moment(formatData.max).toDate() : undefined}
+            value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
+            onChange={(data, isUserChange) => {
+              let dateString = moment(data).format(dateStringFormat)
+              handleChange(dateString, parameter.name)
+            }}
+          />
+        )
+      case "time": case "string":
       default:
         if(parameter.in === "path")
           return (

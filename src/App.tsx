@@ -85,7 +85,6 @@ function App() {
       let parsedConfig;
       if(!localConfig) parsedConfig = config
       else parsedConfig = JSON.parse(localConfig)
-      console.log('parsed config:', config)
       setAppConfig(parsedConfig)
     } catch (error) {
       console.log('error parsing json config:', error)

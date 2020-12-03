@@ -1,3 +1,5 @@
+import {  } from "moment"
+
 export declare namespace DataCommonsConfig {
   interface Config {
     globalExcludes?: string[] // endpoints to exclude from visualizing
@@ -30,6 +32,7 @@ export declare namespace DataCommonsConfig {
     default?: any // string | number | string[] | ...
     description?: string
     options?: string[]
+    dateFormatString?: string // should work with moment.js, i.e "YYYY-MM-DD"
   }
 
   interface Response {
