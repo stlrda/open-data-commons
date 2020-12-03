@@ -1,5 +1,8 @@
 import React, { useState } from 'react'
-import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse } from '@blueprintjs/core'
+import moment from 'moment'
+import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, NumericInput, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
+import { DateInput, IDateFormatProps, TimePicker, ITimePickerProps } from '@blueprintjs/datetime'
+import { DataCommonsConfig } from '../../mocks/config2'
 // import { JSONFormat } from '@blueprintjs/table'
 import Table from '../table/Table'
 import ApiRequestService from '../../services/ApiRequest'
@@ -28,9 +31,12 @@ interface ApiItemProps {
   method: any // add types
   endpoint: string
   table: ODCTable
+  config?: DataCommonsConfig.ApiItemConfig
+  formats?: DataCommonsConfig.Formats
   updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
   showFullscreenTable(tableId: string): void
+  showFullscreenViz(tableId: string): void
   // apiItem: IApiItem
 }
 
@@ -38,16 +44,27 @@ const maxResponses = 5
 const cellHeight = 20; // px
 const maxVisibleCells = 15;
 
+// const jsDateFormatter: IDateFormatProps = {
+//   formatDate: date => date.toLocaleDateString(),
+//   parseDate: str => new Date(str),
+//   placeholder: "YYYY-MM-DD"
+// }
+
 const ApiItem: React.FC<ApiItemProps> = ({
   http,
   method,
   endpoint,
   table,
+  config,
+  formats,
   updateTableData,
   resetTableRows,
-  showFullscreenTable
+  showFullscreenTable,
+  showFullscreenViz,
 }) => {
+  // NOTE: could calculate the default parameters and paths in ApiItems, and pass as props...
   const [parameters, setParameters] = useState<IParametersForm>({})
+  const [paths, setPaths] = useState<IParametersForm>({})
   const [loading, setLoading] = useState<boolean>(false)
   const [errors, setErrors] = useState<FormErrors>({})
   const [responses, setResponses] = useState<ResponseItem[]>([])
@@ -57,10 +74,18 @@ const ApiItem: React.FC<ApiItemProps> = ({
     setParameters({ ...parameters, [field]: value })
   }
 
+  const handleChangePath = (value: any, field: string) => {
+    setPaths({...paths, [field]: value})
+  }
+
   // onConfirm
-  const validateInput = (field: string, type: string) => {
+  const validateInput = (field: string, type: string, path?: boolean) => {
     // enum
-    let input = parameters[field]
+    let input;
+    if(path)
+      input = paths[field]
+    else
+      input = parameters[field]
     // console.log('input confirmed:', input, 'as type:', type)
     if (input) {
       if (type === 'integer') {
@@ -75,6 +100,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
   const clearForm = () => {
     setParameters({})
+    setPaths({})
     setErrors({})
   }
 
@@ -92,7 +118,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
     if (method.parameters) {
       method.parameters.forEach((parameter: any) => {
         // console.log('parameter:', parameter)
-        if (parameter.required && !parameters[parameter.name]) {
+        if (parameter.required && !parameters[parameter.name] && !paths[parameter.name]) {
           // console.log(parameter.name + ' is missing from parameters')
           addError(parameter.name, `${parameter.name} is required`)
           valid = false
@@ -104,7 +130,11 @@ const ApiItem: React.FC<ApiItemProps> = ({
       // console.log('submitting data:', parameters)
       // send api call
       const ApiRequest = new ApiRequestService(endpoint)
-      const response = await ApiRequest.callApi(parameters)
+      let response: any;
+      if(Object.keys(paths).length > 0)
+        response = await ApiRequest.callApi(parameters, 'GET', Object.keys(paths).map(path => paths[path]))
+      else
+        response = await ApiRequest.callApi(parameters)
       // console.log('api response in ApiItem:', response)
 
       // Get Column Fields, Iterate
@@ -199,6 +229,205 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
   const collapseResults = () => setOpenResults([])
 
+  const momentFormatter = (format: string): IDateFormatProps => {
+    return {
+      formatDate: date => moment(date).format(format),
+      parseDate: str => moment(str, format).toDate(),
+      placeholder: format
+    }
+  }
+
+  // Can have 2 separate functions, one for parameter that is in "path", one for parameter in "query"
+  const getFormInput = (parameter: any, index: number) => {
+    let queryData = config!.queries![index]
+    let formatData = formats![queryData.format]
+
+    // console.log('format data:', formatData)
+
+    if(formatData.options) {
+      if(parameter.in === "path") {
+        if(!paths[parameter.name]) {
+          if(queryData.default) setPaths({...paths, [parameter.name]: queryData.default})
+          else if(formatData.default) setPaths({...paths, [parameter.name]: formatData.default})
+          else setPaths({...paths, [parameter.name]: formatData.options[0]})
+        }
+        // return select item
+        return (
+          <HTMLSelect
+            value={paths[parameter.name] || "none yet"}
+            onChange={(event) => {
+              let value = event.currentTarget.value;
+              handleChangePath(value, parameter.name)
+            }}
+          >
+            {formatData.options.map((option, index) => (
+              <option key={index} value={option}>{option}</option>
+            ))}
+          </HTMLSelect>
+        )
+      }
+      if(!parameters[parameter.name]) {
+        if(queryData.default) setParameters({...parameters, [parameter.name]: queryData.default})
+        else if(formatData.default) setParameters({...parameters, [parameter.name]: formatData.default})
+        else setParameters({...parameters, [parameter.name]: formatData.options[0]})
+      }
+      // return select item
+      return (
+        <HTMLSelect
+          value={parameters[parameter.name] || "none yet"}
+          onChange={(event) => {
+            let value = event.currentTarget.value;
+            handleChange(value, parameter.name)
+          }}
+        >
+          {formatData.options.map((option, index) => (
+            <option key={index} value={option}>{option}</option>
+          ))}
+        </HTMLSelect>
+      )
+    }
+
+    let dateStringFormat = "YYYY-MM-DD" // the default format
+
+    switch(formatData.type) {
+      case "number":
+        if(parameter.in === "path")
+          return (
+            <NumericInput
+              style={{margin: 0}}
+              min={formatData.min || undefined}
+              max={formatData.max || undefined}
+              placeholder="Enter a number..."
+              value={paths[parameter.name] || queryData.default || formatData.default || 0}
+              onValueChange={(numericValue: number) => handleChangePath(numericValue, parameter.name)}
+            />
+          )
+        return (
+          <NumericInput
+            style={{margin: 0}}
+            min={formatData.min || undefined}
+            max={formatData.max || undefined}
+            placeholder="Enter a number..."
+            value={parameters[parameter.name] || queryData.default || formatData.default || 0}
+            onValueChange={(numericValue: number) => handleChange(numericValue, parameter.name)}
+            leftIcon={(queryData.description || formatData.description) ? (
+              // <Tooltip content={queryData.description || formatData.description} position={Position.TOP}>
+                <Icon icon="info-sign" />
+              // {/* </Tooltip> */}
+            ) : undefined}
+          />
+        )
+      case "date":
+        if(formatData.dateFormatString)
+          dateStringFormat = formatData.dateFormatString
+
+        if(parameter.in === "path") {
+          if(!paths[parameter.name]) {
+            if(queryData.default) handleChangePath(queryData.default, parameter.name)
+            else if (formatData.default) handleChangePath(formatData.default, parameter.name)
+          }
+          return (
+            <DateInput
+              {...momentFormatter(dateStringFormat)}
+              placeholder={formatData.description || "Date"}
+              minDate={formatData.min ? moment(formatData.min).toDate() : undefined}
+              maxDate={formatData.max ? moment(formatData.max).toDate() : undefined}
+              value={(paths[parameter.name] && moment(paths[parameter.name]).toDate()) || moment().toDate()}
+              onChange={(data, isUserChange) => {
+                let dateString = moment(data).format(dateStringFormat)
+                handleChangePath(dateString, parameter.name)
+              }}
+            />
+          )
+        }
+
+        if(!parameters[parameter.name]) {
+          if(queryData.default) handleChange(queryData.default, parameter.name)
+          else if (formatData.default) handleChange(formatData.default, parameter.name)
+        }
+
+        return (
+          <DateInput
+            {...momentFormatter(dateStringFormat)}
+            placeholder={formatData.description || "Date"}
+            minDate={formatData.min ? moment(formatData.min).toDate() : undefined}
+            maxDate={formatData.max ? moment(formatData.max).toDate() : undefined}
+            value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
+            onChange={(data, isUserChange) => {
+              let dateString = moment(data).format(dateStringFormat)
+              handleChange(dateString, parameter.name)
+            }}
+          />
+        )
+      case "time":
+        if(parameter.in === "path") {
+          if(!paths[parameter.name]) {
+            if(queryData.default) handleChangePath(queryData.default, parameter.name)
+            else if(formatData.default) handleChangePath(formatData.default, parameter.name)
+          }
+          return (
+            <TimePicker
+              precision="second"
+              showArrowButtons
+              useAmPm={false}
+              value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
+              onChange={(data) => {
+                console.log('time change data:', data)
+                handleChange(data, parameter.name)
+              }}
+            />
+          )
+        }
+
+        if(!parameters[parameter.name]) {
+          if(queryData.default) handleChange(queryData.default, parameter.name)
+          else if(formatData.default) handleChange(formatData.default, parameter.name)
+        }
+
+        return (
+          <TimePicker
+            precision="second"
+            showArrowButtons
+            useAmPm={false}
+            value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
+            onChange={(data) => {
+              console.log('time change data:', data)
+              handleChange(data, parameter.name)
+            }}
+          />
+        )
+      case "string":
+      default:
+        if(parameter.in === "path")
+          return (
+            <EditableText
+              alwaysRenderInput={true}
+              intent={errors[parameter.name] ? 'danger' : 'none'}
+              placeholder={`(PATH): ${parameter.schema.type} ${
+                parameter.schema.title ? `(${parameter.schema.title})` : ''
+              }`}
+              selectAllOnFocus={true}
+              value={paths[parameter.name] || queryData.default || formatData.default || ''}
+              onChange={(data) => handleChangePath(data, parameter.name)}
+              onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
+            />
+          )
+        return (
+          <EditableText
+            alwaysRenderInput={true}
+            intent={errors[parameter.name] ? 'danger' : 'none'}
+            placeholder={`${parameter.schema.type} ${
+              parameter.schema.title ? `(${parameter.schema.title})` : ''
+            }`}
+            selectAllOnFocus={true}
+            value={parameters[parameter.name] || queryData.default || formatData.default || ''}
+            onChange={(data) => handleChange(data, parameter.name)}
+            onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+          />
+        )
+    }
+  }
+
   // TODO: test for schema objects with "items" that are an array
   // TODO: test with a more robust openapi.json spec to verify edge cases
   return (
@@ -235,27 +464,45 @@ const ApiItem: React.FC<ApiItemProps> = ({
                       {parameter.required && <span className="required-text">*</span>}
                     </td>
                     <td className="parameter-datatype-column">
-                      <span
-                        style={{
-                          border: errors[parameter.name] && '1px solid rgba(235,0,0,.54)',
-                          padding: 4,
-                          borderRadius: 4,
-                        }}
-                      >
-                        <EditableText
-                          alwaysRenderInput={true}
-                          intent={errors[parameter.name] ? 'danger' : 'none'}
-                          placeholder={`${parameter.schema.type} ${
-                            parameter.schema.title ? `(${parameter.schema.title})` : ''
-                          }`}
-                          selectAllOnFocus={true}
-                          value={parameters[parameter.name] || ''}
-                          onChange={(data) => handleChange(data, parameter.name)}
-                          onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
-                        />
+                      {config && config.queries && formats
+                        ? getFormInput(parameter, index)
+                        : <span
+                            style={{
+                              border: errors[parameter.name] && '1px solid rgba(235,0,0,.54)',
+                              padding: 4,
+                              borderRadius: 4,
+                            }}
+                          >
+                            {parameter.in === "path" ? (
+                              <EditableText
+                                alwaysRenderInput={true}
+                                intent={errors[parameter.name] ? 'danger' : 'none'}
+                                placeholder={`(PATH): ${parameter.schema.type} ${
+                                  parameter.schema.title ? `(${parameter.schema.title})` : ''
+                                }`}
+                                selectAllOnFocus={true}
+                                value={paths[parameter.name] || ''}
+                                onChange={(data) => handleChangePath(data, parameter.name)}
+                                onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
+                              />
+                            ) : (
+                              <EditableText
+                                alwaysRenderInput={true}
+                                intent={errors[parameter.name] ? 'danger' : 'none'}
+                                placeholder={`${parameter.schema.type} ${
+                                  parameter.schema.title ? `(${parameter.schema.title})` : ''
+                                }`}
+                                selectAllOnFocus={true}
+                                value={parameters[parameter.name] || ''}
+                                onChange={(data) => handleChange(data, parameter.name)}
+                                onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+                              />
+                            )}
+                        </span>
+                      }
                         {/* {parameter.schema.type}{' '}
                         {parameter.schema.title && `(${parameter.schema.title})`} */}
-                      </span>
+                      {/* </span> */}
                       {parameter.defaultValue && (
                         <div className="default-value-container">
                           <span>Default: &nbsp;</span>
@@ -313,7 +560,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
           <h3 className="section-header-title small-title">
             <div>
               <span style={{ marginRight: 6 }}>Responses</span>
-              {responses.length > 0 && (
+              {responses.length > 0 ? (
                 <>
                   <Button
                     className="api-execute-button"
@@ -321,6 +568,13 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     text="Fullscreen"
                     minimal={true}
                     onClick={() => showFullscreenTable(table.id)}
+                  />
+                  <Button
+                    className="api-execute-button"
+                    rightIcon="chart" // document-share
+                    text="Visualize"
+                    minimal={true}
+                    onClick={() => showFullscreenViz(table.id)}
                   />
                   <Button
                     className="api-execute-button"
@@ -335,6 +589,37 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     text="Reset"
                     minimal={true}
                     onClick={resetResponseTable}
+                  />
+                </>
+              ) : (
+                <>
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="fullscreen" // document-share
+                    text="Fullscreen"
+                    minimal={true}
+                  />
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="chart" // document-share
+                    text="Visualize"
+                    minimal={true}
+                  />
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="download"
+                    text="CSV"
+                    minimal={true}
+                  />
+                  <Button
+                    disabled
+                    className="api-execute-button"
+                    rightIcon="refresh"
+                    text="Reset"
+                    minimal={true}
                   />
                 </>
               )}
@@ -446,3 +731,26 @@ const ApiItem: React.FC<ApiItemProps> = ({
 }
 
 export default ApiItem
+
+// <Select
+//   items={formatData.options}
+//   itemRenderer={(item) => {
+//     return (
+//       <MenuItem
+//         // active={parameters[parameter.name] === parameter.name}
+//         // label="label"
+//         key={item}
+//         onClick={() => console.log('i clicked!')}
+//         text={item}
+//       />
+//     )
+//   }}
+//   onItemSelect={handleItemSelect}
+//   activeItem={parameters[parameter.name]}
+//   // initialContent={formatData.options}
+// >
+//   <Button
+//     text={parameters[parameter.name] || formatData.default || formatData.options[0]}
+//     rightIcon="double-caret-vertical"
+//   />
+// </Select>

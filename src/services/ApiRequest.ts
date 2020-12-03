@@ -22,9 +22,26 @@ class ApiRequest {
     this.path = process.env.REACT_APP_API_URL || ""
   }
 
-  async callApi(params: ParamsObject, method?: string, ) {
+  async callApi(params: ParamsObject, method?: string, paths?: string[]) {
     let apiMethod = method || this.method;
     let url = this.path + this.endpoint;
+    if(paths) {
+      for(let i = paths.length - 1; i >= 0; i--) {
+        let path = paths[i];
+        let lastCharIndex = url.lastIndexOf('}')
+        if(lastCharIndex > -1) {
+          let lastOpenIndex = url.lastIndexOf('{')
+          if(lastOpenIndex > -1) {
+            // take substring and replace with path
+            let substr = url.substring(lastOpenIndex, lastCharIndex + 1);
+            console.log('substr:', substr)
+            let newstr = url.split(substr).join(path)
+            console.log('newstr:', newstr)
+            url = newstr;
+          }
+        }
+      }
+    }
     Object.keys(params).forEach((param, index) => {
       if(index === 0)
         url+=`?${param}=${params[param]}`

@@ -4,7 +4,7 @@ class LocalStorage {
   getItemFromStorage(name: string) {
     try {
       const retrievedItem = localStorage.getItem(name)
-      console.log('got item from local storage:', retrievedItem)
+      // console.log('got item from local storage:', retrievedItem)
       return retrievedItem;
     }
     catch (error: any) {
