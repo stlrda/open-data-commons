@@ -10,6 +10,7 @@ import TableDialogue from './components/Dialogues/FullscreenTable'
 import VisualizationsDialogue from './components/Dialogues/VisualizationsDialogue'
 // services
 import SwaggerParserService from './services/SwaggerParser'
+import LocalStorageService from './services/LocalStorage'
 import OpenapiFormatter, { ODCTable } from './services/OpenapiFormatter'
 // import LocalStorageService from './services/LocalStorage'
 // Context API
@@ -21,6 +22,8 @@ import { ODCNavRoute } from './types/Openapi'
 // styles
 import GlobalStyle from './styles/global'
 import odcTheme from './styles/theme'
+// config
+import config from './mocks/config2.example'
 
 
 // const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
@@ -67,7 +70,28 @@ function App() {
   const [showTableModal, setShowTableModal] = useState<boolean>(false)
   const [showVizModal, setShowVizModal] = useState<boolean>(false)
   const [modalTableIndex, setModalTableIndex] = useState<number>(-1)
+  const [appConfig, setAppConfig] = useState<undefined | typeof config>(undefined)
 
+  useEffect(() => {
+    // if local storage has not saved config, save the config
+    const localStorage = new LocalStorageService()
+    let localConfig = localStorage.getItemFromStorage("odc-config")
+    if(!localConfig || localConfig != JSON.stringify(config)) {
+      console.log('setting config data in local service')
+      localStorage.setItemInStorage("odc-config", config)
+      localConfig = localStorage.getItemFromStorage("odc-config")
+    }
+    try {
+      let parsedConfig;
+      if(!localConfig) parsedConfig = config
+      else parsedConfig = JSON.parse(localConfig)
+      console.log('parsed config:', config)
+      setAppConfig(parsedConfig)
+    } catch (error) {
+      console.log('error parsing json config:', error)
+      setAppConfig(config)
+    }
+  }, [])
 
   useEffect(() => {
     // console.log('swagger data changed:', data)
@@ -195,6 +219,7 @@ function App() {
                 resetTableRows={resetTableRows}
                 showFullscreenTable={showFullscreenTable}
                 showFullscreenViz={showFullscreenViz}
+                appConfig={appConfig}
               />
               <PageFooter />
             </Layout>

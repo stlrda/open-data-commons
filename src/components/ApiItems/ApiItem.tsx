@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse } from '@blueprintjs/core'
+import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, NumericInput, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
+import { DataCommonsConfig } from '../../mocks/config2'
 // import { JSONFormat } from '@blueprintjs/table'
 import Table from '../table/Table'
 import ApiRequestService from '../../services/ApiRequest'
@@ -28,6 +29,8 @@ interface ApiItemProps {
   method: any // add types
   endpoint: string
   table: ODCTable
+  config?: DataCommonsConfig.ApiItemConfig
+  formats?: DataCommonsConfig.Formats
   updateTableData(data: any, tableId: string): void
   resetTableRows(id: string): void
   showFullscreenTable(tableId: string): void
@@ -44,6 +47,8 @@ const ApiItem: React.FC<ApiItemProps> = ({
   method,
   endpoint,
   table,
+  config,
+  formats,
   updateTableData,
   resetTableRows,
   showFullscreenTable,
@@ -215,6 +220,117 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
   const collapseResults = () => setOpenResults([])
 
+  const handleItemSelect = (item: any) => {
+    console.log('item selected:', item)
+  }
+
+  const getFormInput = (parameter: any, index: number) => {
+    const formatData = formats![config!.queries![index].format]
+    console.log('format data:', formatData)
+
+    if(formatData.options) {
+      if(!parameters[parameter.name]) {
+        if(formatData.default) setParameters({...parameters, [parameter.name]: formatData.default})
+        else setParameters({...parameters, [parameter.name]: formatData.options[0]})
+      }
+      // return select item
+      return (
+        <HTMLSelect
+          value={parameters[parameter.name] || "none yet"}
+          onChange={(event) => {
+            let value = event.currentTarget.value;
+            handleChange(value, parameter.name)
+          }}
+        >
+          {formatData.options.map((option, index) => (
+            <option key={index} value={option}>{option}</option>
+          ))}
+        </HTMLSelect>
+        // <Select
+        //   items={formatData.options}
+        //   itemRenderer={(item) => {
+        //     return (
+        //       <MenuItem
+        //         // active={parameters[parameter.name] === parameter.name}
+        //         // label="label"
+        //         key={item}
+        //         onClick={() => console.log('i clicked!')}
+        //         text={item}
+        //       />
+        //     )
+        //   }}
+        //   onItemSelect={handleItemSelect}
+        //   activeItem={parameters[parameter.name]}
+        //   // initialContent={formatData.options}
+        // >
+        //   <Button
+        //     text={parameters[parameter.name] || formatData.default || formatData.options[0]}
+        //     rightIcon="double-caret-vertical"
+        //   />
+        // </Select>
+      )
+    }
+
+    switch(formatData.type) {
+      case "number":
+        if(parameter.in === "path")
+          return (
+            <NumericInput
+              style={{margin: 0}}
+              min={formatData.min || undefined}
+              max={formatData.max || undefined}
+              placeholder="Enter a number..."
+              value={paths[parameter.name] || formatData.default || 0}
+              onValueChange={(numericValue: number) => handleChangePath(numericValue, parameter.name)}
+            />
+          )
+        return (
+          <NumericInput
+            style={{margin: 0}}
+            min={formatData.min || undefined}
+            max={formatData.max || undefined}
+            placeholder="Enter a number..."
+            value={parameters[parameter.name] || formatData.default || 0}
+            onValueChange={(numericValue: number) => handleChange(numericValue, parameter.name)}
+            leftIcon={formatData.description ? (
+              <Tooltip content={formatData.description} position={Position.TOP}>
+                <Icon icon="info-sign" />
+              </Tooltip>
+            ) : undefined}
+          />
+        )
+      case "date": case "time": case "string":
+      default:
+        if(parameter.in === "path")
+          return (
+            <EditableText
+              alwaysRenderInput={true}
+              intent={errors[parameter.name] ? 'danger' : 'none'}
+              placeholder={`(PATH): ${parameter.schema.type} ${
+                parameter.schema.title ? `(${parameter.schema.title})` : ''
+              }`}
+              selectAllOnFocus={true}
+              value={paths[parameter.name] || ''}
+              onChange={(data) => handleChangePath(data, parameter.name)}
+              onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
+            />
+          )
+        return (
+          <EditableText
+            alwaysRenderInput={true}
+            intent={errors[parameter.name] ? 'danger' : 'none'}
+            placeholder={`${parameter.schema.type} ${
+              parameter.schema.title ? `(${parameter.schema.title})` : ''
+            }`}
+            selectAllOnFocus={true}
+            value={parameters[parameter.name] || ''}
+            onChange={(data) => handleChange(data, parameter.name)}
+            onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+          />
+        )
+    }
+  }
+
   // TODO: test for schema objects with "items" that are an array
   // TODO: test with a more robust openapi.json spec to verify edge cases
   return (
@@ -251,41 +367,45 @@ const ApiItem: React.FC<ApiItemProps> = ({
                       {parameter.required && <span className="required-text">*</span>}
                     </td>
                     <td className="parameter-datatype-column">
-                      <span
-                        style={{
-                          border: errors[parameter.name] && '1px solid rgba(235,0,0,.54)',
-                          padding: 4,
-                          borderRadius: 4,
-                        }}
-                      >
-                        {parameter.in === "path" ? (
-                          <EditableText
-                            alwaysRenderInput={true}
-                            intent={errors[parameter.name] ? 'danger' : 'none'}
-                            placeholder={`(PATH): ${parameter.schema.type} ${
-                              parameter.schema.title ? `(${parameter.schema.title})` : ''
-                            }`}
-                            selectAllOnFocus={true}
-                            value={paths[parameter.name] || ''}
-                            onChange={(data) => handleChangePath(data, parameter.name)}
-                            onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
-                          />
-                        ) : (
-                          <EditableText
-                            alwaysRenderInput={true}
-                            intent={errors[parameter.name] ? 'danger' : 'none'}
-                            placeholder={`${parameter.schema.type} ${
-                              parameter.schema.title ? `(${parameter.schema.title})` : ''
-                            }`}
-                            selectAllOnFocus={true}
-                            value={parameters[parameter.name] || ''}
-                            onChange={(data) => handleChange(data, parameter.name)}
-                            onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
-                          />
-                        )}
+                      {config && config.queries && formats
+                        ? getFormInput(parameter, index)
+                        : <span
+                            style={{
+                              border: errors[parameter.name] && '1px solid rgba(235,0,0,.54)',
+                              padding: 4,
+                              borderRadius: 4,
+                            }}
+                          >
+                            {parameter.in === "path" ? (
+                              <EditableText
+                                alwaysRenderInput={true}
+                                intent={errors[parameter.name] ? 'danger' : 'none'}
+                                placeholder={`(PATH): ${parameter.schema.type} ${
+                                  parameter.schema.title ? `(${parameter.schema.title})` : ''
+                                }`}
+                                selectAllOnFocus={true}
+                                value={paths[parameter.name] || ''}
+                                onChange={(data) => handleChangePath(data, parameter.name)}
+                                onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
+                              />
+                            ) : (
+                              <EditableText
+                                alwaysRenderInput={true}
+                                intent={errors[parameter.name] ? 'danger' : 'none'}
+                                placeholder={`${parameter.schema.type} ${
+                                  parameter.schema.title ? `(${parameter.schema.title})` : ''
+                                }`}
+                                selectAllOnFocus={true}
+                                value={parameters[parameter.name] || ''}
+                                onChange={(data) => handleChange(data, parameter.name)}
+                                onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+                              />
+                            )}
+                        </span>
+                      }
                         {/* {parameter.schema.type}{' '}
                         {parameter.schema.title && `(${parameter.schema.title})`} */}
-                      </span>
+                      {/* </span> */}
                       {parameter.defaultValue && (
                         <div className="default-value-container">
                           <span>Default: &nbsp;</span>
