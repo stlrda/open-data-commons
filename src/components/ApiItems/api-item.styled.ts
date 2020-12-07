@@ -113,7 +113,7 @@ const StyledApiItem = styled.div`
       display: flex;
       flex-direction: row;
       align-items: center;
-      background-color: ${props => props.theme.darkest};
+      // background-color: ${props => props.theme.darkest};
       padding: 10px;
       margin-bottom: 15px;
       border-radius: 4px;
@@ -165,7 +165,7 @@ const StyledApiItem = styled.div`
   }
   .api-execute-button-bar {
     margin-top: .9em;
-    padding-left: 25%;
+    // padding-left: 25%;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -177,6 +177,9 @@ const StyledApiItem = styled.div`
 
     .api-execute-button {
       margin-right: 10px;
+    }
+    .api-execute-button:last-child {
+      margin-right: 0;
     }
   }
 

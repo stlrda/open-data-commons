@@ -473,7 +473,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
               </thead>
               <tbody>
                 {method.parameters.map((parameter: any, index: number) => (
-                  <tr key={index}>
+                  <tr key={`${parameter.name}-${index}`}>
                     <td
                       className="parameter-name-column"
                       style={{ display: 'flex', flexDirection: 'row' }}
