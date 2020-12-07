@@ -11,12 +11,12 @@ export interface ODCTable {
   requiredFields?: string[] // requiredFields
 }
 export interface ODCTableColumn {
-  name: string
+  name?: string
   title: string
   type: string
-  required: boolean
+  required?: boolean
   format?: string
-  id: string
+  id?: string
 }
 export interface ODCTableRow {
   [key: string]: any

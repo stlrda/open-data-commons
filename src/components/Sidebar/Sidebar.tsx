@@ -4,7 +4,7 @@ import NavLink from './NavLink'
 import StyledSidebar, { SidebarHeader } from './sidebar.styled'
 import { ODCNavRoute } from '../../types/Openapi'
 
-interface SidebarProps {
+export interface SidebarProps {
   routes: ODCNavRoute[]
   logoUrl?: string
 }
@@ -13,6 +13,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   routes,
   logoUrl
 }) => {
+
   const [activeTab, setActiveTab] = useState<number>(-1)
   const [searchInput, setSearchInput] = useState<string>("")
 

@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import moment from 'moment'
-import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, NumericInput, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
+import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
 import { DateInput, IDateFormatProps, TimePicker, ITimePickerProps } from '@blueprintjs/datetime'
-import { DataCommonsConfig } from '../../mocks/config2'
-// import { JSONFormat } from '@blueprintjs/table'
+import TextInput from '../FormInputs/TextInput'
+import NumericInput from '../FormInputs/NumericInput'
 import Table from '../table/Table'
+import { DataCommonsConfig } from '../../mocks/config2'
 import ApiRequestService from '../../services/ApiRequest'
 import FileSaverService from '../../services/FileSaver'
 import StyledApiItem, { ResponseItem_Styled } from './api-item.styled'
@@ -289,44 +290,35 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
     let dateStringFormat = "YYYY-MM-DD" // the default format
 
-    switch(formatData.type) {
-      case "number":
-        if(parameter.in === "path") {
-          if(!paths[parameter.name]) {
-            if(queryData.default) handleChangePath(queryData.default, parameter.name)
-            else if (formatData.default) handleChangePath(formatData.default, parameter.name)
-          }
-          return (
-            <NumericInput
-              style={{margin: 0}}
-              min={formatData.min || undefined}
-              max={formatData.max || undefined}
-              placeholder="Enter a number..."
-              value={paths[parameter.name] || queryData.default || formatData.default || 0}
-              onValueChange={(numericValue: number) => handleChangePath(numericValue, parameter.name)}
-            />
-          )
-        }
+    const isPath = parameter.in === "path" ? true : false
 
-        if(!parameters[parameter.name]) {
+    switch(formatData.type) {
+      case "number": {
+        if(isPath && !paths[parameter.name]) {
+          if(queryData.default) handleChangePath(queryData.default, parameter.name)
+          else if (formatData.default) handleChangePath(formatData.default, parameter.name)
+        }
+        else if(!parameters[parameter.name]) {
           if(queryData.default) handleChange(queryData.default, parameter.name)
           else if (formatData.default) handleChange(formatData.default, parameter.name)
         }
+
+        let value = isPath ? paths[parameter.name] : parameters[parameter.name]
+        let changeMethod = isPath ? handleChangePath : handleChange
+
         return (
           <NumericInput
+            isPath={isPath}
+            parameterName={parameter.name}
             style={{margin: 0}}
             min={formatData.min || undefined}
             max={formatData.max || undefined}
             placeholder="Enter a number..."
-            value={parameters[parameter.name] || queryData.default || formatData.default || 0}
-            onValueChange={(numericValue: number) => handleChange(numericValue, parameter.name)}
-            leftIcon={(queryData.description || formatData.description) ? (
-              // <Tooltip content={queryData.description || formatData.description} position={Position.TOP}>
-                <Icon icon="info-sign" />
-              // {/* </Tooltip> */}
-            ) : undefined}
+            value={value || queryData.default || formatData.default || 0}
+            onValueChange={changeMethod}
           />
         )
+      }
       case "date":
         if(formatData.dateFormatString)
           dateStringFormat = formatData.dateFormatString
@@ -407,34 +399,24 @@ const ApiItem: React.FC<ApiItemProps> = ({
           />
         )
       case "string":
-      default:
-        if(parameter.in === "path")
-          return (
-            <EditableText
-              alwaysRenderInput={true}
-              intent={errors[parameter.name] ? 'danger' : 'none'}
-              placeholder={`(PATH): ${parameter.schema.type} ${
-                parameter.schema.title ? `(${parameter.schema.title})` : ''
-              }`}
-              selectAllOnFocus={true}
-              value={paths[parameter.name] || queryData.default || formatData.default || ''}
-              onChange={(data) => handleChangePath(data, parameter.name)}
-              onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
-            />
-          )
+      default: {
+        const value = isPath ? paths[parameter.name] || queryData.default || formatData.default || ''
+          : parameters[parameter.name] || queryData.default || formatData.default || ''
+        const changeMethod = isPath ? handleChangePath : handleChange;
         return (
-          <EditableText
-            alwaysRenderInput={true}
-            intent={errors[parameter.name] ? 'danger' : 'none'}
+          <TextInput
+            isPath={isPath}
+            parameter={parameter}
+            intent={errors[parameter.name] ? "danger" : "none"}
             placeholder={`${parameter.schema.type} ${
               parameter.schema.title ? `(${parameter.schema.title})` : ''
             }`}
-            selectAllOnFocus={true}
-            value={parameters[parameter.name] || queryData.default || formatData.default || ''}
-            onChange={(data) => handleChange(data, parameter.name)}
-            onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+            value={value}
+            onChange={changeMethod}
+            validateInput={validateInput}
           />
         )
+      }
     }
   }
 

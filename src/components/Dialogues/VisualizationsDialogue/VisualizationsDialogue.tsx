@@ -12,12 +12,12 @@ import {
   Alignment,
   Button
 } from '@blueprintjs/core'
-import BarChartViz from '../visualizations/BarChart/BarChart'
-import PieChartViz from '../visualizations/PieChart/PieChart'
-import GeoMapViz, { GeoData } from '../visualizations/GeoMap/GeoMap'
-import { DataCommonsConfig } from '../../mocks/config2'
-import DataCalculations from '../../services/DataCalculations'
-import { ODCTable } from '../../services/OpenapiFormatter'
+import BarChartViz from '../../visualizations/BarChart/BarChart'
+import PieChartViz from '../../visualizations/PieChart/PieChart'
+import GeoMapViz, { GeoData } from '../../visualizations/GeoMap/GeoMap'
+import { DataCommonsConfig } from '../../../mocks/config2'
+import DataCalculations from '../../../services/DataCalculations'
+import { ODCTable } from '../../../services/OpenapiFormatter'
 
 interface IConfigContextState {
   config?: DataCommonsConfig.ApiItemConfig
@@ -43,19 +43,25 @@ function useItemConfig(initialState: IConfigContextState) {
   return [state, dispatch]
 }
 
-interface Props {
+export interface VisualizationsDialogueProps {
   showModal: boolean
   responseTable?: ODCTable // data
   config?: DataCommonsConfig.ApiItemConfig // can trim this down
   onCloseModal: () => void
 }
 
-const VisualizationsDialogue: React.FC<Props> = ({
+const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
   showModal,
   responseTable,
   config,
   onCloseModal,
 }) => {
+
+  useEffect(() => {
+    console.log('response table:', responseTable)
+    console.log('config:', config)
+  }, [responseTable, config])
+
   let dataService: any
 
   // const [visualizations, setVisualizations] = useState<any[]>([])

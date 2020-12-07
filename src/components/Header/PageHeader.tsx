@@ -1,11 +1,11 @@
-import React, { useContext } from 'react'
+import React from 'react'
 import { Classes } from '@blueprintjs/core'
 import sanitizeHtml from 'sanitize-html'
 import StyledPageHeader from '../layout/header.styled'
 
 import { SpecContext } from '../../context/SpecContext'
 
-interface PageHeaderProps {
+export interface PageHeaderProps {
   loading: boolean
   title: string,
   description?: string,
@@ -35,7 +35,7 @@ const PageHeader: React.FC<PageHeaderProps> = ({
     <StyledPageHeader style={{marginRight: "15%"}}>
       <h1 className="header-title">{title}</h1>
       {version && (
-        <h4 className="header-description header-version">
+        <h4 className="header-version">
           {version}
         </h4>
       )}

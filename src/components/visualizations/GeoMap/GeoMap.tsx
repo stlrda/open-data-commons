@@ -1,8 +1,6 @@
 import React from 'react'
 import L, { IconOptions } from 'leaflet'
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet'
-// import "/node_modules/leaflet/dist/leaflet.css"
-import "./geomap.css"
 
 export interface GeoData {
   lat: number

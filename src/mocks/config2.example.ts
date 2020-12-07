@@ -74,6 +74,21 @@ const appConfig: DataCommonsConfig.Config = {
       ]
     },
     "crime_detailed_crime_detailed_get": {
+      queries: [
+        {
+          field: "start",
+          format: "date"
+        },
+        {
+          field: "end",
+          format: "date",
+          default: "2020-10-01"
+        },
+        {
+          field: "category",
+          format: "category",
+        }
+      ],
       responses: [
         {
           field: "id",
@@ -92,6 +107,16 @@ const appConfig: DataCommonsConfig.Config = {
           format: "string", // not sure what all the codes are
           category: true,
           charts: [""]
+        },
+        {
+          field: "lon",
+          format: "geo",
+          description: "lon"
+        },
+        {
+          field: "lat",
+          format: "geo",
+          description: "lat"
         }
       ],
     },
