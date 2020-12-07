@@ -550,8 +550,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
         {/* Response Section */}
         <div className="api-responses">
           <h3 className="section-header-title small-title">
-            <div>
-              <span style={{ marginRight: 6 }}>Responses</span>
+              <span style={{ marginRight: 6, flex: 1 }}>Responses</span>
               {responses.length > 0 ? (
                 <>
                   <Button
@@ -615,8 +614,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                   />
                 </>
               )}
-            </div>
-            {method.responses && (
+            {/* {method.responses && (
               <div className="method-responses">
                 {method.responses.map((response: any) => (
                   <Tag
@@ -629,7 +627,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                   </Tag>
                 ))}
               </div>
-            )}
+            )} */}
           </h3>
           <div className="subsection-header">
             <h6 className="subsection-header-title">response schema</h6>
