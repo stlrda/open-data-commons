@@ -215,20 +215,20 @@ const ApiItem: React.FC<ApiItemProps> = ({
     })
   }
 
-  const toggleCollapse = (id: number) => {
-    // open / close the collapse using the given id
-    // console.log('toggling collapse')
-    if(openResults.includes(id))
-      setOpenResults(openResults.filter(resultId => resultId !== id))
-    else
-      setOpenResults([...openResults, id ])
-  }
+  // const toggleCollapse = (id: number) => {
+  //   // open / close the collapse using the given id
+  //   // console.log('toggling collapse')
+  //   if(openResults.includes(id))
+  //     setOpenResults(openResults.filter(resultId => resultId !== id))
+  //   else
+  //     setOpenResults([...openResults, id ])
+  // }
 
-  const expandResults = () => {
-    setOpenResults(responses.map(response => response.id))
-  }
+  // const expandResults = () => {
+  //   setOpenResults(responses.map(response => response.id))
+  // }
 
-  const collapseResults = () => setOpenResults([])
+  // const collapseResults = () => setOpenResults([])
 
   const momentFormatter = (format: string): IDateFormatProps => {
     return {
@@ -425,16 +425,16 @@ const ApiItem: React.FC<ApiItemProps> = ({
   return (
     <StyledApiItem id={method.operationId}>
       {/* Left side: Api Info, Table Display, Params */}
-      <div className="api-item-left">
-        <h3 className="section-header-title">{method.summary}</h3>
+      <div className="api-item-inner">
+        <h2 className="section-header-title">{method.summary}</h2>
         {method.description && <p className="section-header-description">{method.description}</p>}
 
         {method.parameters && method.parameters.length > 0 ? (
           <div className="query-parameters">
-            <div className="subsection-header">
+            {/* <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
               <Divider className="mh-0" />
-            </div>
+            </div> */}
             {/* Display the query parameters */}
             {/* HTMLTable: Field, Type */}
             <HTMLTable className="api-item-html-table" bordered>
@@ -529,13 +529,13 @@ const ApiItem: React.FC<ApiItemProps> = ({
           </div>
         ) : (
           <div className="query-parameters">
-            <div className="subsection-header">
+            {/* <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
               <Divider className="mh-0" />
-            </div>
-            <p>No query parameters</p>
+            </div> */}
+            <p style={{fontSize: "1.15em", marginBottom: 20}}>No query parameters</p>
             {/* Execute Button Bar */}
-            <div className="api-execute-button-bar">
+            <div className="api-execute-button-bar center-start">
               <Button
                 className="api-execute-button"
                 rightIcon="arrow-right"
@@ -550,7 +550,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
         {/* Response Section */}
         <div className="api-responses">
           <h3 className="section-header-title small-title">
-              <span style={{ marginRight: 6, flex: 1 }}>Responses</span>
+              <span style={{ marginRight: 10, flex: 1 }}>Responses</span>
               {responses.length > 0 ? (
                 <>
                   <Button
@@ -629,10 +629,10 @@ const ApiItem: React.FC<ApiItemProps> = ({
               </div>
             )} */}
           </h3>
-          <div className="subsection-header">
+          {/* <div className="subsection-header">
             <h6 className="subsection-header-title">response schema</h6>
             <Divider className="mh-0" />
-          </div>
+          </div> */}
           <div className="api-responses-innner">
             <div className="table-container" style={{
               height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
@@ -645,7 +645,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                   id={table.id}
                 />
               ) : (
-                <p>
+                <p style={{fontSize: "1.15em"}}>
                   {method?.responses[0]?.code
                     ? `A successful response will return a ${method.responses[0].code} status code but no data`
                     : 'This method does not return any data'}
@@ -657,8 +657,8 @@ const ApiItem: React.FC<ApiItemProps> = ({
       </div>
 
       {/* Right side: Visualizations, downloads(?), what else? */}
-      <div className="api-item-right">
-        <div className="api-method-item">
+      {/* <div className="api-item-right"> */}
+        {/* <div className="api-method-item">
           <Tag htmlTitle={http} intent="success" className="endpoint-http-text">
             {http}
           </Tag>
@@ -672,25 +672,22 @@ const ApiItem: React.FC<ApiItemProps> = ({
               <Button
                 className="api-execute-button"
                 rightIcon="expand-all"
-                // text="Expand"
                 minimal
                 onClick={expandResults}
               />
               <Button
                 className="api-execute-button"
                 rightIcon="collapse-all"
-                // text="Collapse"
                 minimal
                 onClick={collapseResults}
               />
             </ButtonGroup>
           )}
-        </h3>
+        </h3> */}
 
-        <div className="response-visualizations">
-          <div className="helper-toolbar">{/* Copy, Expand All, Collapse All, etc. */}</div>
+        {/* <div className="response-visualizations">
+          <div className="helper-toolbar"></div>
           <div className="response-results">
-            {/* <p style={{color: "#fff"}}>still deciding...</p> */}
             {responses.map((response, index) => (
               <ResponseItem_Styled key={index} className="response-result-item">
                 <span className="response-result-item-index">{response.id}</span>
@@ -706,7 +703,6 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     <div className="response-result-item-inner response-item-response">
                       <p style={{ color: '#fff', padding: 5, width: '100%', display: 'block', marginBottom: 0 }}>
                         {JSON.stringify(response.details)}
-                        {/* <JSONFormat>{response.details}</JSONFormat> */}
                       </p>
                     </div>
                   </Collapse>
@@ -714,8 +710,8 @@ const ApiItem: React.FC<ApiItemProps> = ({
               </ResponseItem_Styled>
             ))}
           </div>
-        </div>
-      </div>
+        </div> */}
+      {/* </div> */}
     </StyledApiItem>
   )
 }

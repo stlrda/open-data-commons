@@ -4,8 +4,9 @@ const StyledApiItem = styled.div`
   display: flex;
   position: relative;
   flex-direction: row;
-  // width: 100%;
-  padding-top: 3.5em;
+  width: 100%;
+  padding-top: 3em;
+  padding-bottom: 3em;
   z-index: 1;
 
   &:first-child {
@@ -18,7 +19,7 @@ const StyledApiItem = styled.div`
     display: block;
     content: "";
     bottom: 0;
-    border-bottom: 1px solid rgba(10,10,10, .7);
+    border-bottom: 1px solid rgba(33,33,33, .35);
     // border-bottom: 1px solid rgba(17,23,26);
   }
   &:last-child {
@@ -32,14 +33,15 @@ const StyledApiItem = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 1.5em;
+    font-size: 1.7em;
     color: #000;
     font-weight: 400;
     font-family: ${props => props.theme.typography.fontFamilyRegular};
 
     &.small-title {
-      font-size: 1.3em;
+      font-size: 1.45em;
       margin-top: 40px;
+      margin-bottom: 25px;
     }
   }
 
@@ -87,10 +89,9 @@ const StyledApiItem = styled.div`
     }
   }
 
-  .api-item-left {
+  .api-item-inner {
     padding-right: 40px;
     padding-left: 40px;
-    width: 60%;
     overflow-x: auto;
   }
 
@@ -168,6 +169,10 @@ const StyledApiItem = styled.div`
     flex-direction: row;
     align-items: center;
     // justify-content: center;
+
+    &.center-start {
+      padding-left: 0;
+    }
 
     .api-execute-button {
       margin-right: 10px;

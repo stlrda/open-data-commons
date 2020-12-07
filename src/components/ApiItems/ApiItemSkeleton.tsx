@@ -12,7 +12,7 @@ const ApiItemSkeleton: React.FC<ApiItemProps> = () => {
   return (
     <StyledApiItem>
       {/* Left side: Api Info, Table Display, Params */}
-      <div className="api-item-left">
+      <div className="api-item-inner">
         <h3 className={`section-header-title ${Classes.SKELETON}`}>An example title</h3>
         <p className={`section-header-description ${Classes.SKELETON}`}>An example api item description</p>
 
@@ -74,7 +74,7 @@ const ApiItemSkeleton: React.FC<ApiItemProps> = () => {
       </div>
 
       {/* Right side: Visualizations, downloads(?), what else? */}
-      <div className="api-item-right">
+      {/* <div className="api-item-right">
         <div className="api-method-item">
           <Tag
             htmlTitle="Loading"
@@ -90,19 +90,13 @@ const ApiItemSkeleton: React.FC<ApiItemProps> = () => {
 
         <div className="response-visualizations">
           <div className="helper-toolbar">
-            {/* Copy, Expand All, Collapse All, etc. */}
           </div>
           <div className="response-result">
-            {/* Show the code */}
             <div className={`table-container ${Classes.SKELETON}`} style={{minHeight: 120}}>
-              {/* <Table
-                numRows={3}
-                columns={simpleColumns}
-              /> */}
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </StyledApiItem>
   )
 }

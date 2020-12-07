@@ -117,7 +117,7 @@ const Table: React.FC<TableProps> = ({
   if(!columns || Object.keys(columns).length < 1) {
     return (
       <div>
-        <p>No responses found for this request</p>
+        <p style={{fontSize: "1.15em"}}>No responses found for this request</p>
       </div>
     )
   }
