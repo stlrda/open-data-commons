@@ -19,7 +19,7 @@ const StyledApiItem = styled.div`
     display: block;
     content: "";
     bottom: 0;
-    border-bottom: 1px solid rgba(10,10,10, .7);
+    border-bottom: 1px solid rgba(33,33,33, .43);
     // border-bottom: 1px solid rgba(17,23,26);
   }
   &:last-child {
@@ -33,13 +33,13 @@ const StyledApiItem = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 1.7em;
+    font-size: 1.75em;
     color: #000;
     font-weight: 400;
     font-family: ${props => props.theme.typography.fontFamilyRegular};
 
     &.small-title {
-      font-size: 1.43em;
+      font-size: 1.35em;
       margin-top: 40px;
     }
   }
@@ -47,6 +47,7 @@ const StyledApiItem = styled.div`
   .table-container {
     display: flex; // keeps from taking up all space
     // overflow-y: auto;
+    margin-top: 25px !important;
 
     &.expanded {
       height: initial; //100% or auto
@@ -101,7 +102,7 @@ const StyledApiItem = styled.div`
     padding-left: 1em;
     padding-right: 1em;
     width: 40%;
-    background: ${props => props.theme.dark};
+    // background: ${props => props.theme.dark};
     color: #fff;
     // width: ${props => props.theme.rightColumnWidth};
     // width: calc(40% - 130px);

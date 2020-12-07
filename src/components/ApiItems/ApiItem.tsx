@@ -426,15 +426,41 @@ const ApiItem: React.FC<ApiItemProps> = ({
     <StyledApiItem id={method.operationId}>
       {/* Left side: Api Info, Table Display, Params */}
       <div className="api-item-left">
-        <h2 className="section-header-title">{method.summary}</h2>
+        <h2 className="section-header-title">
+          <span style={{marginRight: 10}}>{method.summary}</span>
+          {/* <span style={{opacity: .75, fontSize: "0.75em"}}>-</span> */}
+          <span style={{opacity: .75, marginLeft: 10, marginTop: 1, marginBottom: 0, paddingBottom: 0, fontSize: "0.75em"}}>{endpoint}</span>
+        </h2>
         {method.description && <p className="section-header-description">{method.description}</p>}
 
         {method.parameters && method.parameters.length > 0 ? (
           <div className="query-parameters">
-            <div className="subsection-header">
+            {/* <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
               <Divider className="mh-0" />
-            </div>
+            </div> */}
+
+            <h3 className="section-header-title small-title">
+              <span style={{ marginRight: 6, flex: 1 }}>Queries</span>
+              <div className="api-execute-button-bar">
+                <Button
+                  className="api-execute-button"
+                  text="Clear"
+                  disabled={Object.keys(parameters).length < 1 && Object.keys(errors).length < 1}
+                  onClick={clearForm}
+                />
+                <Button
+                  className="api-execute-button"
+                  rightIcon="arrow-right"
+                  intent="success"
+                  text="Execute"
+                  onClick={submitForm}
+                />
+              </div>
+            </h3>
+
+
+
             {/* Display the query parameters */}
             {/* HTMLTable: Field, Type */}
             <HTMLTable className="api-item-html-table" bordered>
@@ -512,7 +538,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
             </HTMLTable>
 
             {/* Execute Button Bar */}
-            <div className="api-execute-button-bar">
+            {/* <div className="api-execute-button-bar">
               <Button
                 className="api-execute-button"
                 text="Clear"
@@ -526,7 +552,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 text="Execute"
                 onClick={submitForm}
               />
-            </div>
+            </div> */}
           </div>
         ) : (
           <div className="query-parameters">
@@ -638,11 +664,11 @@ const ApiItem: React.FC<ApiItemProps> = ({
               <p style={{fontSize: "1.15em", marginTop: 10}}>No responses found for this request</p>
             </div>
           ) : (
-            <>
-              <div className="subsection-header">
-                <h6 className="subsection-header-title">response schema</h6>
-                <Divider className="mh-0" />
-              </div>
+            // <>
+              // {/* <div className="subsection-header">
+              //   <h6 className="subsection-header-title">response schema</h6>
+              //   <Divider className="mh-0" />
+              // </div> */}
               <div className="api-responses-innner">
                 <div className="table-container" style={{
                   height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
@@ -655,23 +681,22 @@ const ApiItem: React.FC<ApiItemProps> = ({
                   />
                 </div>
               </div>
-            </>
+            // </>
           )}
         </div>
       </div>
 
       {/* Right side: Visualizations, downloads(?), what else? */}
       <div className="api-item-right">
-        <div className="api-method-item">
+        {/* <div className="api-method-item">
           <Tag htmlTitle={http} intent="success" className="endpoint-http-text">
             {http}
           </Tag>
           <span className="endpoint-path-text">{endpoint}</span>
-        </div>
+        </div> */}
 
-        <h3 className="response-header" style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
-          <span style={{flex: 1}}>Response Log</span>
-          {responses.length > 0 && (
+        {/* <h3 className="response-header">Statistical Information */}
+          {/* {responses.length > 0 && (
             <ButtonGroup>
               <Button
                 className="api-execute-button"
@@ -688,14 +713,21 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 onClick={collapseResults}
               />
             </ButtonGroup>
-          )}
-        </h3>
+          )} */}
+        {/* </h3> */}
 
         <div className="response-visualizations">
           <div className="helper-toolbar">{/* Copy, Expand All, Collapse All, etc. */}</div>
           <div className="response-results">
+            {/* {responses.length > 0 ? (
+              <div>
+                <p>stats: djf;lsdfjdlf</p>
+              </div>
+            ) : (
+              <p>No data yet</p>
+            )} */}
             {/* <p style={{color: "#fff"}}>still deciding...</p> */}
-            {responses.map((response, index) => (
+            {/* {responses.map((response, index) => (
               <ResponseItem_Styled key={index} className="response-result-item">
                 <span className="response-result-item-index">{response.id}</span>
                 <div style={{display:'flex', flexDirection:'column', alignItems:'stretch', flex: 1}}>
@@ -710,13 +742,12 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     <div className="response-result-item-inner response-item-response">
                       <p style={{ color: '#fff', padding: 5, width: '100%', display: 'block', marginBottom: 0 }}>
                         {JSON.stringify(response.details)}
-                        {/* <JSONFormat>{response.details}</JSONFormat> */}
                       </p>
                     </div>
                   </Collapse>
                 </div>
               </ResponseItem_Styled>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>
