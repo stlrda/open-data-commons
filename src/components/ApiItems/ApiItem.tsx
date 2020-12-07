@@ -458,8 +458,9 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     <td className="parameter-datatype-column">
                       {config && config.queries && formats
                         ? getFormInput(parameter, index)
-                        : <span
+                        : <div
                             style={{
+                              display: "inline-block",
                               border: errors[parameter.name] && '1px solid rgba(235,0,0,.54)',
                               padding: 4,
                               borderRadius: 4,
@@ -490,7 +491,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                                 onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
                               />
                             )}
-                        </span>
+                        </div>
                       }
                         {/* {parameter.schema.type}{' '}
                         {parameter.schema.title && `(${parameter.schema.title})`} */}
