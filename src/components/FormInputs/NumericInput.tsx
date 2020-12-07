@@ -27,6 +27,7 @@ const NumericInput: React.FC<NumericInputProps> = ({
   return (
     <BPNumericInput
       style={style}
+      intent="none"
       min={min}
       max={max}
       placeholder={placeholder}
