@@ -6,8 +6,8 @@ import Layout from './components/layout/Layout'
 import PageHeader from './components/Header/PageHeader'
 import PageFooter from './components/Footer/PageFooter'
 import ApiItems from './components/ApiItems/ApiItems'
-import TableDialogue from './components/Dialogues/FullscreenTable'
-import VisualizationsDialogue from './components/Dialogues/VisualizationsDialogue'
+import TableDialogue from './components/Dialogues/FullscreenTable/FullscreenTable'
+import VisualizationsDialogue from './components/Dialogues/VisualizationsDialogue/VisualizationsDialogue'
 // services
 import SwaggerParserService from './services/SwaggerParser'
 import LocalStorageService from './services/LocalStorage'
@@ -70,6 +70,7 @@ function App() {
   const [showTableModal, setShowTableModal] = useState<boolean>(false)
   const [showVizModal, setShowVizModal] = useState<boolean>(false)
   const [modalTableIndex, setModalTableIndex] = useState<number>(-1)
+  const [modalTableId, setModalTableId] = useState<string>("")
   const [appConfig, setAppConfig] = useState<undefined | typeof config>(undefined)
 
   useEffect(() => {
@@ -77,7 +78,7 @@ function App() {
     const localStorage = new LocalStorageService()
     let localConfig = localStorage.getItemFromStorage("odc-config")
     if(!localConfig || localConfig != JSON.stringify(config)) {
-      console.log('setting config data in local service')
+      // console.log('setting config data in local service')
       localStorage.setItemInStorage("odc-config", config)
       localConfig = localStorage.getItemFromStorage("odc-config")
     }
@@ -129,7 +130,7 @@ function App() {
           return prevTables.map(table => {
             if(table.id === tableId) {
               table.rows = data;
-              console.log('data length:', data.length)
+              // console.log('data length:', data.length)
             }
             return table;
           })
@@ -178,12 +179,14 @@ function App() {
   const showFullscreenViz = (tableId: string) => {
     let foundTableIndex = responseTables.findIndex(table => table.id === tableId)
     if(foundTableIndex < 0) return;
+    setModalTableId(tableId)
     setModalTableIndex(foundTableIndex)
     setShowVizModal(true)
   }
 
   const onCloseTable = () => {
     setModalTableIndex(-1)
+    setModalTableId("")
     setShowTableModal(false)
     setShowVizModal(false)
   }
@@ -234,6 +237,7 @@ function App() {
             <VisualizationsDialogue
               showModal={showVizModal}
               responseTable={responseTables[modalTableIndex] || undefined}
+              config={appConfig ? appConfig.items[modalTableId] : undefined}
               onCloseModal={onCloseTable}
             />
           </ReactQueryCacheProvider>

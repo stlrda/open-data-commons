@@ -113,14 +113,6 @@ const Table: React.FC<TableProps> = ({
     )
   }
 
-  // const cellRendererJSON = (rowIndex: number) => <Cell><JSONFormat>{{"index": rowIndex, "yessir": true}}</JSONFormat></Cell>;
-  if(!columns || Object.keys(columns).length < 1) {
-    return (
-      <div>
-        <p>No responses found for this request</p>
-      </div>
-    )
-  }
   return (
     <BPTable
       numRows={numRows}

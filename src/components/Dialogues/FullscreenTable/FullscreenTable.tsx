@@ -1,15 +1,15 @@
 import React from 'react'
 import { Dialog, Classes, Spinner } from '@blueprintjs/core'
-import Table from '../table/Table'
-import { ODCTable } from '../../services/OpenapiFormatter'
+import Table from '../../table/Table'
+import { ODCTable } from '../../../services/OpenapiFormatter'
 
-interface Props {
+export interface FullscreenTableProps {
   showModal: boolean
   responseTable?: ODCTable
   onCloseModal: () => void
 }
 
-const FullscreenTable: React.FC<Props> = ({
+const FullscreenTable: React.FC<FullscreenTableProps> = ({
   showModal,
   responseTable,
   onCloseModal,

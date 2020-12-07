@@ -5,7 +5,8 @@ const StyledApiItem = styled.div`
   position: relative;
   flex-direction: row;
   // width: 100%;
-  padding-top: 3.5em;
+  padding-top: 3em;
+  padding-bottom: 2em;
   z-index: 1;
 
   &:first-child {
@@ -18,7 +19,7 @@ const StyledApiItem = styled.div`
     display: block;
     content: "";
     bottom: 0;
-    border-bottom: 1px solid rgba(10,10,10, .7);
+    border-bottom: 1px solid rgba(33,33,33, .43);
     // border-bottom: 1px solid rgba(17,23,26);
   }
   &:last-child {
@@ -32,13 +33,13 @@ const StyledApiItem = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 1.5em;
+    font-size: 1.75em;
     color: #000;
     font-weight: 400;
     font-family: ${props => props.theme.typography.fontFamilyRegular};
 
     &.small-title {
-      font-size: 1.3em;
+      font-size: 1.35em;
       margin-top: 40px;
     }
   }
@@ -46,6 +47,7 @@ const StyledApiItem = styled.div`
   .table-container {
     display: flex; // keeps from taking up all space
     // overflow-y: auto;
+    margin-top: 25px !important;
 
     &.expanded {
       height: initial; //100% or auto
@@ -100,7 +102,7 @@ const StyledApiItem = styled.div`
     padding-left: 1em;
     padding-right: 1em;
     width: 40%;
-    background: ${props => props.theme.dark};
+    // background: ${props => props.theme.dark};
     color: #fff;
     // width: ${props => props.theme.rightColumnWidth};
     // width: calc(40% - 130px);
@@ -111,7 +113,7 @@ const StyledApiItem = styled.div`
       display: flex;
       flex-direction: row;
       align-items: center;
-      background-color: ${props => props.theme.darkest};
+      // background-color: ${props => props.theme.darkest};
       padding: 10px;
       margin-bottom: 15px;
       border-radius: 4px;
@@ -163,14 +165,21 @@ const StyledApiItem = styled.div`
   }
   .api-execute-button-bar {
     margin-top: .9em;
-    padding-left: 25%;
+    // padding-left: 25%;
     display: flex;
     flex-direction: row;
     align-items: center;
     // justify-content: center;
 
+    &.no-params {
+      padding-left: 0;
+    }
+
     .api-execute-button {
       margin-right: 10px;
+    }
+    .api-execute-button:last-child {
+      margin-right: 0;
     }
   }
 

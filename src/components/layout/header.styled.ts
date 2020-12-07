@@ -8,11 +8,18 @@ const PageHeader = styled.header`
     font-weight: 400;
     color: ${props => props.theme.dark};
     font-family: sans-serif;
-    font-size: 2.3;
+    font-size: 2.3em;
+    margin-left: 0;
+  }
+
+  .header-version {
+    font-size: 1.2em;
+    font-weight: bold;
   }
 
   .header-description {
-
+    font-size: 1.15em;
+    margin-bottom: 0;
   }
 
   @media(max-width: ${props => props.theme.breakpoints.medium}) {

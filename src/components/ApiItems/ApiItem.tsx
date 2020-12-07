@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
 import moment from 'moment'
-import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, NumericInput, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
+import { Divider, HTMLTable, Tag, EditableText, Button, ButtonGroup, Collapse, HTMLSelect, Tooltip, Position, Icon } from '@blueprintjs/core'
 import { DateInput, IDateFormatProps, TimePicker, ITimePickerProps } from '@blueprintjs/datetime'
-import { DataCommonsConfig } from '../../mocks/config2'
-// import { JSONFormat } from '@blueprintjs/table'
+import TextInput from '../FormInputs/TextInput'
+import NumericInput from '../FormInputs/NumericInput'
 import Table from '../table/Table'
+import { DataCommonsConfig } from '../../mocks/config2'
 import ApiRequestService from '../../services/ApiRequest'
 import FileSaverService from '../../services/FileSaver'
 import StyledApiItem, { ResponseItem_Styled } from './api-item.styled'
@@ -180,7 +181,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
           },
         ])
       }
-    } else console.log('data is invalid somehow. errors:', errors)
+    } else console.log('data is invalid. errors:', errors)
 
     setLoading(false)
   }
@@ -289,34 +290,35 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
     let dateStringFormat = "YYYY-MM-DD" // the default format
 
+    const isPath = parameter.in === "path" ? true : false
+
     switch(formatData.type) {
-      case "number":
-        if(parameter.in === "path")
-          return (
-            <NumericInput
-              style={{margin: 0}}
-              min={formatData.min || undefined}
-              max={formatData.max || undefined}
-              placeholder="Enter a number..."
-              value={paths[parameter.name] || queryData.default || formatData.default || 0}
-              onValueChange={(numericValue: number) => handleChangePath(numericValue, parameter.name)}
-            />
-          )
+      case "number": {
+        if(isPath && !paths[parameter.name]) {
+          if(queryData.default) handleChangePath(queryData.default, parameter.name)
+          else if (formatData.default) handleChangePath(formatData.default, parameter.name)
+        }
+        else if(!parameters[parameter.name]) {
+          if(queryData.default) handleChange(queryData.default, parameter.name)
+          else if (formatData.default) handleChange(formatData.default, parameter.name)
+        }
+
+        let value = isPath ? paths[parameter.name] : parameters[parameter.name]
+        let changeMethod = isPath ? handleChangePath : handleChange
+
         return (
           <NumericInput
-            style={{margin: 0}}
+            isPath={isPath}
+            parameterName={parameter.name}
+            // style={{margin: 0}}
             min={formatData.min || undefined}
             max={formatData.max || undefined}
             placeholder="Enter a number..."
-            value={parameters[parameter.name] || queryData.default || formatData.default || 0}
-            onValueChange={(numericValue: number) => handleChange(numericValue, parameter.name)}
-            leftIcon={(queryData.description || formatData.description) ? (
-              // <Tooltip content={queryData.description || formatData.description} position={Position.TOP}>
-                <Icon icon="info-sign" />
-              // {/* </Tooltip> */}
-            ) : undefined}
+            value={value || queryData.default || formatData.default || 0}
+            onValueChange={changeMethod}
           />
         )
+      }
       case "date":
         if(formatData.dateFormatString)
           dateStringFormat = formatData.dateFormatString
@@ -372,7 +374,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
               useAmPm={false}
               value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
               onChange={(data) => {
-                console.log('time change data:', data)
+                // console.log('time change data:', data)
                 handleChange(data, parameter.name)
               }}
             />
@@ -391,40 +393,30 @@ const ApiItem: React.FC<ApiItemProps> = ({
             useAmPm={false}
             value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
             onChange={(data) => {
-              console.log('time change data:', data)
+              // console.log('time change data:', data)
               handleChange(data, parameter.name)
             }}
           />
         )
       case "string":
-      default:
-        if(parameter.in === "path")
-          return (
-            <EditableText
-              alwaysRenderInput={true}
-              intent={errors[parameter.name] ? 'danger' : 'none'}
-              placeholder={`(PATH): ${parameter.schema.type} ${
-                parameter.schema.title ? `(${parameter.schema.title})` : ''
-              }`}
-              selectAllOnFocus={true}
-              value={paths[parameter.name] || queryData.default || formatData.default || ''}
-              onChange={(data) => handleChangePath(data, parameter.name)}
-              onConfirm={() => validateInput(parameter.name, parameter.schema.type, true)}
-            />
-          )
+      default: {
+        const value = isPath ? paths[parameter.name] || queryData.default || formatData.default || ''
+          : parameters[parameter.name] || queryData.default || formatData.default || ''
+        const changeMethod = isPath ? handleChangePath : handleChange;
         return (
-          <EditableText
-            alwaysRenderInput={true}
-            intent={errors[parameter.name] ? 'danger' : 'none'}
+          <TextInput
+            isPath={isPath}
+            parameter={parameter}
+            intent={errors[parameter.name] ? "danger" : "none"}
             placeholder={`${parameter.schema.type} ${
               parameter.schema.title ? `(${parameter.schema.title})` : ''
             }`}
-            selectAllOnFocus={true}
-            value={parameters[parameter.name] || queryData.default || formatData.default || ''}
-            onChange={(data) => handleChange(data, parameter.name)}
-            onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
+            value={value}
+            onChange={changeMethod}
+            validateInput={validateInput}
           />
         )
+      }
     }
   }
 
@@ -434,15 +426,41 @@ const ApiItem: React.FC<ApiItemProps> = ({
     <StyledApiItem id={method.operationId}>
       {/* Left side: Api Info, Table Display, Params */}
       <div className="api-item-left">
-        <h3 className="section-header-title">{method.summary}</h3>
+        <h2 className="section-header-title">
+          <span style={{marginRight: 10}}>{method.summary}</span>
+          {/* <span style={{opacity: .75, fontSize: "0.75em"}}>-</span> */}
+          <span style={{opacity: .75, marginLeft: 10, marginTop: 1, marginBottom: 0, paddingBottom: 0, fontSize: "0.75em"}}>{endpoint}</span>
+        </h2>
         {method.description && <p className="section-header-description">{method.description}</p>}
 
         {method.parameters && method.parameters.length > 0 ? (
           <div className="query-parameters">
-            <div className="subsection-header">
+            {/* <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
               <Divider className="mh-0" />
-            </div>
+            </div> */}
+
+            <h3 className="section-header-title small-title">
+              <span style={{ marginRight: 6, flex: 1 }}>Queries</span>
+              <div className="api-execute-button-bar">
+                <Button
+                  className="api-execute-button"
+                  text="Clear"
+                  disabled={Object.keys(parameters).length < 1 && Object.keys(errors).length < 1}
+                  onClick={clearForm}
+                />
+                <Button
+                  className="api-execute-button"
+                  rightIcon="arrow-right"
+                  intent="success"
+                  text="Execute"
+                  onClick={submitForm}
+                />
+              </div>
+            </h3>
+
+
+
             {/* Display the query parameters */}
             {/* HTMLTable: Field, Type */}
             <HTMLTable className="api-item-html-table" bordered>
@@ -455,7 +473,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
               </thead>
               <tbody>
                 {method.parameters.map((parameter: any, index: number) => (
-                  <tr key={index}>
+                  <tr key={`${parameter.name}-${index}`}>
                     <td
                       className="parameter-name-column"
                       style={{ display: 'flex', flexDirection: 'row' }}
@@ -466,8 +484,9 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     <td className="parameter-datatype-column">
                       {config && config.queries && formats
                         ? getFormInput(parameter, index)
-                        : <span
+                        : <div
                             style={{
+                              display: "inline-block",
                               border: errors[parameter.name] && '1px solid rgba(235,0,0,.54)',
                               padding: 4,
                               borderRadius: 4,
@@ -498,7 +517,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
                                 onConfirm={() => validateInput(parameter.name, parameter.schema.type)}
                               />
                             )}
-                        </span>
+                        </div>
                       }
                         {/* {parameter.schema.type}{' '}
                         {parameter.schema.title && `(${parameter.schema.title})`} */}
@@ -519,7 +538,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
             </HTMLTable>
 
             {/* Execute Button Bar */}
-            <div className="api-execute-button-bar">
+            {/* <div className="api-execute-button-bar">
               <Button
                 className="api-execute-button"
                 text="Clear"
@@ -533,17 +552,18 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 text="Execute"
                 onClick={submitForm}
               />
-            </div>
+            </div> */}
           </div>
         ) : (
           <div className="query-parameters">
-            <div className="subsection-header">
+            {/* <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
               <Divider className="mh-0" />
-            </div>
-            <p>No query parameters</p>
-            {/* Execute Button Bar */}
-            <div className="api-execute-button-bar">
+            </div> */}
+
+            <p style={{fontSize: "1.15em", marginBottom: 20}}>No query parameters</p>
+
+            <div className="api-execute-button-bar no-params">
               <Button
                 className="api-execute-button"
                 rightIcon="arrow-right"
@@ -558,8 +578,8 @@ const ApiItem: React.FC<ApiItemProps> = ({
         {/* Response Section */}
         <div className="api-responses">
           <h3 className="section-header-title small-title">
-            <div>
-              <span style={{ marginRight: 6 }}>Responses</span>
+            {/* <div> */}
+              <span style={{ marginRight: 6, flex: 1 }}>Responses</span>
               {responses.length > 0 ? (
                 <>
                   <Button
@@ -623,8 +643,8 @@ const ApiItem: React.FC<ApiItemProps> = ({
                   />
                 </>
               )}
-            </div>
-            {method.responses && (
+            {/* </div> */}
+            {/* {method.responses && (
               <div className="method-responses">
                 {method.responses.map((response: any) => (
                   <Tag
@@ -637,47 +657,46 @@ const ApiItem: React.FC<ApiItemProps> = ({
                   </Tag>
                 ))}
               </div>
-            )}
+            )} */}
           </h3>
-          <div className="subsection-header">
-            <h6 className="subsection-header-title">response schema</h6>
-            <Divider className="mh-0" />
-          </div>
-          <div className="api-responses-innner">
-            <div className="table-container" style={{
-              height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
-            }}>
-              {table ? (
-                <Table
-                  numRows={table.rows.length}
-                  columns={table.columns}
-                  rows={table.rows}
-                  id={table.id}
-                />
-              ) : (
-                <p>
-                  {method?.responses[0]?.code
-                    ? `A successful response will return a ${method.responses[0].code} status code but no data`
-                    : 'This method does not return any data'}
-                </p>
-              )}
+          {!table || !table.columns || Object.keys(table.columns).length < 1 ? (
+            <div>
+              <p style={{fontSize: "1.15em", marginTop: 10}}>No responses found for this request</p>
             </div>
-          </div>
+          ) : (
+            // <>
+              // {/* <div className="subsection-header">
+              //   <h6 className="subsection-header-title">response schema</h6>
+              //   <Divider className="mh-0" />
+              // </div> */}
+              <div className="api-responses-innner">
+                <div className="table-container" style={{
+                  height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
+                }}>
+                  <Table
+                    numRows={table.rows.length}
+                    columns={table.columns}
+                    rows={table.rows}
+                    id={table.id}
+                  />
+                </div>
+              </div>
+            // </>
+          )}
         </div>
       </div>
 
       {/* Right side: Visualizations, downloads(?), what else? */}
       <div className="api-item-right">
-        <div className="api-method-item">
+        {/* <div className="api-method-item">
           <Tag htmlTitle={http} intent="success" className="endpoint-http-text">
             {http}
           </Tag>
           <span className="endpoint-path-text">{endpoint}</span>
-        </div>
+        </div> */}
 
-        <h3 className="response-header" style={{display:'flex',flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
-          <span style={{flex: 1}}>Response Log</span>
-          {responses.length > 0 && (
+        {/* <h3 className="response-header">Statistical Information */}
+          {/* {responses.length > 0 && (
             <ButtonGroup>
               <Button
                 className="api-execute-button"
@@ -694,14 +713,21 @@ const ApiItem: React.FC<ApiItemProps> = ({
                 onClick={collapseResults}
               />
             </ButtonGroup>
-          )}
-        </h3>
+          )} */}
+        {/* </h3> */}
 
         <div className="response-visualizations">
           <div className="helper-toolbar">{/* Copy, Expand All, Collapse All, etc. */}</div>
           <div className="response-results">
+            {/* {responses.length > 0 ? (
+              <div>
+                <p>stats: djf;lsdfjdlf</p>
+              </div>
+            ) : (
+              <p>No data yet</p>
+            )} */}
             {/* <p style={{color: "#fff"}}>still deciding...</p> */}
-            {responses.map((response, index) => (
+            {/* {responses.map((response, index) => (
               <ResponseItem_Styled key={index} className="response-result-item">
                 <span className="response-result-item-index">{response.id}</span>
                 <div style={{display:'flex', flexDirection:'column', alignItems:'stretch', flex: 1}}>
@@ -716,13 +742,12 @@ const ApiItem: React.FC<ApiItemProps> = ({
                     <div className="response-result-item-inner response-item-response">
                       <p style={{ color: '#fff', padding: 5, width: '100%', display: 'block', marginBottom: 0 }}>
                         {JSON.stringify(response.details)}
-                        {/* <JSONFormat>{response.details}</JSONFormat> */}
                       </p>
                     </div>
                   </Collapse>
                 </div>
               </ResponseItem_Styled>
-            ))}
+            ))} */}
           </div>
         </div>
       </div>

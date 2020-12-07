@@ -35,7 +35,7 @@ const Layout: React.FC<LayoutProps> = ({
       </MainContent>
 
       {/* Right-column Backdrop, only display if large screens */}
-      <Backdrop />
+      {/* <Backdrop /> */}
     </ThreeColumnLayout>
   )
 }

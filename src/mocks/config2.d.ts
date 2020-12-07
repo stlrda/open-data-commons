@@ -1,5 +1,3 @@
-import {  } from "moment"
-
 export declare namespace DataCommonsConfig {
   interface Config {
     globalExcludes?: string[] // endpoints to exclude from visualizing
