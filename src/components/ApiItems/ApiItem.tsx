@@ -181,7 +181,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
           },
         ])
       }
-    } else console.log('data is invalid somehow. errors:', errors)
+    } else console.log('data is invalid. errors:', errors)
 
     setLoading(false)
   }
@@ -374,7 +374,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
               useAmPm={false}
               value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
               onChange={(data) => {
-                console.log('time change data:', data)
+                // console.log('time change data:', data)
                 handleChange(data, parameter.name)
               }}
             />
@@ -393,7 +393,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
             useAmPm={false}
             value={(parameters[parameter.name] && moment(parameters[parameter.name]).toDate()) || moment().toDate()}
             onChange={(data) => {
-              console.log('time change data:', data)
+              // console.log('time change data:', data)
               handleChange(data, parameter.name)
             }}
           />
@@ -426,7 +426,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
     <StyledApiItem id={method.operationId}>
       {/* Left side: Api Info, Table Display, Params */}
       <div className="api-item-left">
-        <h3 className="section-header-title">{method.summary}</h3>
+        <h2 className="section-header-title">{method.summary}</h2>
         {method.description && <p className="section-header-description">{method.description}</p>}
 
         {method.parameters && method.parameters.length > 0 ? (
@@ -529,13 +529,14 @@ const ApiItem: React.FC<ApiItemProps> = ({
           </div>
         ) : (
           <div className="query-parameters">
-            <div className="subsection-header">
+            {/* <div className="subsection-header">
               <h6 className="subsection-header-title">query parameters</h6>
               <Divider className="mh-0" />
-            </div>
-            <p>No query parameters</p>
-            {/* Execute Button Bar */}
-            <div className="api-execute-button-bar">
+            </div> */}
+
+            <p style={{fontSize: "1.15em", marginBottom: 20}}>No query parameters</p>
+
+            <div className="api-execute-button-bar no-params">
               <Button
                 className="api-execute-button"
                 rightIcon="arrow-right"
@@ -631,30 +632,30 @@ const ApiItem: React.FC<ApiItemProps> = ({
               </div>
             )} */}
           </h3>
-          <div className="subsection-header">
-            <h6 className="subsection-header-title">response schema</h6>
-            <Divider className="mh-0" />
-          </div>
-          <div className="api-responses-innner">
-            <div className="table-container" style={{
-              height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
-            }}>
-              {table ? (
-                <Table
-                  numRows={table.rows.length}
-                  columns={table.columns}
-                  rows={table.rows}
-                  id={table.id}
-                />
-              ) : (
-                <p>
-                  {method?.responses[0]?.code
-                    ? `A successful response will return a ${method.responses[0].code} status code but no data`
-                    : 'This method does not return any data'}
-                </p>
-              )}
+          {!table || !table.columns || Object.keys(table.columns).length < 1 ? (
+            <div>
+              <p style={{fontSize: "1.15em", marginTop: 10}}>No responses found for this request</p>
             </div>
-          </div>
+          ) : (
+            <>
+              <div className="subsection-header">
+                <h6 className="subsection-header-title">response schema</h6>
+                <Divider className="mh-0" />
+              </div>
+              <div className="api-responses-innner">
+                <div className="table-container" style={{
+                  height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
+                }}>
+                  <Table
+                    numRows={table.rows.length}
+                    columns={table.columns}
+                    rows={table.rows}
+                    id={table.id}
+                  />
+                </div>
+              </div>
+            </>
+          )}
         </div>
       </div>
 

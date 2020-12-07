@@ -5,7 +5,8 @@ const StyledApiItem = styled.div`
   position: relative;
   flex-direction: row;
   // width: 100%;
-  padding-top: 3.5em;
+  padding-top: 3em;
+  padding-bottom: 2em;
   z-index: 1;
 
   &:first-child {
@@ -32,13 +33,13 @@ const StyledApiItem = styled.div`
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 1.5em;
+    font-size: 1.7em;
     color: #000;
     font-weight: 400;
     font-family: ${props => props.theme.typography.fontFamilyRegular};
 
     &.small-title {
-      font-size: 1.3em;
+      font-size: 1.43em;
       margin-top: 40px;
     }
   }
@@ -168,6 +169,10 @@ const StyledApiItem = styled.div`
     flex-direction: row;
     align-items: center;
     // justify-content: center;
+
+    &.no-params {
+      padding-left: 0;
+    }
 
     .api-execute-button {
       margin-right: 10px;

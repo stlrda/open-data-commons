@@ -78,7 +78,7 @@ function App() {
     const localStorage = new LocalStorageService()
     let localConfig = localStorage.getItemFromStorage("odc-config")
     if(!localConfig || localConfig != JSON.stringify(config)) {
-      console.log('setting config data in local service')
+      // console.log('setting config data in local service')
       localStorage.setItemInStorage("odc-config", config)
       localConfig = localStorage.getItemFromStorage("odc-config")
     }
@@ -130,7 +130,7 @@ function App() {
           return prevTables.map(table => {
             if(table.id === tableId) {
               table.rows = data;
-              console.log('data length:', data.length)
+              // console.log('data length:', data.length)
             }
             return table;
           })

@@ -50,7 +50,7 @@ class DataCalculations {
     let dataShape = this.getDataShape();
 
     dataShape.forEach(column => {
-      console.log('column:', column)
+      // console.log('column:', column)
       if(!this.data!.rows) return { name: column.name, value: 0 }
       dataValues[column.name] = this.data!.rows.map(row => {
         if(!row) return {name: column.name, value: 0}

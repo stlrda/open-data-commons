@@ -56,12 +56,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
   config,
   onCloseModal,
 }) => {
-
-  useEffect(() => {
-    console.log('response table:', responseTable)
-    console.log('config:', config)
-  }, [responseTable, config])
-
   let dataService: any
 
   // const [visualizations, setVisualizations] = useState<any[]>([])
@@ -82,15 +76,15 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
     dataService = new DataCalculations(responseTable)
 
     // set keys from columns
-    console.log('data changed:', responseTable)
+    // console.log('data changed:', responseTable)
     let columnKeys = Object.keys(responseTable.columns)
     setKeys(columnKeys)
     setSelectedTab(columnKeys[0])
 
     const getData = () => {
-      console.log('getting data from service')
+      // console.log('getting data from service')
       const data = dataService.getDataValues()
-      console.log('data from service:', data)
+      // console.log('data from service:', data)
       setChartData(data)
     }
 
@@ -106,10 +100,10 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
   }
 
   const getVisualizations = (field: string, data: any, index: number, formatData?: DataCommonsConfig.Response) => {
-    console.log('getting viz for this data:')
-    console.log('field:', field)
-    console.log('data:', data) // name, type, value
-    console.log('format data:', formatData)
+    // console.log('getting viz for this data:')
+    // console.log('field:', field)
+    // console.log('data:', data) // name, type, value
+    // console.log('format data:', formatData)
 
     let visualizations: any = [] // will be set of visualizations to render
 
@@ -118,16 +112,16 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
       if(formatData.format) {
         // warning: this will not support multiple lat/lon in the same response
         if(formatData.format === "geo") {
-          console.log('pushing geomap viz')
+          // console.log('pushing geomap viz')
           let newGeoData;
           visualizations.push(<div>geo</div>)
 
           if(!geoData) {
             let responseData = config!.responses![index]
-            if(responseData)
-              console.log('config data for response item:', responseData)
+            // if(responseData)
+              // console.log('config data for response item:', responseData)
 
-            console.log('response table data:', responseTable)
+            // console.log('response table data:', responseTable)
 
             // for each item in responseTable.rows
               // return object with lat and lon
@@ -153,7 +147,7 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
 
               filteredData = filteredData.filter(row => row.lat && row.lng)
 
-              console.log('filtered data:', filteredData)
+              // console.log('filtered data:', filteredData)
 
               setGeoData(filteredData as GeoData[])
 
@@ -256,7 +250,7 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
     if (!chartData)
       return (
         <div>
-          <p>chart data or data service undefined</p>
+          <p style={{fontSize: "1.15em"}}>chart data or data service undefined</p>
         </div>
       )
 
@@ -340,7 +334,7 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
                           {/* Card Masonry / Grid */}
                           {keys.map((option, index: number) => {
                             let formatData = config ? config.responses![index] : undefined
-                            console.log('format data:', formatData)
+                            // console.log('format data:', formatData)
                             if(!formatData) {
                               return (
                                 <Card elevation={Elevation.TWO} key={option} className="overview-card">
@@ -364,7 +358,7 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
                   />
                   {keys.map((option, index) => {
                     let formatData = config ? config.responses![index] : undefined
-                    console.log('format data:', formatData)
+                    // console.log('format data:', formatData)
                     return (
                       <Tab
                         key={option}
