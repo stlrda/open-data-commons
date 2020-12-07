@@ -70,6 +70,7 @@ function App() {
   const [showTableModal, setShowTableModal] = useState<boolean>(false)
   const [showVizModal, setShowVizModal] = useState<boolean>(false)
   const [modalTableIndex, setModalTableIndex] = useState<number>(-1)
+  const [modalTableId, setModalTableId] = useState<string>("")
   const [appConfig, setAppConfig] = useState<undefined | typeof config>(undefined)
 
   useEffect(() => {
@@ -178,12 +179,14 @@ function App() {
   const showFullscreenViz = (tableId: string) => {
     let foundTableIndex = responseTables.findIndex(table => table.id === tableId)
     if(foundTableIndex < 0) return;
+    setModalTableId(tableId)
     setModalTableIndex(foundTableIndex)
     setShowVizModal(true)
   }
 
   const onCloseTable = () => {
     setModalTableIndex(-1)
+    setModalTableId("")
     setShowTableModal(false)
     setShowVizModal(false)
   }
@@ -234,6 +237,7 @@ function App() {
             <VisualizationsDialogue
               showModal={showVizModal}
               responseTable={responseTables[modalTableIndex] || undefined}
+              config={appConfig ? appConfig.items[modalTableId] : undefined}
               onCloseModal={onCloseTable}
             />
           </ReactQueryCacheProvider>

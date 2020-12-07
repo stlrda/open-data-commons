@@ -291,7 +291,11 @@ const ApiItem: React.FC<ApiItemProps> = ({
 
     switch(formatData.type) {
       case "number":
-        if(parameter.in === "path")
+        if(parameter.in === "path") {
+          if(!paths[parameter.name]) {
+            if(queryData.default) handleChangePath(queryData.default, parameter.name)
+            else if (formatData.default) handleChangePath(formatData.default, parameter.name)
+          }
           return (
             <NumericInput
               style={{margin: 0}}
@@ -302,6 +306,12 @@ const ApiItem: React.FC<ApiItemProps> = ({
               onValueChange={(numericValue: number) => handleChangePath(numericValue, parameter.name)}
             />
           )
+        }
+
+        if(!parameters[parameter.name]) {
+          if(queryData.default) handleChange(queryData.default, parameter.name)
+          else if (formatData.default) handleChange(formatData.default, parameter.name)
+        }
         return (
           <NumericInput
             style={{margin: 0}}

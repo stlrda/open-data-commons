@@ -15,19 +15,20 @@ interface IDataValue {
 }
 
 class DataCalculations {
-  data: ODCTable;
+  data?: ODCTable;
 
 
-  constructor(dataset: ODCTable) {
-    this.data = dataset;
+  constructor(dataset?: ODCTable) {
+    if(dataset)
+      this.data = dataset;
   }
 
   // returns array of DataVizResponse's
   getDataShape() {
     let responses: IDataShape[] = []
 
-    Object.keys(this.data.columns).forEach(columnKey => {
-      let column = this.data.columns[columnKey]
+    Object.keys(this.data!.columns).forEach(columnKey => {
+      let column = this.data!.columns[columnKey]
 
       let response: IDataShape = {
         name: columnKey,
@@ -50,10 +51,12 @@ class DataCalculations {
 
     dataShape.forEach(column => {
       console.log('column:', column)
-      dataValues[column.name] = this.data.rows.map(row => {
+      if(!this.data!.rows) return { name: column.name, value: 0 }
+      dataValues[column.name] = this.data!.rows.map(row => {
+        if(!row) return {name: column.name, value: 0}
         return {
           name: column.name,
-          value: row[column.name]
+          value: row[column.name] ? row[column.name] : 0
         }
       })
     })
@@ -66,7 +69,8 @@ class DataCalculations {
       switch(column.type) {
         case "string":
           // value = this.getStringOccurences(dataValues[column.name]);
-          value = [{name: column.name, value: 15 }]
+          // value = [{name: column.name, value: dataValues[column.name] }]
+          value = dataValues[column.name]
           break;
         case "number": case "integer": case "float": case "double": case "long":
           // value = this.getNumericDistribution(dataValues[column.name]);
@@ -74,7 +78,7 @@ class DataCalculations {
           break;
         case "boolean":
           // value = dataValues[column.name]
-          value = [{name: column.name, value: 15 }]
+          value = [{name: column.name, value: dataValues[column.name] }]
           break;
         // ...other types
         default:
@@ -87,7 +91,7 @@ class DataCalculations {
         name: column.name,
         type: column.type,
         value
-      }
+      } as IDataVizResponse
     })
 
     return responses
