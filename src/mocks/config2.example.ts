@@ -106,7 +106,7 @@ const appConfig: DataCommonsConfig.Config = {
           field: "description",
           format: "string", // not sure what all the codes are
           category: true,
-          charts: [""]
+          charts: ["barchart", "piechart"]
         },
         {
           field: "lon",

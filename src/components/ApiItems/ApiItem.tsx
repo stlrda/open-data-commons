@@ -70,6 +70,7 @@ const ApiItem: React.FC<ApiItemProps> = ({
   const [errors, setErrors] = useState<FormErrors>({})
   const [responses, setResponses] = useState<ResponseItem[]>([])
   const [openResults, setOpenResults] = useState<number[]>([])
+  const [startQuery, setStartQuery] = useState<boolean>(false)
 
   const handleChange = (value: any, field: string) => {
     setParameters({ ...parameters, [field]: value })
@@ -433,6 +434,14 @@ const ApiItem: React.FC<ApiItemProps> = ({
         </h2>
         {method.description && <p className="section-header-description">{method.description}</p>}
 
+        {!startQuery ? (
+          <div className="query-parameters">
+            <Button title="Start Query" large onClick={() => setStartQuery(true)}>
+              Start Query
+            </Button>
+          </div>
+        ) : (
+          <>
         {method.parameters && method.parameters.length > 0 ? (
           <div className="query-parameters">
             {/* <div className="subsection-header">
@@ -574,117 +583,123 @@ const ApiItem: React.FC<ApiItemProps> = ({
             </div>
           </div>
         )}
+          </>
+        )}
+
+
 
         {/* Response Section */}
-        <div className="api-responses">
-          <h3 className="section-header-title small-title">
-            {/* <div> */}
-              <span style={{ marginRight: 6, flex: 1 }}>Responses</span>
-              {responses.length > 0 ? (
-                <>
-                  <Button
-                    className="api-execute-button"
-                    rightIcon="fullscreen" // document-share
-                    text="Fullscreen"
-                    minimal={true}
-                    onClick={() => showFullscreenTable(table.id)}
-                  />
-                  <Button
-                    className="api-execute-button"
-                    rightIcon="chart" // document-share
-                    text="Visualize"
-                    minimal={true}
-                    onClick={() => showFullscreenViz(table.id)}
-                  />
-                  <Button
-                    className="api-execute-button"
-                    rightIcon="download"
-                    text="CSV"
-                    minimal={true}
-                    onClick={downloadCsv}
-                  />
-                  <Button
-                    className="api-execute-button"
-                    rightIcon="refresh"
-                    text="Reset"
-                    minimal={true}
-                    onClick={resetResponseTable}
-                  />
-                </>
-              ) : (
-                <>
-                  <Button
-                    disabled
-                    className="api-execute-button"
-                    rightIcon="fullscreen" // document-share
-                    text="Fullscreen"
-                    minimal={true}
-                  />
-                  <Button
-                    disabled
-                    className="api-execute-button"
-                    rightIcon="chart" // document-share
-                    text="Visualize"
-                    minimal={true}
-                  />
-                  <Button
-                    disabled
-                    className="api-execute-button"
-                    rightIcon="download"
-                    text="CSV"
-                    minimal={true}
-                  />
-                  <Button
-                    disabled
-                    className="api-execute-button"
-                    rightIcon="refresh"
-                    text="Reset"
-                    minimal={true}
-                  />
-                </>
-              )}
-            {/* </div> */}
-            {/* {method.responses && (
-              <div className="method-responses">
-                {method.responses.map((response: any) => (
-                  <Tag
-                    key={response.code}
-                    className="method-response-tag"
-                    htmlTitle={response.code}
-                    intent={response.code < 400 ? 'success' : 'danger'}
-                  >
-                    {response.code}
-                  </Tag>
-                ))}
-              </div>
-            )} */}
-          </h3>
-          {!table || !table.columns || Object.keys(table.columns).length < 1 ? (
-            <div>
-              <p style={{fontSize: "1.15em", marginTop: 10}}>No responses found for this request</p>
-            </div>
-          ) : (
-            // <>
-              // {/* <div className="subsection-header">
-              //   <h6 className="subsection-header-title">response schema</h6>
-              //   <Divider className="mh-0" />
-              // </div> */}
-              <div className="api-responses-innner">
-                <div className="table-container" style={{
-                  height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
-                }}>
-                  <Table
-                    numRows={table.rows.length}
-                    columns={table.columns}
-                    rows={table.rows}
-                    id={table.id}
-                  />
+        {startQuery && (
+          <div className="api-responses">
+            <h3 className="section-header-title small-title">
+              {/* <div> */}
+                <span style={{ marginRight: 6, flex: 1 }}>Responses</span>
+                {responses.length > 0 ? (
+                  <>
+                    <Button
+                      className="api-execute-button"
+                      rightIcon="fullscreen" // document-share
+                      text="Fullscreen"
+                      minimal={true}
+                      onClick={() => showFullscreenTable(table.id)}
+                    />
+                    <Button
+                      className="api-execute-button"
+                      rightIcon="chart" // document-share
+                      text="Visualize"
+                      minimal={true}
+                      onClick={() => showFullscreenViz(table.id)}
+                    />
+                    <Button
+                      className="api-execute-button"
+                      rightIcon="download"
+                      text="CSV"
+                      minimal={true}
+                      onClick={downloadCsv}
+                    />
+                    <Button
+                      className="api-execute-button"
+                      rightIcon="refresh"
+                      text="Reset"
+                      minimal={true}
+                      onClick={resetResponseTable}
+                    />
+                  </>
+                ) : (
+                  <>
+                    <Button
+                      disabled
+                      className="api-execute-button"
+                      rightIcon="fullscreen" // document-share
+                      text="Fullscreen"
+                      minimal={true}
+                    />
+                    <Button
+                      disabled
+                      className="api-execute-button"
+                      rightIcon="chart" // document-share
+                      text="Visualize"
+                      minimal={true}
+                    />
+                    <Button
+                      disabled
+                      className="api-execute-button"
+                      rightIcon="download"
+                      text="CSV"
+                      minimal={true}
+                    />
+                    <Button
+                      disabled
+                      className="api-execute-button"
+                      rightIcon="refresh"
+                      text="Reset"
+                      minimal={true}
+                    />
+                  </>
+                )}
+              {/* </div> */}
+              {/* {method.responses && (
+                <div className="method-responses">
+                  {method.responses.map((response: any) => (
+                    <Tag
+                      key={response.code}
+                      className="method-response-tag"
+                      htmlTitle={response.code}
+                      intent={response.code < 400 ? 'success' : 'danger'}
+                    >
+                      {response.code}
+                    </Tag>
+                  ))}
                 </div>
+              )} */}
+            </h3>
+            {!table || !table.columns || Object.keys(table.columns).length < 1 ? (
+              <div>
+                <p style={{fontSize: "1.15em", marginTop: 10}}>No responses found for this request</p>
               </div>
-            // </>
-          )}
+            ) : (
+              // <>
+                // {/* <div className="subsection-header">
+                //   <h6 className="subsection-header-title">response schema</h6>
+                //   <Divider className="mh-0" />
+                // </div> */}
+                <div className="api-responses-innner">
+                  <div className="table-container" style={{
+                    height: `calc(22px * ${table.rows.length < maxVisibleCells ? table.rows.length : maxVisibleCells} + 40px)`, // props.cellHeight * props.maxVisibleCells
+                  }}>
+                    <Table
+                      numRows={table.rows.length}
+                      columns={table.columns}
+                      rows={table.rows}
+                      id={table.id}
+                    />
+                  </div>
+                </div>
+              // </>
+            )}
+          </div>
+      )}
         </div>
-      </div>
 
       {/* Right side: Visualizations, downloads(?), what else? */}
       <div className="api-item-right">
