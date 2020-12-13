@@ -26,6 +26,7 @@ interface IApiInfo { // store in local storage
 //   "x-logo"?: string
 // }
 
+const BaseLayout = loadable(() => import('./containers/BaseLayout'))
 const ApiItemsContainer = loadable(() => import('./containers/ApiItemsContainer'))
 const Visualizations = loadable(() => import('./containers/Visualizations'))
 
@@ -52,6 +53,10 @@ function App(props: any) {
   const [responseTables, setResponseTables] = useState<ODCTable[]>([])
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
   const [appConfig, setAppConfig] = useState<undefined | typeof config>(undefined)
+
+  useEffect(() => {
+    console.log('dark mode changed:', darkMode)
+  }, [darkMode])
 
   useEffect(() => {
     // if local storage has not saved config, save the config
@@ -134,12 +139,19 @@ function App(props: any) {
 
   return (
     <>
+    {console.log('rendering')}
       <CSSBaseline />
       <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
         <Router>
-          <ApiItemsContainer
+          <BaseLayout
             default
             path="/"
+            darkMode={darkMode}
+            toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
+          />
+          <ApiItemsContainer
+            // default
+            path="/docs"
             responseTables={responseTables}
             appConfig={appConfig}
             routes={routes}

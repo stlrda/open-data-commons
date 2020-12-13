@@ -18,6 +18,7 @@ interface ApiItemsProps {
   showFullscreenViz(tableId: string): void
 }
 
+// Make HOC??
 const ApiItems: React.FC<ApiItemsProps> = ({
   apiData,
   tables,
@@ -33,7 +34,7 @@ const ApiItems: React.FC<ApiItemsProps> = ({
     return (
       <div className="content-container">
         <ApiItemSkeleton />
-        <ApiItemSkeleton />
+        {/* <ApiItemSkeleton /> */}
       </div>
     )
   }
