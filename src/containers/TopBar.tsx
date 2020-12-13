@@ -79,7 +79,7 @@ const TopBar: React.FC<Props> = (props) => {
           style={{marginRight: 15}}
 
         />
-        <IconButton className={classes.topBarIconButton} onClick={handleIconClick}>
+        <IconButton href="https://github.com/stlrda" target="_blank" rel="noopener" className={classes.topBarIconButton} onClick={handleIconClick}>
           <GitHubIcon className={classes.topBarIcon} />
         </IconButton>
         <IconButton className={classes.topBarIconButton} onClick={handleIconClick}>

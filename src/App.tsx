@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import loadable from '@loadable/component'
 import CSSBaseline from '@material-ui/core/CssBaseline'
-import { lightTheme, darkTheme } from './styles/mui/theme'
-import { ThemeProvider } from '@material-ui/core'
+// import { lightTheme, darkTheme } from './styles/mui/theme'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 // services
 import SwaggerParserService from './services/SwaggerParser'
 import LocalStorageService from './services/LocalStorage'
@@ -54,9 +54,11 @@ function App(props: any) {
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
   const [appConfig, setAppConfig] = useState<undefined | typeof config>(undefined)
 
-  useEffect(() => {
-    console.log('dark mode changed:', darkMode)
-  }, [darkMode])
+  const theme = createMuiTheme({
+    palette: {
+      type: darkMode ? "dark" : "light"
+    }
+  })
 
   useEffect(() => {
     // if local storage has not saved config, save the config
@@ -139,9 +141,8 @@ function App(props: any) {
 
   return (
     <>
-    {console.log('rendering')}
       <CSSBaseline />
-      <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+      <ThemeProvider theme={theme}>
         <Router>
           <BaseLayout
             default
@@ -150,7 +151,6 @@ function App(props: any) {
             toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
           />
           <ApiItemsContainer
-            // default
             path="/docs"
             responseTables={responseTables}
             appConfig={appConfig}
