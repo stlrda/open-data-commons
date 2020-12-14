@@ -49,6 +49,7 @@ class DataCalculations {
 
     let dataShape = this.getDataShape();
 
+    //@ts-ignore
     dataShape.forEach(column => {
       // console.log('column:', column)
       if(!this.data!.rows) return { name: column.name, value: 0 }

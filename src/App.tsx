@@ -1,36 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { ThemeProvider } from 'styled-components'
-import { useQuery, QueryCache, ReactQueryCacheProvider } from 'react-query'
-import { ReactQueryDevtools } from 'react-query-devtools'
-import Layout from './components/layout/Layout'
-import PageHeader from './components/Header/PageHeader'
-import PageFooter from './components/Footer/PageFooter'
-import ApiItems from './components/ApiItems/ApiItems'
-import TableDialogue from './components/Dialogues/FullscreenTable/FullscreenTable'
-import VisualizationsDialogue from './components/Dialogues/VisualizationsDialogue/VisualizationsDialogue'
+import { Router, Redirect } from '@reach/router';
+// import loadable from '@loadable/component'
+import Loadable from 'react-loadable'
+import CSSBaseline from '@material-ui/core/CssBaseline'
+import ApiItem from './containers/ApiItem'
+import Loading from './containers/new-components/Loading'
+import ApiItems from './containers/ApiItems'
+// import { lightTheme, darkTheme } from './styles/mui/theme'
+import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 // services
 import SwaggerParserService from './services/SwaggerParser'
 import LocalStorageService from './services/LocalStorage'
 import OpenapiFormatter, { ODCTable } from './services/OpenapiFormatter'
-// import LocalStorageService from './services/LocalStorage'
-// Context API
-import { SpecProvider } from './context/SpecContext'
-import { UIProvider } from './context/UIContext';
 // types
 import { OpenAPIV3 } from 'openapi-types'
 import { ODCNavRoute } from './types/Openapi'
-// styles
-import GlobalStyle from './styles/global'
-import odcTheme from './styles/theme'
 // config
 import config from './mocks/config2.example'
 
 
 // const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
-const uniqueQueryId = 'openapi-source'
-
-const queryCache = new QueryCache()
-
 interface IApiInfo { // store in local storage
   logoUrl?: string
   apiVersion?: string
@@ -41,23 +30,63 @@ interface IApiInfo { // store in local storage
 //   "x-logo"?: string
 // }
 
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+
+const BaseLayout = Loadable({
+  loader: () => import('./containers/BaseLayout'),
+  loading: Loading,
+  delay: 300,
+})
+
+// const ApiItem = Loadable({
+//   loader: () => import('./containers/ApiItem'),
+//   loading: Loading,
+//   delay: 300,
+// })
+
+const Visualizations = Loadable({
+  loader: () => import('./containers/Visualizations'),
+  loading: Loading,
+  delay: 300,
+})
+
+const TabularData = Loadable({
+  loader: () => import('./containers/TabularData'),
+  loading: Loading,
+  delay: 300,
+})
+
+const DeveloperMode = Loadable({
+  loader: () => import('./containers/DeveloperMode'),
+  loading: Loading,
+  delay: 300,
+})
+
+const NotFound = Loadable({
+  loader: () => import('./containers/new-components/NotFound'),
+  loading: Loading,
+  delay: 300,
+})
+
+
 export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
   path: string
 }
 
-function App() {
+function App(props: any) {
+  const { api, swaggerUrl } = props
 
-  const swaggerUrl = process.env.REACT_APP_SWAGGER_URL || "";
+  const [darkMode, setDarkMode] = useState<boolean>(false)
 
-  const fetchSwaggerData = async () => {
-    const swaggerParser = new SwaggerParserService();
-    const response = await swaggerParser.validateApi(swaggerUrl)
-    return response;
-  }
-
-  const { isLoading, isError, data, error } = useQuery(uniqueQueryId, fetchSwaggerData, {
-    refetchOnMount: false, refetchOnReconnect: false, refetchOnWindowFocus: false
-  })
+  // Swagger Loading... can make own custom hook for
+  const [swaggerLoading, setSwaggerLoading] = useState<boolean>(true)
+  const [swaggerErrors, setSwaggerErrors] = useState<any>(null)
+  const [swaggerData, setSwaggerData] = useState<any>(null)
 
   // "paths" contain more data than just "paths"
   // since the "refs" are resolved with swagger-parser, all schemas are nested within these paths.
@@ -67,11 +96,13 @@ function App() {
   const [routes, setRoutes] = useState<ODCNavRoute[]>([])
   const [responseTables, setResponseTables] = useState<ODCTable[]>([])
   const [apiInfo, setApiInfo] = useState<IApiInfo | undefined>(undefined)
-  const [showTableModal, setShowTableModal] = useState<boolean>(false)
-  const [showVizModal, setShowVizModal] = useState<boolean>(false)
-  const [modalTableIndex, setModalTableIndex] = useState<number>(-1)
-  const [modalTableId, setModalTableId] = useState<string>("")
   const [appConfig, setAppConfig] = useState<undefined | typeof config>(undefined)
+
+  const theme = createMuiTheme({
+    palette: {
+      type: darkMode ? "dark" : "light"
+    }
+  })
 
   useEffect(() => {
     // if local storage has not saved config, save the config
@@ -91,179 +122,111 @@ function App() {
       console.log('error parsing json config:', error)
       setAppConfig(config)
     }
+
+    const fetchSwaggerData = async () => {
+      const swaggerParser = new SwaggerParserService();
+      const response = await swaggerParser.validateApi(swaggerUrl)
+      return response;
+    }
+
+    const getSwagger = async () => {
+      setSwaggerLoading(true)
+
+      const response = await fetchSwaggerData()
+      console.log('parsed swagger response:', response)
+
+      if(response) {
+        if(swaggerErrors) setSwaggerErrors(null)
+        setSwaggerData(response)
+      }
+      else
+        setSwaggerErrors("swagger url could not be parsed")
+
+      setSwaggerLoading(false)
+    }
+
+    getSwagger()
   }, [])
 
   useEffect(() => {
-    // console.log('swagger data changed:', data)
-
-    if(data && !isError && !error && paths.length < 1) {
+    if(swaggerData && !swaggerErrors && paths.length < 1) {
       const openapiFormatter = new OpenapiFormatter();
 
-      const formattedPaths = openapiFormatter.formatPaths(data.paths);
-      // console.log('paths:', formattedPaths)
-      const formattedNavRoutes = openapiFormatter.getNavRoutes(formattedPaths);
-      // console.log('navRoutes:', formattedNavRoutes)
-      const formattedResponseTables = openapiFormatter.getResponseTables(formattedPaths)
-      // console.log('tables:', formattedResponseTables)
-
-      setRoutes(formattedNavRoutes);
-      setPaths(formattedPaths)
-      setResponseTables(formattedResponseTables)
+      if(swaggerData.paths) {
+        const formattedPaths = openapiFormatter.formatPaths(swaggerData.paths);
+        setPaths(formattedPaths)
+        // console.log('paths:', formattedPaths)
+        const formattedNavRoutes = openapiFormatter.getNavRoutes(formattedPaths);
+        // console.log('navRoutes:', formattedNavRoutes)
+        const formattedResponseTables = openapiFormatter.getResponseTables(formattedPaths)
+        // console.log('tables:', formattedResponseTables)
+        setRoutes(formattedNavRoutes);
+        setResponseTables(formattedResponseTables)
+      }
+      else {
+        console.log('swagger data paths undefined')
+        console.log('swagger data:', swaggerData)
+      }
 
       let newApiInfo: IApiInfo = {}
       //@ts-ignore
-      data.info["x-logo"]?.url && (newApiInfo.logoUrl = data.info["x-logo"].url)
+      swaggerData.info["x-logo"]?.url && (newApiInfo.logoUrl = swaggerData.info["x-logo"].url)
       setApiInfo(newApiInfo);
     }
 
     return cleanup;
-  }, [data, isLoading, isError, error])
-
-  const updateTableData = (data: any, tableId: string) => {
-    // should have rows and columns...?
-    // or should be an api response in the form array of objects or object
-    let tableData = responseTables.find(table => table.id === tableId)
-    if(tableData) {
-      if(Array.isArray(data)) {
-        // replace table.rows with the data, since already array
-        setResponseTables(prevTables => {
-          return prevTables.map(table => {
-            if(table.id === tableId) {
-              table.rows = data;
-              // console.log('data length:', data.length)
-            }
-            return table;
-          })
-        })
-      }
-      else {
-        // populate only the first row with response object data
-        setResponseTables(prevTables => {
-          return prevTables.map(table => {
-            if(table.id === tableId) {
-              table.rows = []
-              table.rows.push(data)
-            }
-            return table;
-          })
-        })
-      }
-    }
-  }
-
-  const resetTableRows = (id: string) => {
-    // reset the given table's rows to their default types
-    const openapiFormatter = new OpenapiFormatter();
-    // find the table and schema
-    const chosenTable = responseTables.find(responseTable => responseTable.id === id)
-    const chosenPath = paths.find((path: any) => path.methods[0].value.operationId === id)
-    const chosenSchema = chosenPath.methods[0].value.responses[0].content["application/json"].schema
-    if(chosenTable && chosenSchema) {
-      const table = openapiFormatter.resetTable(chosenTable, chosenSchema)
-      if(table)
-        setResponseTables(responseTables.map(responseTable => {
-          if(responseTable.id === id)
-            responseTable = table
-          return responseTable;
-        }))
-    }
-  }
-
-  const showFullscreenTable = (tableId: string) => {
-    let foundTableIndex = responseTables.findIndex(table => table.id === tableId)
-    if(foundTableIndex < 0) return;
-    setModalTableIndex(foundTableIndex)
-    setShowTableModal(true)
-  }
-
-  const showFullscreenViz = (tableId: string) => {
-    let foundTableIndex = responseTables.findIndex(table => table.id === tableId)
-    if(foundTableIndex < 0) return;
-    setModalTableId(tableId)
-    setModalTableIndex(foundTableIndex)
-    setShowVizModal(true)
-  }
-
-  const onCloseTable = () => {
-    setModalTableIndex(-1)
-    setModalTableId("")
-    setShowTableModal(false)
-    setShowVizModal(false)
-  }
+  }, [swaggerData, swaggerErrors, swaggerLoading])
 
   const cleanup = () => {
     // console.log('cleanup App.tsx')
   }
 
+  // Context API good for managing modal states if applicable
+
   return (
     <>
-      <ReactQueryDevtools initialIsOpen />
-      <GlobalStyle />
-      <ThemeProvider theme={odcTheme}>
-        <SpecProvider>
-        <UIProvider>
-          <ReactQueryCacheProvider queryCache={queryCache}>
-            <Layout
+      <CSSBaseline />
+      <ThemeProvider theme={theme}>
+        {/* SpecProvider */}
+        {/* Config Provider (or useConfig? or both are needed?) */}
+        <BaseLayout
+          darkMode={darkMode}
+          toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
+        >
+          <Router>
+            <Redirect from="/" to="/endpoints" />
+            <ApiItems
+              path="endpoints"
+            />
+            <ApiItem
+              // rename "endpoint" to more user-friendly word? Like "doc"? other idea?
+              path="endpoints/:operationId"
+            />
+            <Visualizations
+              path="visualize"
+            />
+            <TabularData
+              path="tabular-data"
+            />
+            <DeveloperMode
+              path="code-examples"
+            />
+            <NotFound default />
+            {/* <ApiItemsContainer
+              path="/docs"
+              responseTables={responseTables}
+              appConfig={appConfig}
               routes={routes}
-              logoUrl={apiInfo?.logoUrl}
-            >
-              <PageHeader
-                loading={isLoading}
-                title={data?.info.title || "loading"}
-                description={data?.info.description || "loading"}
-                version={data?.info.version || "loading"}
-              />
-              <ApiItems
-                isFetching={isLoading}
-                apiData={paths}
-                tables={responseTables}
-                updateTableData={updateTableData}
-                resetTableRows={resetTableRows}
-                showFullscreenTable={showFullscreenTable}
-                showFullscreenViz={showFullscreenViz}
-                appConfig={appConfig}
-              />
-              <PageFooter />
-            </Layout>
-
-            {/* Fullscreen Table Dialogue */}
-            <TableDialogue
-              showModal={showTableModal}
-              responseTable={responseTables[modalTableIndex] || undefined}
-              onCloseModal={onCloseTable}
-            />
-
-            {/* Visualizations Dialogue */}
-            <VisualizationsDialogue
-              showModal={showVizModal}
-              responseTable={responseTables[modalTableIndex] || undefined}
-              config={appConfig ? appConfig.items[modalTableId] : undefined}
-              onCloseModal={onCloseTable}
-            />
-          </ReactQueryCacheProvider>
-        </UIProvider>
-        </SpecProvider>
+              apiInfo={apiInfo}
+              paths={paths}
+              swaggerData={swaggerData}
+              updateResponseTables={(data) => setResponseTables(data)}
+            /> */}
+          </Router>
+        </BaseLayout>
       </ThemeProvider>
     </>
   );
 }
 
 export default App;
-
-// const getSwagger = async () => {
-//   setLoading(true)
-//   const localStorage = new LocalStorageService();
-//   const storedData = localStorage.getItemFromStorage('openapi_data')
-//   if(storedData) {
-//     // set it from storage
-//     setSwaggerData(storedData)
-//   }
-//   else {
-//
-//   }
-//   const swaggerParser = new SwaggerParserService();
-//   const urlParsed = await swaggerParser.validateApi(swaggerUrl)
-//   console.log('url parsed response:', urlParsed)
-//   setLoading(false)
-// }
-// getSwagger()

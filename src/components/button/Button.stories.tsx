@@ -14,5 +14,5 @@ const Template: Story<ComponentProps<typeof Button>> = (args) => (
 export const FirstButtonStory = Template.bind({})
 
 FirstButtonStory.args = {
-  title: "ODC Button"
+  title: "Mui Button"
 }

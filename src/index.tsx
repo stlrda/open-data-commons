@@ -1,12 +1,18 @@
+/* eslint-disable no-undef */
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import './index.css';
+// import './index.css';
 import reportWebVitals from './reportWebVitals';
+
+const getEnvironmentVariables = () => ({
+  swaggerUrl: process.env.REACT_APP_SWAGGER_URL,
+  api: process.env.REACT_APP_API_URL
+})
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <App {...getEnvironmentVariables()} />
   </React.StrictMode>,
   document.getElementById('root')
 );

@@ -6,10 +6,10 @@ const NavLink_Styled = styled.li`
     background: transparent;
 
     &:hover {
-      background: ${props => props.theme.gray};
+      background: #E1E1E1;
     }
     &.active {
-      background: ${props => props.theme.gray};
+      background: #E1E1E1;
     }
 
     a.sidebar-navlink {
