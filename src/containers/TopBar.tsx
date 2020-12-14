@@ -21,9 +21,10 @@ const useStyles = makeStyles({
     marginLeft: 90,
     minHeight: 60,
     height: 82,
+    zIndex: 1000,
     paddingLeft: 10,
     paddingRight: 15,
-    filter: "drop-shadow(0px 3px 3px rgba(39, 44, 54, 0.06))"
+    filter: "drop-shadow(0px 3px 3px rgba(39, 44, 54, 0.06))",
   },
   topBarLeft: {
     paddingTop: 15,

@@ -4,15 +4,20 @@ import Sidebar from './Sidebar'
 import TopBar from './TopBar'
 import OverviewCard from './OverviewCard'
 import ItemCard from './ItemCard'
+import Sidemenu from './Sidemenu'
 import RoutesTable from './new-components/RoutesTable'
 // import FAB from '@material-ui/core/Fab'
 import Container from '@material-ui/core/Container'
+import IconButton from '@material-ui/core/IconButton'
+
 // import Tooltip from '@material-ui/core/Tooltip'
 import SpeedDial, { SpeedDialProps } from '@material-ui/lab/SpeedDial'
 import SpeedDialAction from '@material-ui/lab/SpeedDialAction'
 import WidgetsIcon from '@material-ui/icons/Widgets'
 import LaunchIcon from '@material-ui/icons/Launch'
 import SaveIcon from '@material-ui/icons/Save'
+import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 // types
 import { RouteComponentProps } from '@reach/router'
 
@@ -22,12 +27,15 @@ interface Props extends RouteComponentProps {
 }
 
 const useStyles = makeStyles({
-  pageContainer: {},
+  pageContainer: {
+    background: "#fff"
+  },
   mainContent: {
     position: 'relative',
     minHeight: 'calc(100vh - 82px)',
     background: 'rgba(178, 185, 200, 0.15)',
     marginLeft: 90,
+    transition: ".1s ease"
   },
   innerContent: {
     paddingTop: 26,
@@ -48,6 +56,15 @@ const useStyles = makeStyles({
     bottom: 45,
     right: 45,
   },
+  sidemenuIconButton: {
+    position: 'fixed',
+    top: 92,
+    left: 100,
+    zIndex: 1000,
+    border: "1px solid rgba(0,0,0,.25)",
+    background: "#fff !important",
+    padding: 5
+  },
 })
 
 const actions = [
@@ -55,22 +72,17 @@ const actions = [
   { icon: <SaveIcon />, name: 'Save' },
 ]
 
-interface ICardItem {
-  name: string
-  endpoint: string
-  description?: string
-}
-const cardItems: ICardItem[] = [
-  { name: "Crime Details", endpoint: "/crime/details", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vitae hendrerit sed mattis massa, porta facilisi lobortis libero. Quis a sit scelerisque tortor, eleifend neque, sed odio. Sed eget volutpat urna eget."},
-  { name: "Crime Coords", endpoint: "/crime/coords" },
-  { name: "Legacy District", endpoint: "/legacy/district", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."},
-  { name: "Crime Geometry", endpoint: "/crime/{geometry}" }
-]
-
 const BaseLayout: React.FC<Props> = ({ darkMode, toggleDarkMode, ...rest }) => {
   const classes = useStyles()
 
+  const [showSideMenu, setShowSideMenu] = useState<boolean>(false)
+  const [routeType, setRouteType] = useState<number>(0); // 0 or 1
+
   const handleFabClick = () => console.log('fab clicked')
+
+  const toggleSideMenu = () => setShowSideMenu(prevShow => !prevShow)
+
+  const handleRouteTypeChange = (type: number) => setRouteType(type)
 
   return (
     <div className={classes.pageContainer}>
@@ -79,6 +91,23 @@ const BaseLayout: React.FC<Props> = ({ darkMode, toggleDarkMode, ...rest }) => {
 
       {/* Top Bar */}
       <TopBar />
+
+      {/* Arrow Button to Trigger Side Menu */}
+      <IconButton className={classes.sidemenuIconButton} onClick={toggleSideMenu}
+        style={{left: showSideMenu ? ((90 - 16) + 240) : 100 }}
+      >
+        {showSideMenu
+          ? <ArrowBackIcon style={{fontSize: 24, color: "#272C36"}} />
+          : <ArrowForwardIcon style={{fontSize: 24, color: "#272C36"}} />
+        }
+      </IconButton>
+
+      {showSideMenu && (
+        <Sidemenu
+          routeType={routeType}
+          changeRouteType={handleRouteTypeChange}
+        />
+      )}
 
       {/* FAB */}
       {/* <Fab aria-label="try out api" color="inherit" className={classes.fab} size="large">
@@ -106,23 +135,11 @@ const BaseLayout: React.FC<Props> = ({ darkMode, toggleDarkMode, ...rest }) => {
       </SpeedDial>
 
       {/* Main Content Panel */}
-      <main className={classes.mainContent}>
-        {/* Main Content Card */}
+      <main className={classes.mainContent} style={{marginLeft: showSideMenu ? (90 + 240) : 90 }}>
         <div className={classes.innerContent}>
-          <Container>
 
-            {/* <OverviewCard /> */}
+          {rest.children}
 
-            {cardItems.map(item => (
-              <ItemCard
-                key={item.name}
-                {...item}
-              />
-            ))}
-
-            {/* <RoutesTable /> */}
-
-          </Container>
         </div>
       </main>
     </div>

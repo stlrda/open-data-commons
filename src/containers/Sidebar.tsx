@@ -4,6 +4,7 @@ import { Link } from '@reach/router'
 import MUILink from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip'
+import Typography from '@material-ui/core/Typography'
 // icon imports
 import ListIcon from '@material-ui/icons/FormatListBulleted'
 import BarChartIcon from '@material-ui/icons/BarChart';
@@ -50,7 +51,45 @@ const useStyles = makeStyles({
     fontSize: 44,
   },
   navLink: { outline: 'none', borderRadius: "50%" },
-  logoPlaceholder: {display: 'inline-block', width: 66, height: 53, marginLeft: 12, marginRight: 12, marginTop: 15, marginBottom: 15, background: "#6F52ED", cursor: 'pointer' }
+  logoPlaceholder: {
+    display: 'inline-block', width: 90, height: 82, background: "#6F52ED", cursor: 'pointer', textAlign:'center', fontSize: "1.35em", color: "#fff", fontWeight: "bold", fontFamily: "sans-serif", textTransform: "uppercase", lineHeight: "82px",
+    transition: ".12s ease-in-out",
+    "&:hover": {
+    background: "#633fff",
+    lineHeight: "78px",
+    paddingLeft: 4,
+    transition: ".15s ease-in-out",
+    textShadow: `
+      0 1px #808d93, -1px 0 #cdd2d5,
+      -1px 2px #808d93,
+      -2px 1px #cdd2d5,
+      -2px 3px #808d93,
+      -3px 2px #cdd2d5,
+      -3px 4px #808d93,
+      -4px 3px #cdd2d5,
+      -4px 5px #808d93,
+      -5px 4px #cdd2d5,
+      -5px 6px #808d93,
+      -6px 5px #cdd2d5,
+      -6px 7px #808d93,
+      -7px 6px #cdd2d5,
+      -7px 8px #808d93,
+      -8px 7px #cdd2d5
+      `
+    }
+  },
+  iconButtonAfter: {
+    position: "relative",
+
+    "&::after": {
+      // borderRight: "1px solid #fff"
+      content: "",
+      position: "absolute",
+      width: 1,
+      color: "#fff",
+      background: "#fff"
+    }
+  }
 })
 
 const Sidebar: React.FC<Props> = ({
@@ -64,14 +103,14 @@ const Sidebar: React.FC<Props> = ({
     <div className={classes.sidebar}>
       <div className={classes.sidebarTop}>
         <MUILink href="https://stldata.org" target="_blank" rel="noopener" style={{display:'block', outline: 'none'}}>
-          <span className={classes.logoPlaceholder}></span>
+          <Typography component="span" className={classes.logoPlaceholder}>RDA</Typography>
         </MUILink>
 
         <nav className={classes.iconNavMenu}>
           {/* Icon Links */}
             <Tooltip enterDelay={0} title="Api Items" placement="right">
-              <Link to="/" className={`${classes.navItem} ${classes.navLink}`}>
-                <IconButton aria-label="api items" color="inherit">
+              <Link to="/" className={`${classes.navItem} ${classes.navLink}`} style={{marginTop: 8}}>
+                <IconButton aria-label="api items" color="inherit" className={classes.iconButtonAfter}>
                   <ListIcon className={classes.navIcon} />
                 </IconButton>
               </Link>

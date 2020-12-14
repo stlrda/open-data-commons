@@ -6,7 +6,9 @@ import Paper from '@material-ui/core/Paper'
 
 
 interface Props {
-
+  name: string
+  details?: string
+  endpoint: string
 }
 
 const useStyles = makeStyles({
@@ -42,22 +44,24 @@ const useStyles = makeStyles({
   },
 })
 
-const OverviewCard: React.FC<Props> = (props) => {
+const OverviewCard: React.FC<Props> = ({
+  name,
+  endpoint,
+  details
+}) => {
   const classes = useStyles()
 
   return (
     <Paper elevation={1} className={classes.overviewCard}>
       <header className={classes.cardHeader}>
         <Typography variant="body1" gutterBottom className={classes.cardHeaderContextTitle}>
-          /crime/details
+          {endpoint}
         </Typography>
         <Typography variant="h3" gutterBottom className={classes.cardHeaderTitle}>
-          Crime Details
+          {name}
         </Typography>
         <Typography variant="body1" gutterBottom className={classes.cardHeaderDescription}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vitae hendrerit sed
-          mattis massa, porta facilisi lobortis libero. Quis a sit scelerisque tortor,
-          eleifend neque, sed odio. Sed eget volutpat urna eget.
+          {details}
         </Typography>
       </header>
 

@@ -27,6 +27,8 @@ interface IApiInfo { // store in local storage
 // }
 
 const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+const ApiItem = loadable(() => import ('./containers/ApiItem'))
+const ApiItems = loadable(() => import ('./containers/ApiItems'))
 const ApiItemsContainer = loadable(() => import('./containers/ApiItemsContainer'))
 const Visualizations = loadable(() => import('./containers/Visualizations'))
 
@@ -149,7 +151,18 @@ function App(props: any) {
             path="/"
             darkMode={darkMode}
             toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
-          />
+          >
+            <ApiItems
+              path="/"
+              // default
+            />
+            <ApiItem
+              path="endpoint/:operationId"
+            />
+            <Visualizations
+              path="visualize"
+            />
+          </BaseLayout>
           <ApiItemsContainer
             path="/docs"
             responseTables={responseTables}
@@ -160,7 +173,6 @@ function App(props: any) {
             swaggerData={swaggerData}
             updateResponseTables={(data) => setResponseTables(data)}
           />
-          <Visualizations path="/visualizations" />
         </Router>
       </ThemeProvider>
     </>

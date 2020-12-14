@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import Table from './new-components/Table'
+// import Table from './new-components/Table'
 import { makeStyles } from '@material-ui/core/styles'
 import Typography from '@material-ui/core/Typography'
 import Paper from '@material-ui/core/Paper'
