@@ -7,8 +7,8 @@ import Paper from '@material-ui/core/Paper'
 
 interface Props {
   name: string
-  details?: string
   endpoint: string
+  details?: string
 }
 
 const useStyles = makeStyles({
@@ -61,7 +61,7 @@ const OverviewCard: React.FC<Props> = ({
           {name}
         </Typography>
         <Typography variant="body1" gutterBottom className={classes.cardHeaderDescription}>
-          {details}
+          {details ? details : "No description provided"}
         </Typography>
       </header>
 

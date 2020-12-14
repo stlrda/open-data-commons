@@ -1,43 +1,25 @@
 import React, { useState, useEffect } from 'react'
-import { RouteComponentProps } from '@reach/router'
 import Container from '@material-ui/core/Container'
+import Paper from '@material-ui/core/Paper'
 import LinearProgress from '@material-ui/core/LinearProgress'
 import OverviewCard from './OverviewCard'
 
-interface Props extends RouteComponentProps {
-  operationId?: string
+interface Props {
+  routeData?: any
 }
 
-interface IApiItemData {
-  name: string
-  details?: string
-  endpoint: string
-}
+const ApiItem: React.FC<Props> = ({
+  routeData
+}) => {
+  // useContext to look up data from state
 
-const ApiItem: React.FC<Props> = (props) => {
-  // useContext to look this up
-  const [apiItemData, setApiItemData] = useState<any>(null)
-
-  useEffect(() => {
-    if(props.operationId) {
-      // show the user the operation Id
-      console.log('operation id found:', props.operationId)
-      setApiItemData({
-        name: "Crime Details",
-        endpoint: "/crime/details",
-        details: "The crime details endpoint route is lit."
-      })
-    }
-    else {
-      console.log("operation id not found:", props.operationId)
-    }
-  }, [props.operationId])
-
-  if(!apiItemData) {
+  if(!routeData) {
     // return loading state
     return (
       <Container>
-        <LinearProgress />
+        <Paper elevation={1} style={{padding: 20}}>
+          <LinearProgress />
+        </Paper>
       </Container>
     )
   }
@@ -45,9 +27,9 @@ const ApiItem: React.FC<Props> = (props) => {
     <Container>
 
       <OverviewCard
-        name={apiItemData.name}
-        details={apiItemData.details}
-        endpoint={apiItemData.endpoint}
+        name={routeData.methods[0].value.summary}
+        details={routeData.methods[0].value.description}
+        endpoint={routeData.endpoint}
       />
 
     </Container>

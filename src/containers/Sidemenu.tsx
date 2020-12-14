@@ -1,15 +1,17 @@
 import React, { useState, useEffect } from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Link } from '@reach/router'
+import Link from '@material-ui/core/Link'
 import throttle from "lodash/throttle"
 import pure from 'recompose/pure'
 import FormControl from '@material-ui/core/FormControl'
 import NativeSelect from '@material-ui/core/NativeSelect'
 // import InputLabel from '@material-ui/core/InputLabel'
 import Paper from '@material-ui/core/Paper'
+import { ODCNavRoute } from '../types/Openapi'
 
 interface SidemenuProps {
   routeType: number
+  routes: ODCNavRoute[]
   changeRouteType: (type: number) => void
 }
 
@@ -61,12 +63,13 @@ const useStyles = makeStyles({
 
 const Sidemenu: React.FC<SidemenuProps> = ({
   routeType,
+  routes,
   changeRouteType
 }) => {
   const classes = useStyles();
   let scrollListener: any
-  let mouseListener: any
-  let firefox_mouseListener: any
+  // let mouseListener: any
+  // let firefox_mouseListener: any
 
   // const [sidebarWidth, setSidebarWidth] = useState<number>(240) // for resize if implementing
   const [sidebarOffset, setSidebarOffset] = useState<number>(82)
@@ -120,26 +123,13 @@ const Sidemenu: React.FC<SidemenuProps> = ({
 
       {/* Main Routes Content */}
       <ul className={classes.routesList}>
-        <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoints/crime-coords">
-            Crime Coords
-          </Link>
-        </li>
-        <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoints/crime-details">
-            Crime Details
-          </Link>
-        </li>
-        <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoints/legacy-latest">
-            Legacy Latest
-          </Link>
-        </li>
-        <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoints/crime-geometry">
-            Crime Geometry
-          </Link>
-        </li>
+        {routes && routes.length && routes.map((route, index) => (
+          <li className={classes.routesItem} key={`route-${index}`}>
+            <Link className={classes.routesLink} href={`#${route.operationId}`}>
+              {routeType == 0 ? route.summary : route.endpoint}
+            </Link>
+          </li>
+        ))}
       </ul>
     </Paper>
   )

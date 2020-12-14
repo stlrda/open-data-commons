@@ -11,9 +11,8 @@ import { UIProvider } from '../context/UIContext';
 // Services
 // import OpenapiFormatter, { ODCTable } from '../services/OpenapiFormatter'
 // types
-import { RouteComponentProps } from '@reach/router'
 
-interface Props extends RouteComponentProps {
+interface Props {
   responseTables: any[]
   appConfig: any
   routes: any[]

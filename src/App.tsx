@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { Router, Redirect } from '@reach/router';
-// import loadable from '@loadable/component'
+import React, { useState, useEffect, useCallback } from 'react';
 import Loadable from 'react-loadable'
 import CSSBaseline from '@material-ui/core/CssBaseline'
-import ApiItem from './containers/ApiItem'
+// import ApiItem from './containers/ApiItem'
 import Loading from './containers/new-components/Loading'
-import ApiItems from './containers/ApiItems'
+import BaseLayout from './containers/BaseLayout'
 // import { lightTheme, darkTheme } from './styles/mui/theme'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 // services
@@ -17,6 +15,7 @@ import { OpenAPIV3 } from 'openapi-types'
 import { ODCNavRoute } from './types/Openapi'
 // config
 import config from './mocks/config2.example'
+import useEventListener from './utils/useEventListener'
 
 
 // const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
@@ -30,24 +29,22 @@ interface IApiInfo { // store in local storage
 //   "x-logo"?: string
 // }
 
-// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
-// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
-// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
-// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
-// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
-// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
-
-const BaseLayout = Loadable({
-  loader: () => import('./containers/BaseLayout'),
-  loading: Loading,
-  delay: 300,
-})
-
-// const ApiItem = Loadable({
-//   loader: () => import('./containers/ApiItem'),
+// const BaseLayout = Loadable({
+//   loader: () => import('./containers/BaseLayout'),
 //   loading: Loading,
 //   delay: 300,
 // })
+
+const ApiItems = Loadable({
+  loader: () => import('./containers/ApiItems'),
+  loading: Loading,
+  delay: 300
+})
+const ApiItem = Loadable({
+  loader: () => import('./containers/ApiItem'),
+  loading: Loading,
+  delay: 300,
+})
 
 const Visualizations = Loadable({
   loader: () => import('./containers/Visualizations'),
@@ -67,11 +64,11 @@ const DeveloperMode = Loadable({
   delay: 300,
 })
 
-const NotFound = Loadable({
-  loader: () => import('./containers/new-components/NotFound'),
-  loading: Loading,
-  delay: 300,
-})
+// const NotFound = Loadable({
+//   loader: () => import('./containers/new-components/NotFound'),
+//   loading: Loading,
+//   delay: 300,
+// })
 
 
 export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
@@ -82,11 +79,43 @@ function App(props: any) {
   const { api, swaggerUrl } = props
 
   const [darkMode, setDarkMode] = useState<boolean>(false)
+  const [currentRouteData, setCurrentRouteData] = useState<any>(null)
+
+  const hashHandler = useCallback((event: any) => {
+    let hash = location.hash
+    console.log('hash on hashchange:', hash)
+
+    let hashId = hash.substring(1)
+
+    console.log('hash id on hashchange:', hashId)
+
+    // Needs to match hash to the operation id
+    if(paths) {
+      let foundRoute = paths.find((path: any) => path.methods[0].value.operationId == hashId)
+      // let foundRoute = routes.find(route => route.operationId == hashId)
+      if(foundRoute) {
+        console.log('found route:', foundRoute)
+        // set route data in state
+        // can use this or the index of this route in paths, using findIndex()
+        setCurrentRouteData(foundRoute)
+        setActivePanelIndex(1)
+      }
+      else
+        console.log('did not find route')
+    }
+    else
+      console.log('paths/swagger data undefined')
+  }, [])
+
+  useEventListener('hashchange', hashHandler)
 
   // Swagger Loading... can make own custom hook for
   const [swaggerLoading, setSwaggerLoading] = useState<boolean>(true)
   const [swaggerErrors, setSwaggerErrors] = useState<any>(null)
   const [swaggerData, setSwaggerData] = useState<any>(null)
+
+  // Use as TS Enum not number
+  const [activePanelIndex, setActivePanelIndex] = useState<number>(0)
 
   // "paths" contain more data than just "paths"
   // since the "refs" are resolved with swagger-parser, all schemas are nested within these paths.
@@ -181,48 +210,52 @@ function App(props: any) {
     // console.log('cleanup App.tsx')
   }
 
+  const getPanel = (index: number) => {
+    switch(index) {
+      case 0:
+        return <ApiItems paths={paths} />
+      case 1:
+        return <ApiItem routeData={currentRouteData} />
+      case 2:
+        return <Visualizations />
+      case 3:
+        return <TabularData />
+      case 4:
+        return <DeveloperMode />
+      default:
+        return <ApiItems paths={paths} />
+    }
+  }
+
+  const changeActivePanelIndex = (index: number) => setActivePanelIndex(index)
+
   // Context API good for managing modal states if applicable
 
   return (
     <>
       <CSSBaseline />
       <ThemeProvider theme={theme}>
-        {/* SpecProvider */}
+        {/* <SpecProvider /> */}
         {/* Config Provider (or useConfig? or both are needed?) */}
         <BaseLayout
           darkMode={darkMode}
+          routes={routes}
+          activePanelIndex={activePanelIndex}
+          changeActivePanelIndex={changeActivePanelIndex}
           toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
         >
-          <Router>
-            <Redirect from="/" to="/endpoints" />
-            <ApiItems
-              path="endpoints"
-            />
-            <ApiItem
-              // rename "endpoint" to more user-friendly word? Like "doc"? other idea?
-              path="endpoints/:operationId"
-            />
-            <Visualizations
-              path="visualize"
-            />
-            <TabularData
-              path="tabular-data"
-            />
-            <DeveloperMode
-              path="code-examples"
-            />
-            <NotFound default />
-            {/* <ApiItemsContainer
-              path="/docs"
-              responseTables={responseTables}
-              appConfig={appConfig}
-              routes={routes}
-              apiInfo={apiInfo}
-              paths={paths}
-              swaggerData={swaggerData}
-              updateResponseTables={(data) => setResponseTables(data)}
-            /> */}
-          </Router>
+          {getPanel(activePanelIndex)}
+          {/* <NotFound default /> */}
+          {/* <ApiItemsContainer
+            path="/docs"
+            responseTables={responseTables}
+            appConfig={appConfig}
+            routes={routes}
+            apiInfo={apiInfo}
+            paths={paths}
+            swaggerData={swaggerData}
+            updateResponseTables={(data) => setResponseTables(data)}
+          /> */}
         </BaseLayout>
       </ThemeProvider>
     </>

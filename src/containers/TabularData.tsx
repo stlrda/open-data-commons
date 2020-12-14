@@ -1,18 +1,24 @@
 import React from 'react'
-import { RouteComponentProps } from '@reach/router'
 import { makeStyles } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container'
 import Paper from '@material-ui/core/Paper'
 import Typography from '@material-ui/core/Typography'
+import Table from './new-components/Table'
 
-interface TabularDataProps extends RouteComponentProps {
+interface TabularDataProps {
 
 }
 
 const useStyles = makeStyles({
   pageContainer: {},
   card: {
-    padding: 20
+    padding: "20px 40px"
+  },
+  cardHeader: {
+    marginBottom: 20
+  },
+  cardHeaderDescription: {
+    opacity: 0.95
   }
 })
 
@@ -22,7 +28,15 @@ const TabularData: React.FC<TabularDataProps> = (props) => {
   return (
     <Container maxWidth={false} className={classes.pageContainer}>
       <Paper elevation={1} className={classes.card}>
-        <Typography>Tabular Data</Typography>
+        <header className={classes.cardHeader}>
+          <Typography variant="h3" component="h1" gutterBottom>Tabular Data</Typography>
+          <Typography variant="body1" gutterBottom className={classes.cardHeaderDescription}>
+            Descriptive Text
+          </Typography>
+        </header>
+        <div className="content-inner">
+          <Table />
+        </div>
       </Paper>
     </Container>
   )

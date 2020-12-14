@@ -18,11 +18,13 @@ import LaunchIcon from '@material-ui/icons/Launch'
 import SaveIcon from '@material-ui/icons/Save'
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward'
 import ArrowBackIcon from '@material-ui/icons/ArrowBack'
-// types
-import { RouteComponentProps } from '@reach/router'
+import { ODCNavRoute } from '../types/Openapi'
 
-interface Props extends RouteComponentProps {
+interface Props {
   darkMode: boolean
+  activePanelIndex: number
+  routes: ODCNavRoute[]
+  changeActivePanelIndex: (index: number) => void
   toggleDarkMode: () => void
 }
 
@@ -72,7 +74,14 @@ const actions = [
   { icon: <SaveIcon />, name: 'Save' },
 ]
 
-const BaseLayout: React.FC<Props> = ({ darkMode, toggleDarkMode, ...rest }) => {
+const BaseLayout: React.FC<Props> = ({
+  darkMode,
+  activePanelIndex,
+  routes,
+  changeActivePanelIndex,
+  toggleDarkMode,
+  ...rest
+}) => {
   const classes = useStyles()
 
   const [showSideMenu, setShowSideMenu] = useState<boolean>(false)
@@ -87,7 +96,12 @@ const BaseLayout: React.FC<Props> = ({ darkMode, toggleDarkMode, ...rest }) => {
   return (
     <div className={classes.pageContainer}>
       {/* Left Sidebar */}
-      <Sidebar darkMode={darkMode} toggleDarkMode={toggleDarkMode} />
+      <Sidebar
+        darkMode={darkMode}
+        activePanelIndex={activePanelIndex}
+        changeActivePanelIndex={changeActivePanelIndex}
+        toggleDarkMode={toggleDarkMode}
+      />
 
       {/* Top Bar */}
       <TopBar />
@@ -105,6 +119,7 @@ const BaseLayout: React.FC<Props> = ({ darkMode, toggleDarkMode, ...rest }) => {
       {showSideMenu && (
         <Sidemenu
           routeType={routeType}
+          routes={routes}
           changeRouteType={handleRouteTypeChange}
         />
       )}

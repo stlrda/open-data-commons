@@ -1,7 +1,6 @@
 import React from 'react'
 import { makeStyles } from '@material-ui/core/styles'
-import { Link } from '@reach/router'
-import MUILink from '@material-ui/core/Link'
+import Link from '@material-ui/core/Link'
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip'
 import Typography from '@material-ui/core/Typography'
@@ -15,7 +14,9 @@ import DarkModeIcon from '@material-ui/icons/Brightness4'
 import MessageIcon from '@material-ui/icons/ChatBubbleOutline'
 
 interface Props {
+  activePanelIndex: number
   darkMode: boolean
+  changeActivePanelIndex: (index: number) => void
   toggleDarkMode: () => void
 }
 
@@ -93,7 +94,9 @@ const useStyles = makeStyles({
 })
 
 const Sidebar: React.FC<Props> = ({
+  activePanelIndex,
   darkMode,
+  changeActivePanelIndex,
   toggleDarkMode,
   ...rest
 }) => {
@@ -102,34 +105,46 @@ const Sidebar: React.FC<Props> = ({
   return (
     <div className={classes.sidebar}>
       <div className={classes.sidebarTop}>
-        <MUILink href="https://stldata.org" target="_blank" rel="noopener" style={{display:'block', outline: 'none'}}>
+        <Link href="https://stldata.org" target="_blank" rel="noopener" style={{display:'block', outline: 'none'}}>
           <Typography component="span" className={classes.logoPlaceholder}>RDA</Typography>
-        </MUILink>
+        </Link>
 
         <nav className={classes.iconNavMenu}>
           {/* Icon Links */}
             <Tooltip enterDelay={0} title="Api Items" placement="right">
-              <Link to="/" className={`${classes.navItem} ${classes.navLink}`} style={{marginTop: 8}}>
+              <Link onClick={(e: any) => {
+                e.preventDefault()
+                changeActivePanelIndex(0)
+              }} className={`${classes.navItem} ${classes.navLink}`} style={{marginTop: 8}}>
                 <IconButton aria-label="api items" color="inherit" className={classes.iconButtonAfter}>
                   <ListIcon className={classes.navIcon} />
                 </IconButton>
               </Link>
             </Tooltip>
           <Tooltip enterDelay={0} title="Visualizations" placement="right">
-            <Link to="/visualize" className={classes.navItem}>
+            <Link onClick={(e: any) => {
+              e.preventDefault()
+              changeActivePanelIndex(2)
+            }} className={classes.navItem}>
               <IconButton aria-label="visualizations" color="inherit">
                 <BarChartIcon className={classes.navIcon} />
               </IconButton>
             </Link>
           </Tooltip>
-          <Link to="/tabular-data">
+          <Link onClick={(e: any) => {
+            e.preventDefault()
+            changeActivePanelIndex(3)
+          }}>
             <Tooltip enterDelay={0} title="Tabular Data" placement="right">
               <IconButton aria-label="view tabular data" color="inherit">
                 <Layers className={classes.navIcon} />
               </IconButton>
             </Tooltip>
           </Link>
-          <Link to="/code-examples">
+          <Link onClick={(e: any) => {
+            e.preventDefault()
+            changeActivePanelIndex(4)
+          }}>
             <Tooltip enterDelay={0} title="See Code Examples" placement="right">
               <IconButton aria-label="see code examples" color="inherit">
                 <Code className={classes.navIcon} />
