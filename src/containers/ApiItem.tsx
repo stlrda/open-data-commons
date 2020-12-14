@@ -28,6 +28,9 @@ const ApiItem: React.FC<Props> = (props) => {
         details: "The crime details endpoint route is lit."
       })
     }
+    else {
+      console.log("operation id not found:", props.operationId)
+    }
   }, [props.operationId])
 
   if(!apiItemData) {

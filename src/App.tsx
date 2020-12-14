@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import loadable from '@loadable/component'
+import { Router, Redirect } from '@reach/router';
+// import loadable from '@loadable/component'
+import Loadable from 'react-loadable'
 import CSSBaseline from '@material-ui/core/CssBaseline'
+import ApiItem from './containers/ApiItem'
+import Loading from './containers/new-components/Loading'
+import ApiItems from './containers/ApiItems'
 // import { lightTheme, darkTheme } from './styles/mui/theme'
 import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 // services
@@ -12,7 +17,6 @@ import { OpenAPIV3 } from 'openapi-types'
 import { ODCNavRoute } from './types/Openapi'
 // config
 import config from './mocks/config2.example'
-import { Router } from '@reach/router';
 
 
 // const swaggerUrl = "https://api.stldata.org/crime/openapi.json"
@@ -26,13 +30,49 @@ interface IApiInfo { // store in local storage
 //   "x-logo"?: string
 // }
 
-const BaseLayout = loadable(() => import('./containers/BaseLayout'))
-const ApiItem = loadable(() => import ('./containers/ApiItem'))
-const ApiItems = loadable(() => import ('./containers/ApiItems'))
-const ApiItemsContainer = loadable(() => import('./containers/ApiItemsContainer'))
-const Visualizations = loadable(() => import('./containers/Visualizations'))
-const TabularData = loadable(() => import('./containers/TabularData'))
-const DeveloperMode = loadable(() => import('./containers/DeveloperMode'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+// const BaseLayout = loadable(() => import('./containers/BaseLayout'))
+
+const BaseLayout = Loadable({
+  loader: () => import('./containers/BaseLayout'),
+  loading: Loading,
+  delay: 300,
+})
+
+// const ApiItem = Loadable({
+//   loader: () => import('./containers/ApiItem'),
+//   loading: Loading,
+//   delay: 300,
+// })
+
+const Visualizations = Loadable({
+  loader: () => import('./containers/Visualizations'),
+  loading: Loading,
+  delay: 300,
+})
+
+const TabularData = Loadable({
+  loader: () => import('./containers/TabularData'),
+  loading: Loading,
+  delay: 300,
+})
+
+const DeveloperMode = Loadable({
+  loader: () => import('./containers/DeveloperMode'),
+  loading: Loading,
+  delay: 300,
+})
+
+const NotFound = Loadable({
+  loader: () => import('./containers/new-components/NotFound'),
+  loading: Loading,
+  delay: 300,
+})
+
 
 export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
   path: string
@@ -147,19 +187,20 @@ function App(props: any) {
     <>
       <CSSBaseline />
       <ThemeProvider theme={theme}>
-        <Router>
-          <BaseLayout
-            default
-            path="/"
-            darkMode={darkMode}
-            toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
-          >
+        {/* SpecProvider */}
+        {/* Config Provider (or useConfig? or both are needed?) */}
+        <BaseLayout
+          darkMode={darkMode}
+          toggleDarkMode={() => setDarkMode(prevMode => !prevMode)}
+        >
+          <Router>
+            <Redirect from="/" to="/endpoints" />
             <ApiItems
-              path="/"
-              // default
+              path="endpoints"
             />
             <ApiItem
-              path="endpoint/:operationId"
+              // rename "endpoint" to more user-friendly word? Like "doc"? other idea?
+              path="endpoints/:operationId"
             />
             <Visualizations
               path="visualize"
@@ -170,18 +211,19 @@ function App(props: any) {
             <DeveloperMode
               path="code-examples"
             />
-          </BaseLayout>
-          <ApiItemsContainer
-            path="/docs"
-            responseTables={responseTables}
-            appConfig={appConfig}
-            routes={routes}
-            apiInfo={apiInfo}
-            paths={paths}
-            swaggerData={swaggerData}
-            updateResponseTables={(data) => setResponseTables(data)}
-          />
-        </Router>
+            <NotFound default />
+            {/* <ApiItemsContainer
+              path="/docs"
+              responseTables={responseTables}
+              appConfig={appConfig}
+              routes={routes}
+              apiInfo={apiInfo}
+              paths={paths}
+              swaggerData={swaggerData}
+              updateResponseTables={(data) => setResponseTables(data)}
+            /> */}
+          </Router>
+        </BaseLayout>
       </ThemeProvider>
     </>
   );

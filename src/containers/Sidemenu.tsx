@@ -121,22 +121,22 @@ const Sidemenu: React.FC<SidemenuProps> = ({
       {/* Main Routes Content */}
       <ul className={classes.routesList}>
         <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoint/crime-coords">
+          <Link className={classes.routesLink} to="/endpoints/crime-coords">
             Crime Coords
           </Link>
         </li>
         <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoint/crime-details">
+          <Link className={classes.routesLink} to="/endpoints/crime-details">
             Crime Details
           </Link>
         </li>
         <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoint/legacy-latest">
+          <Link className={classes.routesLink} to="/endpoints/legacy-latest">
             Legacy Latest
           </Link>
         </li>
         <li className={classes.routesItem}>
-          <Link className={classes.routesLink} to="/endpoint/crime-geometry">
+          <Link className={classes.routesLink} to="/endpoints/crime-geometry">
             Crime Geometry
           </Link>
         </li>
