@@ -31,6 +31,8 @@ const ApiItem = loadable(() => import ('./containers/ApiItem'))
 const ApiItems = loadable(() => import ('./containers/ApiItems'))
 const ApiItemsContainer = loadable(() => import('./containers/ApiItemsContainer'))
 const Visualizations = loadable(() => import('./containers/Visualizations'))
+const TabularData = loadable(() => import('./containers/TabularData'))
+const DeveloperMode = loadable(() => import('./containers/DeveloperMode'))
 
 export interface PathsArrayItem extends OpenAPIV3.PathItemObject {
   path: string
@@ -161,6 +163,12 @@ function App(props: any) {
             />
             <Visualizations
               path="visualize"
+            />
+            <TabularData
+              path="tabular-data"
+            />
+            <DeveloperMode
+              path="code-examples"
             />
           </BaseLayout>
           <ApiItemsContainer
