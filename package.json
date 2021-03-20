@@ -1,6 +1,6 @@
 {
-  "name": "data-commons",
-  "version": "0.1.0",
+  "name": "open-data-commons",
+  "version": "1.0.0",
   "private": true,
   "homepage": ".",
   "scripts": {

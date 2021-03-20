@@ -126,7 +126,7 @@ const Sidemenu: React.FC<SidemenuProps> = ({
         {routes && routes.length && routes.map((route, index) => (
           <li className={classes.routesItem} key={`route-${index}`}>
             <Link className={classes.routesLink} href={`#${route.operationId}`}>
-              {routeType == 0 ? route.summary : route.endpoint}
+              {routeType == 0 ? route?.summary : route?.endpoint ?? ""}
             </Link>
           </li>
         ))}
