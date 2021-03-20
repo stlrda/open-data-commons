@@ -36,7 +36,7 @@ const StyledApiItem = styled.div`
     font-size: 1.75em;
     color: #000;
     font-weight: 400;
-    // font-family: props.theme.typography.fontFamilyRegular
+    font-family: ${props => props.theme.typography.fontFamilyRegular};
 
     &.small-title {
       font-size: 1.35em;
@@ -71,8 +71,7 @@ const StyledApiItem = styled.div`
   }
 
   .required-text {
-    // color: props.theme.red;
-    color: red;
+    color: ${props => props.theme.red};
     font-size: 12px;
   }
 
@@ -103,9 +102,9 @@ const StyledApiItem = styled.div`
     padding-left: 1em;
     padding-right: 1em;
     width: 40%;
-    // background: props.theme.dark};
+    // background: ${props => props.theme.dark};
     color: #fff;
-    // width: props.theme.rightColumnWidth};
+    // width: ${props => props.theme.rightColumnWidth};
     // width: calc(40% - 130px);
     z-index: 2;
     overflow-x: auto;
@@ -114,7 +113,7 @@ const StyledApiItem = styled.div`
       display: flex;
       flex-direction: row;
       align-items: center;
-      // background-color: props.theme.darkest};
+      // background-color: ${props => props.theme.darkest};
       padding: 10px;
       margin-bottom: 15px;
       border-radius: 4px;
@@ -184,7 +183,7 @@ const StyledApiItem = styled.div`
     }
   }
 
-  @media(max-width: 75rem) {
+  @media(max-width: ${props => props.theme.breakpoints.medium}) {
     flex-direction: column;
     padding-bottom: 0;
     padding-top: 0;
@@ -198,7 +197,7 @@ const StyledApiItem = styled.div`
       padding: 40px;
     }
   }
-  @media(max-width: 50rem) {
+  @media(max-width: ${props => props.theme.breakpoints.small}) {
     &:first-child {
       .api-item-left {
         padding-top: 0;
@@ -228,7 +227,7 @@ export const ResponseItem_Styled = styled.div`
       flex-direction: row;
       justify-content: space-between;
       align-items: center;
-      background-color: #11171A; //props.theme.darkest
+      background-color: ${props => props.theme.darkest};
       padding: 10px;
       font-size: .95em;
       line-height: 1.1em;

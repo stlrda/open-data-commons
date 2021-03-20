@@ -8,17 +8,17 @@ const SidebarLayout = styled.div`
   position: fixed;
   left: 0;
   height: 100vh;
-  width: 260px;
-  background: #FAFAFA;
+  width: ${props => props.theme.sidebarWidth};
+  background: ${props => props.theme.light};
 
-  @media(max-width: 50rem) {
+  @media(max-width: ${props => props.theme.breakpoints.small}) {
     display: none;
   }
 `
 
 const MainContent = styled.main`
-  background: #fff;
-  padding-left: 260px;
+  background: ${props => props.theme.background};
+  padding-left: ${props => props.theme.sidebarWidth};
   width: 100%;
 
   .content-container {
@@ -26,15 +26,15 @@ const MainContent = styled.main`
     // padding-right: 40px;
   }
 
-  @media(max-width: 75rem) {
-    // width: props.theme.mainContentWidth};
+  @media(max-width: ${props => props.theme.breakpoints.medium}) {
+    // width: ${props => props.theme.mainContentWidth};
 
     .content-container {
       padding-left: 0;
       padding-right: 0;
     }
   }
-  @media(max-width: 50rem) {
+  @media(max-width: ${props => props.theme.breakpoints.small}) {
     margin-left: 0;
     padding-left: 0;
     width: 100%;
@@ -46,12 +46,12 @@ const Backdrop = styled.div`
   right: 0;
   top: 0;
   bottom: 0;
-  // width: props.theme.rightColumnWidth};
+  // width: ${props => props.theme.rightColumnWidth};
   width: calc(40% - 130px + 2em);
-  background: #263238;
+  background: ${props => props.theme.dark};
   z-index: 0;
 
-  @media(max-width: 75rem) {
+  @media(max-width: ${props => props.theme.breakpoints.medium}) {
     display: none;
   }
 `

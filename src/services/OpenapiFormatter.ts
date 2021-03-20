@@ -65,8 +65,7 @@ class OpenapiFormatter {
         let navRoute: ODCNavRoute = {
           http: method.http,
           summary: method.value.summary,
-          operationId: method.value.operationId,
-          endpoint: path.endpoint
+          operationId: method.value.operationId
         }
         navRoutes.push(navRoute);
       })

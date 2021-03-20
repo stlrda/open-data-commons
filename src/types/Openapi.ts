@@ -9,5 +9,4 @@ export interface ODCNavRoute {
   http: string // or enum
   summary: string
   operationId: string
-  endpoint: string
 }

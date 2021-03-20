@@ -1,6 +1,6 @@
 import React from 'react'
 // import { Button as BPButton } from '@blueprintjs/core/lib/cjs/components/button/buttons'
-import MuiButton from '@material-ui/core/Button'
+import { Button as BPButton } from '@blueprintjs/core'
 
 interface ButtonProps {
   title: string
@@ -13,12 +13,10 @@ const Button: React.FC<ButtonProps> = ({
 }) => {
 
   return (
-    <MuiButton
-      title={title}
+    <BPButton
+      text={title}
       onClick={handleClick}
-    >
-      {title}
-    </MuiButton>
+    />
   )
 }
 

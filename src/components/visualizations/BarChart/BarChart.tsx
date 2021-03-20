@@ -1,5 +1,5 @@
 import React from 'react'
-import CircularProgress from '@material-ui/core/CircularProgress'
+import { Spinner } from '@blueprintjs/core'
 import { BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend, Bar } from 'recharts'
 
 export interface BarChartVizProps {
@@ -18,7 +18,7 @@ const BarChartViz: React.FC<BarChartVizProps> = ({ width, height, chartData, ...
   const barFillColor = '#8884d8'
   const dataKey = "value"
 
-  if (!chartData) return <CircularProgress />
+  if (!chartData) return <Spinner />
 
   return (
     // <ResponsiveContainer width={width} height={height}>
