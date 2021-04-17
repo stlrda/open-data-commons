@@ -5,7 +5,6 @@ import throttle from "lodash/throttle"
 import pure from 'recompose/pure'
 import FormControl from '@material-ui/core/FormControl'
 import NativeSelect from '@material-ui/core/NativeSelect'
-// import InputLabel from '@material-ui/core/InputLabel'
 import Paper from '@material-ui/core/Paper'
 import { ODCNavRoute } from '../types/Openapi'
 
@@ -46,7 +45,6 @@ const useStyles = makeStyles({
     paddingLeft: 0
   },
   routesItem: {
-    // display: "inline-block"
   },
   routesLink: {
     textDecoration: "none !important",

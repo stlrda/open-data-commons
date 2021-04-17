@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useReducer } from 'react'
+import React, { useState, useEffect, useReducer } from 'react'
 import styled from 'styled-components'
 import {
   Dialog,
@@ -8,9 +8,6 @@ import {
   Tab,
   Card,
   Elevation,
-  ButtonGroup,
-  Alignment,
-  Button
 } from '@blueprintjs/core'
 import BarChartViz from '../../visualizations/BarChart/BarChart'
 import PieChartViz from '../../visualizations/PieChart/PieChart'
@@ -64,11 +61,11 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
   const [selectedTab, setSelectedTab] = useState<string>("")
   const [geoData, setGeoData] = useState<GeoData[] | null>(null)
 
-  const initialState: IConfigContextState = {
-    config: config,
-  }
+  // const initialState: IConfigContextState = {
+  //   config: config,
+  // }
 
-  const [itemState, dispatch] = useItemConfig(initialState)
+  // const [itemState, dispatch] = useItemConfig(initialState)
 
   useEffect(() => {
     if (!responseTable) return
@@ -100,11 +97,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
   }
 
   const getVisualizations = (field: string, data: any, index: number, formatData?: DataCommonsConfig.Response) => {
-    // console.log('getting viz for this data:')
-    // console.log('field:', field)
-    // console.log('data:', data) // name, type, value
-    // console.log('format data:', formatData)
-
     let visualizations: any = [] // will be set of visualizations to render
 
     // Handle Geo Case
@@ -112,16 +104,10 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
       if(formatData.format) {
         // warning: this will not support multiple lat/lon in the same response
         if(formatData.format === "geo") {
-          // console.log('pushing geomap viz')
           let newGeoData;
           visualizations.push(<div>geo</div>)
 
           if(!geoData) {
-            let responseData = config!.responses![index]
-            // if(responseData)
-              // console.log('config data for response item:', responseData)
-
-            // console.log('response table data:', responseTable)
 
             // for each item in responseTable.rows
               // return object with lat and lon
@@ -129,14 +115,7 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
 
             if(responseTable!.rows.length) {
               let filteredData = responseTable!.rows;
-              // if(Object.keys(responseTable!.columns).length > 2) {
-              //   filteredData = responseTable!.rows.map(row => {
-              //     return {
-              //       lat: row.lat,
-              //       lng: row.lon || row.lng // TODO: specify one of these?
-              //     }
-              //   })
-              // }
+
               filteredData = responseTable!.rows.map(row => {
                 let { lon, ...rest} = row;
                 return {
@@ -146,8 +125,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
               })
 
               filteredData = filteredData.filter(row => row.lat && row.lng)
-
-              // console.log('filtered data:', filteredData)
 
               setGeoData(filteredData as GeoData[])
 
@@ -162,38 +139,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
             />
           )
           return visualizations;
-
-            // let latData, lonData;
-            // let currentResponse = config!.responses![index]
-            // if(currentResponse && Object.keys(currentResponse).length) {
-            //   if(formatData.field === "lon") {
-            //     lonData = data.value;
-            //     //@ts-ignore
-            //     latData = currentResponse.find((item: any) => item.field === "lat")
-            //     if(!latData) console.log('lat data not found! Error')
-            //   }
-            //   else if(formatData.field === "lat") {
-            //     latData = data.value;
-            //     //@ts-ignore
-            //     lonData = currentResponse.find((item: any) => item.field === "lon")
-            //     if(!lonData) console.log('lon data not found! Error')
-            //   }
-            //   else {
-            //     console.log('something went wrong')
-            //   }
-            //   // newGeoData = dataService.getGeoData(latData, lonData)
-            //   setGeoData(newGeoData)
-            // }
-            // else console.log('no geo data to be found')
-          // visualizations.push(
-          //   <GeoMapViz
-          //     scrollWheelZoom={true}
-          //     geoData={newGeoData ? newGeoData : geoData}
-          //   />
-          // )
-          // }
-          // setUsedGeo(true)
-          // return visualizations;
         }
 
         switch(formatData.format) {
@@ -291,11 +236,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
           <h4 className="bp3-heading" style={{flex: 1}}>
             {responseTable?.id ? responseTable.id : 'Data Visualizations: '}
           </h4>
-          <ButtonGroup vertical={false} alignText={Alignment.CENTER}>
-            <Button minimal icon="settings">Settings</Button>
-            <Button minimal icon="info-sign">About</Button>
-            <Button minimal icon="list-detail-view">View All</Button>
-          </ButtonGroup>
         </div>
       }
       autoFocus
@@ -304,7 +244,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
       enforceFocus
       lazy
       usePortal
-      // portalContainer
     >
       {!keys || !responseTable || !chartData ? (
         <Spinner />
@@ -358,7 +297,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
                   />
                   {keys.map((option, index) => {
                     let formatData = config ? config.responses![index] : undefined
-                    // console.log('format data:', formatData)
                     return (
                       <Tab
                         key={option}
@@ -370,17 +308,8 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
                     )
                   })}
                 </Tabs>
-
-                {/* Main Content */}
-                {/* <div className="modal-main-content">
-                <h3>Visualizations</h3>
-
-                D3 Viz. Stuff:
-                <p>[your viz here]</p>
-              </div> */}
               </div>
             ) : (
-              // Loading Indicator
               <Spinner />
             )}
           </div>
@@ -391,11 +320,6 @@ const VisualizationsDialogue: React.FC<VisualizationsDialogueProps> = ({
 }
 
 export default VisualizationsDialogue
-
-// interface VizPanelProps {
-//   option: IVizOption
-//   data: ODCTable
-// }
 
 const Dialog_Styled = styled(Dialog)`
   width: 90%;
@@ -443,126 +367,3 @@ const VizPanel_Styled = styled.div`
     }
   }
 `
-
-// const VizPanel: React.FC<VizPanelProps> = ({
-//   option,
-//   data
-// }) => {
-
-//   return (
-//     <VizPanel_Styled className="viz-panel-inner">
-//       <h1 className="panel-title">{option.title}</h1>
-
-//       <BarChartViz
-//         height={500}
-//         width={500}
-//         data={data}
-//       />
-//     </VizPanel_Styled>
-//   )
-// }
-
-// const VisualizationsDialogue: React.FC<Props> = ({
-//   showModal,
-//   responseTable,
-//   onCloseModal,
-// }) => {
-//   const [visualizations, setVisualizations] = useState<any[]>([])
-//   const [selectedTab, setSelectedTab] = useState<string>(defaultVizOption)
-
-//   const handleTabChange = (tabId: string) => {
-//     setSelectedTab(tabId)
-//   }
-
-//   const getVizPanel = (option: any) => {
-//     if(!responseTable) return <div><p>Loading Data</p></div>
-
-//     let VizComponent: any; // React component
-
-//     switch(option.id) {
-//       case "histogram":
-//         VizComponent = (
-//           <BarChartViz
-//             height={500}
-//             width={500}
-//             data={responseTable}
-//           />
-//         )
-//         break;
-//       case "pie-chart":
-//         VizComponent = <div><p>Hello Pie Chart</p></div>
-//         break;
-//       default:
-//         VizComponent = <div><p>No Visualization Selected</p></div>
-//     }
-
-//     return (
-//       <VizPanel_Styled className="viz-panel-inner">
-//         <h1 className="panel-title">{option.title}</h1>
-
-//         {VizComponent}
-//       </VizPanel_Styled>
-//     )
-//   }
-
-//   return (
-//     <Dialog
-//       isOpen={showModal}
-//       className=""
-//       style={{width: "90%", height: "95vh", margin: "auto"}}
-//       icon="th-list"
-//       onClose={onCloseModal}
-//       title={responseTable?.id ? responseTable.id : "Data Visualizations: "}
-//       autoFocus
-//       canEscapeKeyClose
-//       canOutsideClickClose
-//       enforceFocus
-//       lazy
-//       usePortal
-//       // portalContainer
-//     >
-//       <div className={Classes.DIALOG_BODY}>
-//         {/* Toolbar Here: */}
-//         <div className="table-toolbar">
-
-//         </div>
-
-//         <div className="modal-inner">
-//           {responseTable ? (
-//             <div className="visualizations-container">
-//               {/* Sidebar */}
-//               <Tabs
-//                 id="VisualizationTabs"
-//                 selectedTabId={selectedTab}
-//                 vertical
-//                 renderActiveTabPanelOnly
-//                 onChange={handleTabChange}
-//               >
-//                 {vizOptions.map(option => (
-//                   <Tab
-//                     key={option.id}
-//                     id={option.id}
-//                     title={option.title}
-//                     //@ts-ignore
-//                     panel={getVizPanel(option)}
-//                   />
-//                 ))}
-//               </Tabs>
-
-//               {/* Main Content */}
-//               {/* <div className="modal-main-content">
-//                 <h3>Visualizations</h3>
-
-//                 D3 Viz. Stuff:
-//                 <p>[your viz here]</p>
-//               </div> */}
-//             </div>
-//           ) : (
-//             // Loading Indicator
-//             <Spinner />
-//           )}
-//         </div>
-//       </div>
-//     </Dialog>
-//   )
-// }

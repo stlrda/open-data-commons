@@ -31,7 +31,6 @@ interface ICardItem {
 }
 const rows: ICardItem[] = [
   { name: "Crime Details", endpoint: "/crime/details", description: "Lorem ipsum dolor sit amet"},
-  // { name: "Crime Details", endpoint: "/crime/details", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vitae hendrerit sed mattis massa, porta facilisi lobortis libero. Quis a sit scelerisque tortor, eleifend neque, sed odio. Sed eget volutpat urna eget."},
   { name: "Crime Coords", endpoint: "/crime/coords" },
   { name: "Legacy District", endpoint: "/legacy/district", description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit."},
   { name: "Crime Geometry", endpoint: "/crime/{geometry}" }
