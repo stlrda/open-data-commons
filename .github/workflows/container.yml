@@ -4,14 +4,27 @@ on:
         branches:
             - main
 jobs:
-    build-container:
+    build-crime-container:
         runs-on: ubuntu-latest
         steps:
         - uses: actions/checkout@master
-        - name: Publish Container to Github Registry
+        - name: Publish Crime Container to Github Registry
           uses: elgohr/Publish-Docker-Github-Action@master
           with:
-            name: stlrda/open-data-commons/crime
+            name: stlrda/open-data-commons/odc-crime
             username: ${{ github.actor }}
             password: ${{ secrets.TOKEN }}
             registry: docker.pkg.github.com
+            dockerfile: Dockerfile-crime
+    build-redb-container:
+        runs-on: ubuntu-latest
+        steps:
+        - uses: actions/checkout@master
+        - name: Publish REDB Container to Github Registry
+          uses: elgohr/Publish-Docker-Github-Action@master
+          with:
+            name: stlrda/open-data-commons/odc-redb
+            username: ${{ github.actor }}
+            password: ${{ secrets.TOKEN }}
+            registry: docker.pkg.github.com
+            dockerfile: Dockerfile-redb
